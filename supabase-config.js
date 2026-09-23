@@ -1,2 +1,2 @@
-window.MONOCHECK_STUDY_SUPABASE_URL='';
-window.MONOCHECK_STUDY_SUPABASE_ANON_KEY='';
+window.MONOCHECK_STUDY_SUPABASE_URL='https://lkqalgdrontsyjwvcraf.supabase.co';
+window.MONOCHECK_STUDY_SUPABASE_ANON_KEY='sb_publishable_VVPTEuuIOiDLvW818lxNRQ_GfEna3Aa';
