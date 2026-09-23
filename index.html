@@ -35,7 +35,7 @@ function progressAt(s,date){
 function pct(s){
   const dates=Object.keys(s.actuals||{}).filter(d=>s.actuals[d]!==''&&s.actuals[d]!=null).sort();
   if(!dates.length) return 0;
-  return progressAt(s,dates[dates.length-1]);
+  return Math.round(progressAt(s,dates[dates.length-1]) * 100) / 100;
 }
 function renderNav(){let items=[['home','🏠 ホーム'],['study','📖 学習'],['contents','📚 目次・計画'],['daily','🗓️ 日別記録'],['prep','📝 レポート準備'],['subjects','⚙️ 科目管理']];$('#nav').innerHTML=items.map(([k,t])=>`<button class="btn ${view===k?'active':''}" onclick="view='${k}';render()">${t}</button>`).join('')}
 function render(){renderNav();let s=subject();({home,study,contents,daily,prep,subjects}[view])(s)}
