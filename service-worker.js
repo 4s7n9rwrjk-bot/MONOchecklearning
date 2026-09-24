@@ -1,61 +1,61 @@
-const CACHE_NAME = 'monocheck-study-pwa-v20260924-3';
-const APP_SHELL = ['./', './manifest.json'];
+const CACHE_NAME='monocheck-study-final-v20260924-1';
+const APP_SHELL=['./','./manifest.json'];
 
-self.addEventListener('install', event => {
+self.addEventListener('install',event=>{
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+      .then(c=>c.addAll(APP_SHELL))
+      .then(()=>self.skipWaiting())
   );
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate',event=>{
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      .then(keys=>Promise.all(
+        keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k))
       ))
-      .then(() => self.clients.claim())
+      .then(()=>self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
+self.addEventListener('fetch',event=>{
+  const req=event.request;
+  if(req.method!=='GET')return;
 
-  const url = new URL(request.url);
+  const url=new URL(req.url);
 
-  // Supabase/Auth/CDN等の外部通信には絶対に介入しない
-  if (url.origin !== self.location.origin) return;
+  // Supabase等の外部通信はService Workerで一切処理しない
+  if(url.origin!==self.location.origin)return;
 
-  // HTML/JS/設定は常にネットワーク優先
-  const networkFirst =
-    request.mode === 'navigate' ||
+  const networkFirst=
+    req.mode==='navigate' ||
     /\.(html|js|json)$/.test(url.pathname);
 
-  if (networkFirst) {
+  if(networkFirst){
     event.respondWith(
-      fetch(request, {cache:'no-store'})
-        .then(response => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then(c => c.put(request, copy));
+      fetch(req,{cache:'no-store'})
+        .then(res=>{
+          if(res&&res.ok){
+            const copy=res.clone();
+            caches.open(CACHE_NAME).then(c=>c.put(req,copy));
           }
-          return response;
+          return res;
         })
-        .catch(() => caches.match(request).then(r => r || caches.match('./')))
+        .catch(()=>caches.match(req).then(r=>r||caches.match('./')))
     );
-  } else {
+  }else{
     event.respondWith(
-      caches.match(request).then(cached =>
-        cached || fetch(request).then(response => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then(c => c.put(request, copy));
+      caches.match(req).then(cached=>{
+        if(cached)return cached;
+        return fetch(req).then(res=>{
+          if(res&&res.ok){
+            const copy=res.clone();
+            caches.open(CACHE_NAME).then(c=>c.put(req,copy));
           }
-          return response;
-        })
-      )
+          return res;
+        });
+      })
     );
   }
 });
