@@ -1,11 +1,12 @@
 {
-  "name": "MONOcheck 学習管理",
-  "short_name": "MONOcheck 学習",
-  "description": "学習進捗・学習計画・レポート準備を管理するアプリ",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#1e3a6e",
-  "lang": "ja",
-  "orientation": "portrait"
+  "name":"MONOcheck 学習管理",
+  "short_name":"MONOcheck 学習",
+  "description":"学習進捗・学習計画・レポート準備を管理するアプリ",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f8fafc",
+  "theme_color":"#1e3a6e",
+  "lang":"ja",
+  "orientation":"portrait"
 }

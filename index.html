@@ -92,15 +92,15 @@ function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader
 if("serviceWorker" in navigator){
   window.addEventListener("load", async ()=>{
     try{
-      const reg = await navigator.serviceWorker.register("./service-worker.js?v=20260924-1",{updateViaCache:"none"});
-      try{ await reg.update(); }catch(_){}
+      const reg=await navigator.serviceWorker.register("./service-worker.js?v=20260924-2",{updateViaCache:"none"});
+      try{await reg.update()}catch(_){}
       let reloaded=false;
       navigator.serviceWorker.addEventListener("controllerchange",()=>{
         if(reloaded)return;
         reloaded=true;
         window.location.reload();
       });
-    }catch(e){ console.warn("Service Worker:",e); }
+    }catch(e){console.warn("Service Worker:",e)}
   });
 }
 render();

@@ -7,7 +7,16 @@ function getCfg(){return {url:SUPA_URL_KEYS.map(k=>window[k]).find(Boolean)||'',
 function msg(t){let e=document.getElementById('syncMessage');if(e)e.textContent=t}
 function status(t){let e=document.getElementById('syncStatus');if(e)e.textContent=t;let d=document.getElementById('syncDot');if(d)d.textContent=user?'●':'○'}
 function localStamp(){return Number(localStorage.getItem('monocheck-study-updated')||0)}
-async function ensureClient(){if(client)return client;if(initPromise)return initPromise;initPromise=(async()=>{if(!cfg())throw new Error('Supabase設定が読み込めていません。supabase-config.js のURLとPublishable keyを確認してください。');let c=getCfg();client=window.supabase.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:'monocheck-study-auth'}});let s=await client.auth.getSession();user=s.data?.session?.user||null;client.auth.onAuthStateChange((_e,session)=>{user=session?.user||null;if(user){status('ログイン継続・同期中…');setTimeout(()=>syncNow(false),0)}else status('未ログイン')});if(user)await syncNow(false);else status('未ログイン');return client})().catch(e=>{client=null;status('同期設定エラー');msg(e.message||String(e));throw e}).finally(()=>{initPromise=null});return initPromise}
+async function waitForSupabase(){
+  if(window.supabase)return true;
+  for(let i=0;i<20;i++){
+    await new Promise(r=>setTimeout(r,150));
+    if(window.supabase)return true;
+  }
+  return false;
+}
+
+async function ensureClient(){if(client)return client;if(initPromise)return initPromise;initPromise=(async()=>{await waitForSupabase();if(!cfg())throw new Error('Supabase設定が読み込めていません。supabase-config.js のURLとPublishable keyを確認してください。');let c=getCfg();client=window.supabase.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:'monocheck-study-auth',flowType:'pkce'}});let s=await client.auth.getSession();user=s.data?.session?.user||null;client.auth.onAuthStateChange((_e,session)=>{user=session?.user||null;if(user){status('ログイン継続・同期中…');setTimeout(()=>syncNow(false),0)}else status('未ログイン')});if(user)await syncNow(false);else status('未ログイン');return client})().catch(e=>{client=null;status('同期設定エラー');msg(e.message||String(e));throw e}).finally(()=>{initPromise=null});return initPromise}
 window.openSyncModal=function(){let m=document.getElementById('syncModal');m.style.display='flex';if(!cfg()){status('Supabase未設定：端末内保存のみ');msg('supabase-config.js のURLとPublishable keyを確認してください。')}else if(user)status('同期アカウントに接続済み');else {status('ログインしてください');if(!client)ensureClient().catch(()=>{})}}
 window.closeSyncModal=function(){document.getElementById('syncModal').style.display='none'}
 window.syncSignUp=async function(){try{await ensureClient();let email=document.getElementById('syncEmail').value.trim(),password=document.getElementById('syncPassword').value;if(!email||password.length<6)return msg('メールアドレスと6文字以上のパスワードを入力してください');let {error}=await client.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin}});if(error)throw error;msg('登録しました。メール確認が必要な設定なら確認後にログインしてください。')}catch(e){msg(e.message||String(e))}}
