@@ -11,8 +11,16 @@
     const totalPages = Math.max(0, Number(subject.totalPages) || (Array.isArray(subject.contents) ? subject.contents.reduce((sum,c) => sum + Math.max(0, Number(c.end)-Number(c.start)+1), 0) : 0));
     const actualPages = Object.values(subject.actuals && typeof subject.actuals === 'object' ? subject.actuals : {}).reduce((sum,value) => sum + Math.max(0, Number(value) || 0), 0);
     const completedPages = Math.min(totalPages, actualPages);
-    const percent = totalPages ? Math.round(completedPages / totalPages * 100) : 0;
+    const percent = totalPages ? Math.max(0, Math.min(100, Math.round(completedPages / totalPages * 100))) : 0;
     return {totalPages, actualPages, completedPages, remainingPages:Math.max(0,totalPages-completedPages), percent, ratio:percent/100};
+  };
+
+  // 進捗率バーと円グラフ（ドーナツ）は必ず同じ数値を使う。共通の入口をここに一本化する。
+  window.progressPercent = function(subject){
+    return window.calcProgress(subject).percent;
+  };
+  window.progressPercentText = function(subject){
+    return window.progressPercent(subject) + '%';
   };
 
   window.renderProgressChart = function(subject){
@@ -35,8 +43,9 @@
     const allDates = [...new Set([...Object.keys(plannedByDate), ...Object.keys(actualByDate)])].sort();
     const actualTotal = progress.actualPages;
     const completed = progress.completedPages;
-    const ratio = progress.ratio;
-    const percent = progress.percent;
+    // 数値の出所を一本化：進捗率バーとまったく同じ window.progressPercent() を使う
+    const percent = window.progressPercent(subject);
+    const ratio = percent / 100;
 
     // Separate chart cards to mirror the workbook's trend line + progress doughnut.
     const charts = document.createElement('div');
@@ -49,7 +58,7 @@
     const donutCard = document.createElement('section');
     donutCard.className = 'card span4';
     donutCard.setAttribute('aria-label', '教材全体の実績進捗率');
-    donutCard.innerHTML = `<div class="h">🎯 実績進捗率</div><div class="muted" style="margin:-4px 0 8px">実際に読んだページ／教材総ページ</div><div data-progress-doughnut></div>`;
+    donutCard.innerHTML = `<div class="h">🎯 実績進捗率</div><div class="muted" style="margin:-4px 0 8px">実際に読んだページ／教材総ページ（進捗率バーと同値）</div><div data-progress-doughnut></div>`;
     charts.appendChild(lineCard);
     charts.appendChild(donutCard);
     main.appendChild(charts);
@@ -107,7 +116,7 @@
     }
 
     const size=210, center=size/2, radius=64, circumference=2*Math.PI*radius;
-    const donutSvg=`<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="実績進捗 ${percent}パーセント" style="display:block;width:min(100%,240px);height:auto;margin:0 auto;font-family:system-ui,-apple-system,'Segoe UI','Noto Sans JP',sans-serif"><circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="#edf0f5" stroke-width="22"/><circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${BLUE}" stroke-width="22" stroke-dasharray="${circumference*ratio} ${circumference}" transform="rotate(-90 ${center} ${center})" stroke-linecap="round"/><text x="${center}" y="${center-1}" text-anchor="middle" dominant-baseline="middle" font-size="32" font-weight="900" fill="#172033">${percent}%</text><text x="${center}" y="${center+25}" text-anchor="middle" fill="#667085" font-size="12">実績達成率</text></svg>`;
+    const donutSvg=`<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="実績進捗 ${percent}パーセント" style="display:block;width:min(100%,240px);height:auto;margin:0 auto;font-family:system-ui,-apple-system,'Segoe UI','Noto Sans JP',sans-serif"><circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="#edf0f5" stroke-width="22"/><circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${BLUE}" stroke-width="22" stroke-dasharray="${circumference*ratio} ${circumference}" transform="rotate(-90 ${center} ${center})" stroke-linecap="round"/><text x="${center}" y="${center-1}" text-anchor="middle" dominant-baseline="middle" font-size="32" font-weight="900" fill="#172033">${window.progressPercentText(subject)}</text><text x="${center}" y="${center+25}" text-anchor="middle" fill="#667085" font-size="12">実績進捗率</text></svg>`;
     donutCard.querySelector('[data-progress-doughnut]').innerHTML=`${donutSvg}<div style="text-align:center;font-size:13px;font-weight:800;margin-top:2px">${completed} / ${total} ページ</div><div class="muted" style="text-align:center;margin-top:3px">残り ${progress.remainingPages} ページ</div>`;
   };
 })();
