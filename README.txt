@@ -14,10 +14,13 @@ PCブラウザとスマホPWAの両方で同じSupabaseアカウントを使っ�
 - ホーム・学習・日別記録にExcel風の「予定残りページ／実績残りページ」折れ線と実績進捗率のドーナツグラフを表示
 - 日別記録を保存した後も、保存データを再読込して両グラフを更新
 - 青線は予定残りページ、オレンジ線は実績残りページを表示
+- 進捗バーとドーナツは共通の計算関数を使い、同じ総ページ数・実読ページ数・丸め方法で表示
 - ドーナツは教材総ページ数に対する実読ページ数の割合を表示
 - JavaScriptとService Workerのキャッシュ識別子を更新し、旧版が残りにくいよう修正
 
-更新時はフォルダ内の index.html、index(4).html、progress-chart.js、service-worker.js をまとめて差し替えてください。progress-chart.js は index.html と同じフォルダに置きます。ブラウザは Ctrl+Shift+R（Macは Cmd+Shift+R）で強制再読み込みしてください。supabase-config.js が既に環境別に設定されている場合は、手元の設定を保持してください。
+この配布版では index.html を唯一のアプリ起点ファイルとし、重複していた index(4).html は含めていません。supabase-config.js も1つだけです（同一内容の複製を除去）。progress-chart.js は index.html と同じフォルダに置いてください。
+
+更新時はこのフォルダのファイルを配置し直し、ブラウザを Ctrl+Shift+R（Macは Cmd+Shift+R）で強制再読み込みしてください。PWAは一度完全に終了してから開き直してください。supabase-config.js が既に環境別に設定されている場合は、手元の設定を保持してください。
 
 Renderにはこのフォルダ内のファイルを上書きデプロイしてください。
 progress-chart.js はグラフ機能に必要なので、index.html と同じフォルダに置いてください。
