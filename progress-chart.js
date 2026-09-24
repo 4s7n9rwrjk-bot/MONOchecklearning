@@ -6,13 +6,44 @@
   const BLUE = '#4472c4';
   const ORANGE = '#ed7d31';
 
-  // One source of truth for the bar and the doughnut.
+  // 計算式の出典：「文学入門　進捗管理表.xlsx」の「進捗率管理表」シート。
+  //   H1 = 総ページ数 = SUM(目次!F2:F2000)            → totalPages
+  //   G  = 実績の累積 = SUM(実績)（上限なし）          → actualPages
+  //   H  = 実績残 = $H$1 - G                          → remainingPages
+  //   I  = IF(実績="","", G / その前日時点のH)         （初日は H1 = 総ページ数を使用／それ以外は前日のH）
+  //   I49 = MAX(I2:I48)、J49 = 1 - I49                → 円グラフは [I49, J49]、表示は 0% 書式（四捨五入）
   window.calcProgress = function(subject){
     const totalPages = Math.max(0, Number(subject.totalPages) || (Array.isArray(subject.contents) ? subject.contents.reduce((sum,c) => sum + Math.max(0, Number(c.end)-Number(c.start)+1), 0) : 0));
-    const actualPages = Object.values(subject.actuals && typeof subject.actuals === 'object' ? subject.actuals : {}).reduce((sum,value) => sum + Math.max(0, Number(value) || 0), 0);
-    const completedPages = Math.min(totalPages, actualPages);
-    const percent = totalPages ? Math.max(0, Math.min(100, Math.round(completedPages / totalPages * 100))) : 0;
-    return {totalPages, actualPages, completedPages, remainingPages:Math.max(0,totalPages-completedPages), percent, ratio:percent/100};
+    const actuals = subject.actuals && typeof subject.actuals === 'object' ? subject.actuals : {};
+    const schedule = Array.isArray(subject.schedule) ? subject.schedule : [];
+    const isDay = day => /^\d{4}-\d{2}-\d{2}$/.test(day);
+    const allDates = [...new Set([...schedule.map(row => String(row && row.date || '')), ...Object.keys(actuals)].filter(isDay))].sort();
+
+    // I列を1行ずつ（日付の古い順に）計算し、その最大値を進捗率とする
+    let cumulative = 0;   // 直前の行までの G（実績累計）
+    let maxRatio = 0;     // I49 = MAX(I2:I48)
+    let validRows = 0;
+    allDates.forEach(day => {
+      const entered = Object.prototype.hasOwnProperty.call(actuals, day) && actuals[day] !== '' && actuals[day] != null;
+      const value = entered ? Math.max(0, Number(actuals[day]) || 0) : 0;
+      const total = cumulative + value;                 // G（その日までの実績累計）
+      if (entered) {                                    // IF(実績="","",…)：未入力の日はI列が空欄
+        const remainingBefore = totalPages - cumulative; // その前日時点のH（初日はH1=総ページ数）
+        if (remainingBefore > 0) {                      // Excelでは#DIV/0!になるため分母0は除外
+          maxRatio = Math.max(maxRatio, total / remainingBefore);
+          validRows += 1;
+        }
+      }
+      cumulative = total;
+    });
+
+    const actualPages = cumulative;                    // G列（SUM、上限なし）
+    const remainingPages = totalPages - actualPages;   // H列 = $H$1 - G
+    const completedPages = actualPages;
+    const rawPercent = validRows ? maxRatio * 100 : 0; // I49
+    // Excel の 0% 表示は四捨五入。円弧を描くため 0〜100 に収める（100%超の日は100%表示）。
+    const percent = Math.max(0, Math.min(100, Math.round(rawPercent)));
+    return {totalPages, actualPages, completedPages, remainingPages, percent, rawPercent, ratio:percent/100, validRows};
   };
 
   // 進捗率バーと円グラフ（ドーナツ）は必ず同じ数値を使う。共通の入口をここに一本化する。
@@ -58,7 +89,7 @@
     const donutCard = document.createElement('section');
     donutCard.className = 'card span4';
     donutCard.setAttribute('aria-label', '教材全体の実績進捗率');
-    donutCard.innerHTML = `<div class="h">🎯 実績進捗率</div><div class="muted" style="margin:-4px 0 8px">実際に読んだページ／教材総ページ（進捗率バーと同値）</div><div data-progress-doughnut></div>`;
+    donutCard.innerHTML = `<div class="h">🎯 実績進捗率</div><div class="muted" style="margin:-4px 0 8px">Excel「進捗率管理表」I列の最大値＝実績累計 ÷ 前日時点の実績残（進捗率バーと同値）</div><div data-progress-doughnut></div>`;
     charts.appendChild(lineCard);
     charts.appendChild(donutCard);
     main.appendChild(charts);
@@ -117,6 +148,6 @@
 
     const size=210, center=size/2, radius=64, circumference=2*Math.PI*radius;
     const donutSvg=`<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="実績進捗 ${percent}パーセント" style="display:block;width:min(100%,240px);height:auto;margin:0 auto;font-family:system-ui,-apple-system,'Segoe UI','Noto Sans JP',sans-serif"><circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="#edf0f5" stroke-width="22"/><circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${BLUE}" stroke-width="22" stroke-dasharray="${circumference*ratio} ${circumference}" transform="rotate(-90 ${center} ${center})" stroke-linecap="round"/><text x="${center}" y="${center-1}" text-anchor="middle" dominant-baseline="middle" font-size="32" font-weight="900" fill="#172033">${window.progressPercentText(subject)}</text><text x="${center}" y="${center+25}" text-anchor="middle" fill="#667085" font-size="12">実績進捗率</text></svg>`;
-    donutCard.querySelector('[data-progress-doughnut]').innerHTML=`${donutSvg}<div style="text-align:center;font-size:13px;font-weight:800;margin-top:2px">${completed} / ${total} ページ</div><div class="muted" style="text-align:center;margin-top:3px">残り ${progress.remainingPages} ページ</div>`;
+    donutCard.querySelector('[data-progress-doughnut]').innerHTML=`${donutSvg}<div style="text-align:center;font-size:13px;font-weight:800;margin-top:2px">${completed} / ${total} ページ</div><div class="muted" style="text-align:center;margin-top:3px">残り ${progress.remainingPages} ページ ／ 内訳 ${percent}% ＋ ${100-percent}%</div>`;
   };
 })();
