@@ -1,4 +1,4 @@
-const CACHE_NAME = 'monocheck-study-pwa-v20260924-2';
+const CACHE_NAME = 'monocheck-study-pwa-v20260924-3';
 const APP_SHELL = ['./', './manifest.json'];
 
 self.addEventListener('install', event => {
