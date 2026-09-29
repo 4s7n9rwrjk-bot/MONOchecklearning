@@ -548,7 +548,11 @@ function renderSettings(){
 }
 
 function renderAll(){
-  renderMonth(); renderWeek(); renderList(); renderUpcoming(); renderSettings();
+  renderMonth();
+  renderWeek();
+  renderList();
+  renderUpcoming();
+  renderSettings();
 }
 
 /* ---------- タブ ---------- */
@@ -631,8 +635,9 @@ $('#deleteBtn').onclick = () => {
 $('#prevMonth').onclick = () => { currentM--; if(currentM<0){currentM=11;currentY--;} renderMonth(); };
 $('#nextMonth').onclick = () => { currentM++; if(currentM>11){currentM=0;currentY++;} renderMonth(); };
 $('#todayBtn').onclick = () => { const n=new Date(); currentY=n.getFullYear(); currentM=n.getMonth(); renderMonth(); };
-$('#monthModeBtn').onclick=()=>{ $('#monthModeBtn').classList.add('active'); $('#weekModeBtn').classList.remove('active'); };
-$('#weekModeBtn').onclick=()=>{ $('#weekModeBtn').classList.add('active'); $('#monthModeBtn').classList.remove('active'); root.querySelector('[data-view=week]').click(); };
+$('#monthModeBtn').onclick=()=>{ root.querySelector('[data-view=month]').click(); };
+$('#weekModeBtn').onclick=()=>{ root.querySelector('[data-view=week]').click(); };
+$('#weekMonthModeBtn').onclick=()=>{ root.querySelector('[data-view=month]').click(); };
 $('#prevWeek').onclick=()=>{ const d=new Date(window.__monoWeekStart||weekStartFor(todayStr())); d.setDate(d.getDate()-7); window.__monoWeekStart=d; renderWeek(); };
 $('#nextWeek').onclick=()=>{ const d=new Date(window.__monoWeekStart||weekStartFor(todayStr())); d.setDate(d.getDate()+7); window.__monoWeekStart=d; renderWeek(); };
 $('#weekTodayBtn').onclick=()=>{ window.__monoWeekStart=weekStartFor(todayStr()); renderWeek(); };
