@@ -1,10 +1,11 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#172033"><link rel="manifest" href="manifest.json"><title>MONOcheck 学習管理</title><style>
 :root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e5e7eb;--accent:#2563eb;--accent2:#eef2ff;--ok:#16a34a;--warn:#d97706;--shadow:0 8px 28px rgba(15,23,42,.07)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif}.app{max-width:1180px;margin:auto;padding:16px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.brand{font-weight:900;font-size:21px}.brand small{font-size:12px;color:var(--muted);margin-left:6px}.actions{display:flex;gap:7px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:11px;padding:9px 12px;font-weight:700}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#b91c1c}.nav{display:flex;gap:7px;overflow:auto;padding-bottom:4px;margin-bottom:14px}.nav button{white-space:nowrap}.nav .active{background:#111827;color:#fff;border-color:#111827}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.span12{grid-column:span 12}.span8{grid-column:span 8}.span6{grid-column:span 6}.span4{grid-column:span 4}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}.h{font-size:17px;font-weight:900;margin-bottom:10px}.subh{font-weight:800;margin:14px 0 8px}.muted{color:var(--muted);font-size:13px}.stat{font-size:31px;font-weight:900}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.field{display:grid;gap:6px;margin:9px 0}.field label{font-size:12px;font-weight:800}.field input,.field textarea,.field select{width:100%;border:1px solid #d9dde5;border-radius:10px;padding:9px;background:#fff;color:var(--text)}textarea{min-height:90px;resize:vertical}.progress{height:11px;background:#edf0f5;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);border-radius:99px}.pill{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;background:#f2f4f7}.pill.ok{background:#dcfce7;color:#166534}.pill.warn{background:#fef3c7;color:#92400e}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.tbl{width:100%;border-collapse:collapse;min-width:650px}.tbl th,.tbl td{padding:9px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.tbl th{background:#f8fafc;font-weight:900}.num{width:100px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tabs button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px}.tabs button.sel{background:var(--accent2);border-color:#c7d2fe}.toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:10px 13px;border-radius:11px;display:none}.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.kpi>div{border:1px solid var(--line);border-radius:12px;padding:11px}.small{font-size:11px;color:var(--muted)}.checkline{display:flex;gap:8px;align-items:center}.checkline input{width:18px;height:18px}@media(max-width:800px){.span8,.span6,.span4{grid-column:span 12}.app{padding:11px}.card{padding:13px}.kpi{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+body.viewer-mode .owner-only{display:none!important} body.viewer-mode #main button:not([data-viewer-allow]),body.viewer-mode #main input[type="file"]{display:none!important} body.viewer-mode #main input,body.viewer-mode #main select,body.viewer-mode #main textarea{pointer-events:none;background:#f8fafc} body.viewer-mode #main .file-btn{display:none!important} body.viewer-mode #main .danger{display:none!important}
 
 .prep-wrap{display:grid;grid-template-columns:repeat(6,minmax(220px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px}.prep-col{border:1px solid var(--line);border-radius:12px;background:#f8fafc;min-height:360px;padding:9px;display:flex;flex-direction:column}.prep-head{font-weight:900;font-size:12px;line-height:1.35;min-height:54px;padding:7px;border-radius:9px;background:#eef2ff;display:flex;gap:6px;align-items:flex-start}.prep-no{background:#2563eb;color:#fff;border-radius:999px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}.prep-entries{display:grid;gap:7px;margin:8px 0;flex:1}.prep-entry{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px}.prep-entry textarea{min-height:82px;font-size:12px}.prep-del{padding:5px 7px;font-size:11px;margin-top:5px}.prep-add{width:100%;padding:7px;font-size:11px}
 #calendarMount{width:100%;min-height:calc(100vh - 110px);display:block;}
 .app{max-width:1400px;}
-</style></head><body><div class="app"><header class="top"><div class="brand">MONOcheck <small>学習管理</small></div><div class="actions"><button class="btn" onclick="exportData()">データ書出し</button><button class="btn" onclick="document.getElementById('importFile').click()">データ読込</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"><button class="btn primary" onclick="save(true)">保存</button><button class="btn" onclick="openSyncModal()">☁ 同期 <span id="syncDot">●</span></button></div></header><div class="nav" id="nav"></div><main id="main"></main><div id="calendarMount" style="display:none"></div></div><div id="toast" class="toast">保存しました</div><script src="./progress-chart.js?v=20260929-calendar7"></script><script>
+</style></head><body><div class="app"><header class="top"><div class="brand">MONOcheck <small>学習管理</small></div><div class="actions"><button class="btn owner-only" id="exportDataBtn" onclick="exportData()">データ書出し</button><button class="btn owner-only" onclick="document.getElementById('importFile').click()">データ読込</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"><button class="btn primary owner-only" id="topSaveBtn" onclick="save(true)">保存</button><button class="btn" onclick="openSyncModal()">☁ 同期 <span id="syncDot">●</span></button></div></header><div class="nav" id="nav"></div><main id="main"></main><div id="calendarMount" style="display:none"></div></div><div id="toast" class="toast">保存しました</div><script src="./progress-chart.js?v=20260929-viewer1"></script><script>
 const KEY='monocheck-study-v2';
 const seed={"subjects":[{"id":"literature","name":"文学入門","textbook":"","totalPages":414,"contents":[{"title":"解体新書　全現代語訳 / 近代医学への道を開いた書","start":3,"end":6},{"title":"読者への手引き","start":7,"end":16},{"title":"解体新書を出版するにあたっての序文","start":17,"end":23},{"title":"凡例","start":24,"end":37},{"title":"自序","start":38,"end":42},{"title":"巻の一 / 第一　解体大意篇","start":43,"end":45},{"title":"第二　形体名目篇","start":46,"end":54},{"title":"第三　格致篇","start":55,"end":63},{"title":"第四　骨節分類篇","start":64,"end":68},{"title":"第五　骨節篇","start":69,"end":84},{"title":"巻の二 / 第六　頭、ならびに皮毛篇","start":85,"end":88},{"title":"第七　唇口篇","start":89,"end":92},{"title":"第八　脳髄、ならびに神経篇","start":93,"end":102},{"title":"第九　眼目篇","start":103,"end":112},{"title":"第十　耳篇","start":113,"end":118},{"title":"第十一　鼻篇","start":119,"end":122},{"title":"第十二　舌篇","start":123,"end":126},{"title":"巻の三 / 第十三　胸ならびに角膜篇","start":127,"end":131},{"title":"第十四　肺篇","start":132,"end":136},{"title":"第十五　心篇","start":137,"end":141},{"title":"第十六　動脈篇","start":142,"end":145},{"title":"第十七　血脈篇","start":146,"end":150},{"title":"第十八　門脈篇","start":151,"end":155},{"title":"第十九　腹篇","start":156,"end":159},{"title":"第二十　腸胃篇","start":160,"end":165},{"title":"第二十一　下角膜、および液道篇","start":166,"end":169},{"title":"第二十二　大キリイル篇","start":170,"end":172},{"title":"巻の四 / 第二十三　脾篇","start":173,"end":177},{"title":"第二十四　肝胆篇","start":178,"end":182},{"title":"第二十五　腎、膀胱篇","start":183,"end":187},{"title":"第二十六　陰器篇","start":188,"end":193},{"title":"第二十七　妊娠篇","start":194,"end":200},{"title":"第二十八　筋篇","start":201,"end":233},{"title":"『解体新書』の時代","start":234,"end":256},{"title":"前野良沢　生涯一日のごとく / 第二章 / （はじめに）","start":17,"end":18},{"title":"一　前野良沢の出生と家系","start":19,"end":22},{"title":"二　中津藩江戸屋敷と「医師」の格","start":23,"end":25},{"title":"三　オランダ語との出会い","start":26,"end":29},{"title":"四　明和六年の長崎遊学","start":30,"end":44},{"title":"五　長崎遊学の成果","start":45,"end":52},{"title":"第三章 / （はじめに）","start":53,"end":54},{"title":"一　杉田玄白と「ターヘル・アナトミア」","start":55,"end":66},{"title":"二　翻訳開始とその方法","start":67,"end":79},{"title":"三　良沢のオランダ語指導","start":80,"end":94},{"title":"四　『解体新書』完成へ","start":95,"end":112},{"title":"五　良沢にとっての『解体新書』","start":113,"end":124},{"title":"第四章 / （はじめに）","start":125,"end":126},{"title":"一　『解体新書』後の玄白と良沢","start":127,"end":128},{"title":"二　安永時代の著訳書","start":129,"end":148},{"title":"三　大槻玄沢との出会い","start":149,"end":154},{"title":"四　天明時代の良沢の著訳書","start":155,"end":176}],"schedule":[{"date":"2026-09-15","planned":11},{"date":"2026-09-16","planned":10},{"date":"2026-09-17","planned":11},{"date":"2026-09-18","planned":11},{"date":"2026-09-19","planned":0},{"date":"2026-09-20","planned":0},{"date":"2026-09-21","planned":11},{"date":"2026-09-22","planned":11},{"date":"2026-09-23","planned":10},{"date":"2026-09-24","planned":11},{"date":"2026-09-25","planned":11},{"date":"2026-09-26","planned":5},{"date":"2026-09-27","planned":0},{"date":"2026-09-28","planned":11},{"date":"2026-09-29","planned":11},{"date":"2026-09-30","planned":10},{"date":"2026-10-01","planned":11},{"date":"2026-10-02","planned":11},{"date":"2026-10-03","planned":10},{"date":"2026-10-04","planned":0},{"date":"2026-10-05","planned":11},{"date":"2026-10-06","planned":11},{"date":"2026-10-07","planned":10},{"date":"2026-10-08","planned":11},{"date":"2026-10-09","planned":5},{"date":"2026-10-10","planned":10},{"date":"2026-10-11","planned":0},{"date":"2026-10-12","planned":11},{"date":"2026-10-13","planned":11},{"date":"2026-10-14","planned":10},{"date":"2026-10-15","planned":11},{"date":"2026-10-16","planned":11},{"date":"2026-10-17","planned":10},{"date":"2026-10-18","planned":0},{"date":"2026-10-19","planned":11},{"date":"2026-10-20","planned":11},{"date":"2026-10-21","planned":10},{"date":"2026-10-22","planned":11},{"date":"2026-10-23","planned":11},{"date":"2026-10-24","planned":10},{"date":"2026-10-25","planned":0},{"date":"2026-10-26","planned":11},{"date":"2026-10-27","planned":11},{"date":"2026-10-28","planned":10},{"date":"2026-10-29","planned":11},{"date":"2026-10-30","planned":11},{"date":"2026-10-31","planned":8}],"actuals":{"2026-09-15":0,"2026-09-16":4,"2026-09-17":0,"2026-09-18":39,"2026-09-19":0,"2026-09-20":0,"2026-09-21":11,"2026-09-22":12},"notes":{},"reportPrep":[{"id":"q1","title":"設題①","question":"","steps":["","","","","",""]}],"createdFrom":"文学入門　進捗管理表.xlsx"}],"active":"literature","version":2};
 let data=JSON.parse(localStorage.getItem(KEY)||'null')||seed;let view='home',prepIndex=0;
@@ -19,6 +20,7 @@ function toast(message='保存しました'){
   window.__toastTimer=setTimeout(()=>{el.style.display='none'},1600);
 }
 function save(force){
+  if(window.__monoViewerMode) return;
   // 画面上で編集中の数値を確実にデータへ取り込んでから保存する
   document.querySelectorAll('[data-plan-date]').forEach(el=>{ setPlanValue(el.dataset.planDate, el.value, false); });
   document.querySelectorAll('[data-actual-date]').forEach(el=>{ setActualValue(el.dataset.actualDate, el.value, false); });
@@ -102,11 +104,12 @@ window.initMonoCalendar=()=>{
     if(host) host.innerHTML='<div style="padding:24px;background:#fff;border:1px solid #e5e7eb;border-radius:16px">カレンダーの読み込みに失敗しました。ページを再読み込みしてください。</div>';
   }
 };
+window.__monoCalendarRefresh=()=>{ try{ if(window.__monoCalendarMounted && window.__monoCalendarReload) window.__monoCalendarReload(); }catch(e){ console.error(e); } };
 if("serviceWorker" in navigator){
   window.addEventListener("load",async()=>{
     try{
       const reg=await navigator.serviceWorker.register(
-        "./service-worker.js?v=20260929-integrated4",
+        "./service-worker.js?v=20260929-viewer1",
         {updateViaCache:"none"}
       );
       try{await reg.update()}catch(_){}
@@ -193,7 +196,7 @@ function notifySetup(){
     if (!('Notification' in window)) { st.textContent = 'このブラウザでは通知に対応していません。'; return; }
     st.textContent = '通知 permission: ' + Notification.permission + '(granted=許可済み)';
   }
-  $('#notifyBtn').onclick = async () => {
+  $('#notifyBtn').onclick = async () => { if(window.__monoViewerMode) return;
     if (!('Notification' in window)) { alert('このブラウザでは通知に対応していません。'); return; }
     await Notification.requestPermission();
     upd();
@@ -448,7 +451,7 @@ function renderMonth(){
     num.className='day-num'+((d.getDay()===0||hol)?' sun':(d.getDay()===6?' sat':''));num.innerHTML=d.getDate()+'<span class="day-moon" title="月齢 '+ci.age+'">'+ci.icon+'</span>';cell.appendChild(num);
     if(hol){const hh=document.createElement('div');hh.className='day-holiday';hh.textContent=hol;cell.appendChild(hh);}const rr=document.createElement('div');rr.className='day-rokuyo';rr.textContent=ci.rokuyo;cell.appendChild(rr);
     learningPlansOn(ds).forEach(lp=>{const lc=document.createElement('div');lc.className='learning-chip '+(lp.done?'done':'miss');lc.title=lp.subject+'：予定 '+lp.planned+'ページ / 実績 '+lp.actual+'ページ → '+(lp.done?'既読':'未読');lc.textContent=learningChipText(lp);cell.appendChild(lc);});
-    eventOn(ds).slice(0,3).forEach(ev=>{const c=catOf(ev.cat),chip=document.createElement('div');chip.className='chip';chip.style.borderLeftColor=c.color;chip.style.background=c.color+'22';chip.textContent=(ev.end&&ev.end!==ev.start?'▶':'')+(ev.time?ev.time+' ':'')+ev.title;chip.onclick=e=>{e.stopPropagation();openModal(ev.id);};cell.appendChild(chip);});
+    eventOn(ds).slice(0,3).forEach(ev=>{const c=catOf(ev.cat),chip=document.createElement('div');chip.className='chip';chip.style.borderLeftColor=c.color;chip.style.background=c.color+'22';chip.textContent=(ev.end&&ev.end!==ev.start?'▶':'')+(ev.time?ev.time+' ':'')+ev.title;if(!window.__monoViewerMode)chip.onclick=e=>{e.stopPropagation();openModal(ev.id);};cell.appendChild(chip);});
     const rest=eventOn(ds).length-3;if(rest>0){const m=document.createElement('div');m.className='more';m.textContent='+'+rest;cell.appendChild(m);}cell.onclick=()=>selectDay(ds);grid.appendChild(cell);
     if(i>=34&&new Date(currentY,currentM+1,1)<=d)break;
   }
@@ -457,11 +460,11 @@ function renderMonth(){
 }
 function selectDay(ds){
   const panel=$('#dayDetail'),d=parseD(ds),learns=learningPlansOn(ds),evs=eventOn(ds);panel.classList.remove('hidden');
-  let html='<div class="day-detail-head"><h3>📅 '+(d.getMonth()+1)+'月'+d.getDate()+'日（'+jpDow(ds).replace('曜','')+'）の予定</h3><button class="btn primary" id="dayAddBtn">＋ 予定追加</button></div>';
+  let html='<div class="day-detail-head"><h3>📅 '+(d.getMonth()+1)+'月'+d.getDate()+'日（'+jpDow(ds).replace('曜','')+'）の予定</h3>'+(window.__monoViewerMode?'':'<button class="btn primary" id="dayAddBtn">＋ 予定追加</button>')+'</div>';
   if(!learns.length&&!evs.length)html+='<div class="empty" style="padding:18px 4px">この日の予定はありません。</div>';
   learns.forEach(lp=>{html+='<div class="detail-learning '+(lp.done?'done':'')+'">📚 '+esc(lp.subject)+'　予定 '+lp.planned+'p ／ 実績 '+lp.actual+'p　<strong>'+(lp.done?'既読':'未読')+'</strong></div>';});
   evs.forEach(ev=>{const c=catOf(ev.cat),times=ev.time?(ev.time+(ev.endTime?'〜'+ev.endTime:'')):'時刻未設定';html+='<div class="detail-event" data-event-id="'+ev.id+'" style="border-left-color:'+c.color+'"><div class="detail-event-title">'+esc(ev.title)+'</div><div class="detail-event-meta">'+c.label+'　'+times+(ev.place?'　📍'+esc(ev.place):'')+'</div>'+(ev.notes?'<div class="detail-event-meta">'+esc(ev.notes)+'</div>':'')+'</div>';});
-  panel.innerHTML=html;panel.querySelector('#dayAddBtn').onclick=()=>{$('#fStart').value=ds;openModal(null);};panel.querySelectorAll('[data-event-id]').forEach(el=>el.onclick=()=>openModal(el.dataset.eventId));
+  panel.innerHTML=html;const addBtn=panel.querySelector('#dayAddBtn');if(addBtn)addBtn.onclick=()=>{$('#fStart').value=ds;openModal(null);};if(!window.__monoViewerMode)panel.querySelectorAll('[data-event-id]').forEach(el=>el.onclick=()=>openModal(el.dataset.eventId));
 }
 function weekStartFor(ds){const d=parseD(ds);d.setDate(d.getDate()-d.getDay());return d;}
 function renderWeek(){
@@ -470,7 +473,7 @@ function renderWeek(){
   for(let i=0;i<7;i++){const d=new Date(base);d.setDate(base.getDate()+i);const h=document.createElement('div');h.className='week-head';h.textContent='日月火水木金土'[d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate();grid.appendChild(h);}
   for(let i=0;i<7;i++){const d=new Date(base);d.setDate(base.getDate()+i);const ds=dstr(d),col=document.createElement('div');col.className='week-day'+(ds===todayStr()?' today':'');col.onclick=()=>selectDay(ds);const learns=learningPlansOn(ds),evs=eventOn(ds);
     learns.forEach(lp=>{const x=document.createElement('div');x.className='learning-chip '+(lp.done?'done':'miss');x.textContent=learningChipText(lp);x.title=x.textContent;col.appendChild(x);});
-    evs.forEach(ev=>{const c=catOf(ev.cat),x=document.createElement('div');x.className='chip';x.style.borderLeftColor=c.color;x.style.background=c.color+'22';x.textContent=(ev.time?ev.time+' ':'')+ev.title;x.onclick=e=>{e.stopPropagation();openModal(ev.id);};col.appendChild(x);});
+    evs.forEach(ev=>{const c=catOf(ev.cat),x=document.createElement('div');x.className='chip';x.style.borderLeftColor=c.color;x.style.background=c.color+'22';x.textContent=(ev.time?ev.time+' ':'')+ev.title;if(!window.__monoViewerMode)x.onclick=e=>{e.stopPropagation();openModal(ev.id);};col.appendChild(x);});
     if(!learns.length&&!evs.length){const x=document.createElement('div');x.className='week-empty';x.textContent='予定なし';col.appendChild(x);}grid.appendChild(col);
   }
 }
@@ -572,6 +575,7 @@ function fillCatSelect(sel){
   sel.innerHTML = Object.keys(CATS).map(k => '<option value="'+k+'">'+CATS[k].label+'</option>').join('');
 }
 function openModal(id){
+  if(window.__monoViewerMode) return;
   editingId = id || null;
   const ev = id ? events.find(e=>e.id===id) : null;
   $('#modalTitle').textContent = ev ? '予定を編集' : '予定を追加';
@@ -663,7 +667,7 @@ function bulkAdd(list){
   alert(added + '件の予定を登録しました(登録済み・終了済みのものはスキップ)。');
 }
 root.querySelectorAll('.ref-btn').forEach(b => {
-  b.onclick = () => {
+  b.onclick = () => { if(window.__monoViewerMode) return;
     const kind = b.dataset.ref;
     if (kind === 'reports'){
       const list = [];
@@ -764,7 +768,7 @@ $('#exportIcsBtn').onclick = () => {
 };
 
 /* ---------- 全消去 ---------- */
-$('#clearAllBtn').onclick = () => {
+$('#clearAllBtn').onclick = () => { if(window.__monoViewerMode) return;
   if (!confirm('この端末の全予定を削除します。よろしいですか?')) return;
   if (!confirm('本当に削除しますか?(取り消せません)')) return;
   events = [];
@@ -783,9 +787,18 @@ fbInit();
 notifySetup();
 renderAll();
 checkReminders();
+window.__monoCalendarReload=()=>{ try{ loadLocal(); applyCalendarViewerMode(); renderAll(); }catch(e){ console.error("MONO Calendar refresh failed:",e); } };
+function applyCalendarViewerMode(){
+  const on=!!window.__monoViewerMode;
+  root.classList.toggle("viewer-mode",on);
+  const ids=["fab","dayAddBtn","notifyBtn","clearAllBtn"];
+  ids.forEach(id=>{const el=$("#"+id);if(el)el.style.display=on?"none":"";});
+  root.querySelectorAll(".ref-btn,.file-btn").forEach(el=>el.style.display=on?"none":"");
+}
+applyCalendarViewerMode();
 };
 </script>
-<div id="syncModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:99;align-items:center;justify-content:center;padding:16px"><div class="card" style="max-width:430px;width:100%"><div class="row"><div class="h">☁ PC・スマホ同期</div><button class="btn" onclick="closeSyncModal()">閉じる</button></div><div id="syncStatus" class="muted" style="margin-bottom:10px">確認中…</div><div class="field"><label>メールアドレス</label><input id="syncEmail" type="email" autocomplete="email"></div><div class="field"><label>パスワード</label><input id="syncPassword" type="password" autocomplete="current-password"></div><div class="actions"><button class="btn primary" onclick="syncSignIn()">ログイン</button><button class="btn" onclick="syncSignUp()">新規登録</button><button class="btn" onclick="syncNow(true)">今すぐ同期</button><button class="btn danger" onclick="syncSignOut()">ログアウト</button></div><div class="small" style="margin-top:10px">同じアカウントでPCとスマホにログインすると、学習記録・目次・予定・レポート準備が同期されます。</div><div id="syncMessage" class="small" style="margin-top:8px"></div></div></div>
+<div id="syncModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:99;align-items:center;justify-content:center;padding:16px"><div class="card" style="max-width:430px;width:100%"><div class="row"><div class="h">☁ PC・スマホ同期</div><button class="btn" onclick="closeSyncModal()">閉じる</button></div><div id="syncStatus" class="muted" style="margin-bottom:10px">確認中…</div><div class="field"><label>メールアドレス</label><input id="syncEmail" type="email" autocomplete="email"></div><div class="field"><label>パスワード</label><input id="syncPassword" type="password" autocomplete="current-password"></div><div class="actions"><button class="btn primary" onclick="syncSignIn()">本人ログイン</button><button class="btn" onclick="syncSignUp()">新規登録</button><button class="btn" onclick="viewerSignIn()">👁 閲覧する</button><button class="btn" onclick="syncNow(true)">今すぐ同期</button><button class="btn danger" onclick="syncSignOut()">ログアウト</button><button id="viewerExitBtn" class="btn danger" style="display:none" onclick="viewerSignOut()">閲覧終了</button></div><div class="small" style="margin-top:10px">本人ログインはPC・スマホ間の編集・同期用です。家族は「閲覧する」から、事前に決めた閲覧ID・パスワードで同じMONOcheckを閲覧できます。</div><div id="viewerFields" style="margin-top:12px;padding-top:10px;border-top:1px solid #e5e7eb"><div class="h" style="font-size:14px">👁 家族用・閲覧モード</div><div class="field"><label>閲覧ID</label><input id="viewerId" type="text" autocomplete="username" placeholder="例: family"></div><div class="field"><label>閲覧パスワード</label><input id="viewerPassword" type="password" autocomplete="current-password"></div><div class="small">本人ログイン後、この欄から閲覧ID・パスワードを設定できます。</div><div class="actions" style="margin-top:8px"><button class="btn" onclick="setViewerCredentials()">閲覧ID・パスワードを設定</button><button class="btn danger" onclick="disableViewerAccess()">閲覧アクセス停止</button></div></div><div id="syncMessage" class="small" style="margin-top:8px"></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="sync.js"></script>
