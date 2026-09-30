@@ -1,4 +1,4 @@
-const CACHE_NAME='monocheck-study-final-v20260930-bukyo-schedule53';
+const CACHE_NAME='monocheck-study-final-v20260930-bukyo-category-sync-v55';
 const APP_SHELL=['./','./manifest.json','./progress-chart.js?v=20260930-v52'];
 
 self.addEventListener('install',event=>{

@@ -318,6 +318,23 @@ function saveLocal(){
   try { if (window.__monoCalendarSaveEvents) window.__monoCalendarSaveEvents(events); } catch(e){ console.error(e); }
 }
 
+/* 同一予定の重複を整理する。佛大自動追加はrefKey、その他の予定は主要項目で判定する。 */
+function dedupeEvents(){
+  if(!Array.isArray(events)) return false;
+  const seenRef=new Set(), seenSig=new Set(), out=[], dup=[];
+  events.forEach(ev=>{
+    if(!ev || !ev.title || !ev.start){ out.push(ev); return; }
+    const ref=String(ev.refKey||'').trim();
+    const sig=[String(ev.title||'').trim(),String(ev.start||''),String(ev.end||''),String(ev.cat||'')].join('\x1f');
+    if((ref && seenRef.has(ref)) || seenSig.has(sig)){ dup.push(ev); return; }
+    if(ref) seenRef.add(ref);
+    seenSig.add(sig);
+    out.push(ev);
+  });
+  if(dup.length){ events=out; return true; }
+  return false;
+}
+
 /* 既存予定に残っている旧カテゴリをカテゴリ管理へ自動復元する */
 function migrateLegacyCategoriesFromEvents(){
   const palette=['#7e57c2','#00897b','#0288d1','#ef6c00','#43a047','#8e24aa','#546e7e','#c62828'];
@@ -359,10 +376,11 @@ function migrateLegacyCategoriesFromEvents(){
       });
     }
   }catch(e){}
+  const deduped=dedupeEvents();
   if(catsChanged) saveCategories();
   else { try { if(!localStorage.getItem(CATEGORY_LS_KEY)) saveCategories(); } catch(e){} }
-  if(eventsChanged) saveLocal();
-  return {catsChanged,eventsChanged};
+  if(eventsChanged || deduped) saveLocal();
+  return {catsChanged,eventsChanged,deduped};
 }
 
 function fbPush(){}
@@ -895,11 +913,21 @@ function makeEv(title, cat, start, end, notes, refKey){
   return { id:'e'+Date.now()+Math.random().toString(36).slice(2,7)+refKey, title, cat, start, end:end||'', allDay:true, time:'', endTime:'', place:'', notes:notes||'', refKey:refKey||'' };
 }
 function bulkAdd(list){
-  const ids = new Set(events.map(e => e.refKey));
+  const refs = new Set(events.map(e => String(e.refKey||'').trim()).filter(Boolean));
+  const sigs = new Set(events.map(e => [String(e.title||'').trim(),String(e.start||''),String(e.end||''),String(e.cat||'')].join('\x1f')));
   let added = 0;
-  list.forEach(x => { if (x.refKey && ids.has(x.refKey)) return; events.push(x); added++; });
+  list.forEach(x => {
+    const ref=String(x.refKey||'').trim();
+    const sig=[String(x.title||'').trim(),String(x.start||''),String(x.end||''),String(x.cat||'')].join('\x1f');
+    if((ref && refs.has(ref)) || sigs.has(sig)) return;
+    events.push(x);
+    if(ref) refs.add(ref);
+    sigs.add(sig);
+    added++;
+  });
+  const deduped=dedupeEvents();
   saveLocal(); fbPush(); renderAll();
-  alert(added + '件の予定を登録しました(登録済み・終了済みのものはスキップ)。');
+  alert(added + '件の予定を登録しました(登録済み・重複はスキップ)。' + (deduped ? '\n既存の重複予定も整理しました。' : ''));
 }
 root.querySelectorAll('.ref-btn').forEach(b => {
   b.onclick = () => { if(window.__monoViewerMode) return;
