@@ -191,22 +191,31 @@ window.syncNow=async function(){
     else if(ls>remote)await push();
     else if(remote>ls){
       const remoteData=r.data||{};
+      // カレンダーのカテゴリ設定はこの端末で最後に保存した値を常に保持する。
+      // 学習データの更新時刻がクラウド側で新しくても、カテゴリだけを古い値へ戻さない。
+      const localCatRaw=localStorage.getItem(CAT_LS_KEY);
       const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
-      const remoteCatUpdated=Number(remoteData.calendarCategoriesUpdatedAt||0);
-      if(localCatUpdated>remoteCatUpdated){
-        // 学習データ全体ではクラウド側が新しくても、カテゴリ設定だけは端末側が新しい場合がある。
-        // この場合はカテゴリを保持した状態で、そのままクラウドへpushする。
-        data=mergeLocalCategoriesIntoData(remoteData);
-        localStorage.setItem(KEY,JSON.stringify(data));
-        localStorage.setItem('monocheck-study-updated',String(remote));
-        render();
-        if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
-        status('カテゴリ設定を保持してクラウドへ保存中…');msg('新しいカテゴリ設定を保持しています');
+      if(localCatRaw){
+        try{
+          const localCats=JSON.parse(localCatRaw);
+          if(localCats&&typeof localCats==='object'&&!Array.isArray(localCats)){
+            remoteData.calendarCategories=localCats;
+            remoteData.calendarCategoriesUpdatedAt=Math.max(localCatUpdated,Number(remoteData.calendarCategoriesUpdatedAt||0));
+          }
+        }catch(e){}
+      }
+      data=remoteData;
+      localStorage.setItem(KEY,JSON.stringify(data));
+      localStorage.setItem('monocheck-study-updated',String(remote));
+      render();
+      if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
+      if(localCatRaw){
+        status('クラウドデータを反映（カテゴリ設定は保持）');msg('カテゴリ設定はこの端末の変更を保持しました');
         await push();
         if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
       } else {
         if(data.calendarCategories&&typeof data.calendarCategories==='object'){
-          try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated||Date.now()));}catch(e){}
+          try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(localCatUpdated||remote||Date.now()));}catch(e){}
         }
         localStorage.setItem(KEY,JSON.stringify(data));
         localStorage.setItem('monocheck-study-updated',String(remote));
