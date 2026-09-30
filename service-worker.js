@@ -1,5 +1,5 @@
 const CACHE_NAME='monocheck-study-final-v20260930-catfix37';
-const APP_SHELL=['./','./manifest.json','./progress-chart.js?v=20260930-v38diag'];
+const APP_SHELL=['./','./manifest.json','./progress-chart.js?v=20260930-v39diag'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(

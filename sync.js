@@ -191,17 +191,19 @@ window.syncNow=async function(){
     else if(ls>remote)await push();
     else if(remote>ls){
       const remoteData=r.data||{};
-      data=remoteData;
       const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
-      const remoteCatUpdated=Number(data.calendarCategoriesUpdatedAt||0);
+      const remoteCatUpdated=Number(remoteData.calendarCategoriesUpdatedAt||0);
       if(localCatUpdated>remoteCatUpdated){
-        data=mergeLocalCategoriesIntoData(data);
+        // 学習データ全体ではクラウド側が新しくても、カテゴリ設定だけは端末側が新しい場合がある。
+        // この場合はカテゴリを保持した状態で、そのままクラウドへpushする。
+        data=mergeLocalCategoriesIntoData(remoteData);
         localStorage.setItem(KEY,JSON.stringify(data));
         localStorage.setItem('monocheck-study-updated',String(remote));
         render();
         if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
-        status('カテゴリ設定を保持しました');msg('クラウドの古いカテゴリ設定を上書きせず保持しました');
-        pendingSync=true;
+        status('カテゴリ設定を保持してクラウドへ保存中…');msg('新しいカテゴリ設定を保持しています');
+        await push();
+        if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
       } else {
         if(data.calendarCategories&&typeof data.calendarCategories==='object'){
           try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated||Date.now()));}catch(e){}
