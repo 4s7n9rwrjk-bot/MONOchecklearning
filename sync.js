@@ -21,24 +21,20 @@ function status(t){
 function localStamp(){return Number(localStorage.getItem('monocheck-study-updated')||0);}
 const CAT_LS_KEY='monocheck-calendar-categories-v1';
 const CAT_UPDATED_KEY='monocheck-calendar-categories-updated';
-const CAT_AUTH_KEY='monocheck-calendar-categories-authoritative-v3';
-const CAT_AUTH_UPDATED_KEY='monocheck-calendar-categories-authoritative-updated-v3';
-const CAT_SETTINGS_AUTH_KEY='monocheck-calendar-category-settings-authoritative-v4';
-const CAT_SETTINGS_AUTH_UPDATED_KEY='monocheck-calendar-category-settings-authoritative-updated-v4';
 function mergeLocalCategoriesIntoData(target){
   try{
-    const raw=localStorage.getItem(CAT_SETTINGS_AUTH_KEY)||localStorage.getItem(CAT_AUTH_KEY)||localStorage.getItem(CAT_LS_KEY); if(!raw)return target;
-    const cats=JSON.parse(raw); if(!cats||typeof cats!=='object'||Array.isArray(cats))return target;
+    const raw=localStorage.getItem(CAT_LS_KEY); if(!raw)return target;
+    const cats=JSON.parse(raw); if(!cats||typeof cats!=='object')return target;
     target=target&&typeof target==='object'?target:{};
-    const localUpdated=Number(localStorage.getItem(CAT_SETTINGS_AUTH_UPDATED_KEY)||localStorage.getItem(CAT_AUTH_UPDATED_KEY)||localStorage.getItem(CAT_UPDATED_KEY)||0);
+    const localUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
     const dataUpdated=Number(target.calendarCategoriesUpdatedAt||0);
-    if(localUpdated>=dataUpdated){target.calendarCategories=clone(cats);target.calendarCategorySettings=clone(cats);target.calendarCategoriesUpdatedAt=localUpdated;}
+    if(localUpdated>=dataUpdated){
+      target.calendarCategories=Object.assign({},target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{},cats);
+      target.calendarCategoriesUpdatedAt=localUpdated;
+    }
   }catch(e){}
   return target;
 }
-function clone(x){try{return JSON.parse(JSON.stringify(x));}catch(e){return x;}}
-
-
 async function waitForSupabase(){
   if(window.supabase)return true;
   for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,150));if(window.supabase)return true;}
@@ -198,8 +194,8 @@ window.syncNow=async function(){
     else if(remote>ls){
       const remoteData=r.data||{};
       // カテゴリは学習データ全体とは別の更新日時で競合解決する。
-      const localCatRaw=localStorage.getItem(CAT_SETTINGS_AUTH_KEY)||localStorage.getItem(CAT_AUTH_KEY)||localStorage.getItem(CAT_LS_KEY);
-      const localCatUpdated=Number(localStorage.getItem(CAT_SETTINGS_AUTH_UPDATED_KEY)||localStorage.getItem(CAT_AUTH_UPDATED_KEY)||localStorage.getItem(CAT_UPDATED_KEY)||0);
+      const localCatRaw=localStorage.getItem(CAT_LS_KEY);
+      const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
       const remoteCatUpdated=Number(remoteData.calendarCategoriesUpdatedAt||0);
       let localCats=null;
       if(localCatRaw){
@@ -211,14 +207,9 @@ window.syncNow=async function(){
       const categoryLocalIsNewer=!!localCats && localCatUpdated>=remoteCatUpdated;
       if(categoryLocalIsNewer){
         remoteData.calendarCategories=localCats;
-        remoteData.calendarCategorySettings=localCats;
         remoteData.calendarCategoriesUpdatedAt=localCatUpdated;
       }else if(remoteCatUpdated>localCatUpdated && remoteData.calendarCategories){
         try{
-          localStorage.setItem(CAT_SETTINGS_AUTH_KEY,JSON.stringify(remoteData.calendarCategories));
-          localStorage.setItem(CAT_SETTINGS_AUTH_UPDATED_KEY,String(remoteCatUpdated));
-          localStorage.setItem(CAT_AUTH_KEY,JSON.stringify(remoteData.calendarCategories));
-          localStorage.setItem(CAT_AUTH_UPDATED_KEY,String(remoteCatUpdated));
           localStorage.setItem(CAT_LS_KEY,JSON.stringify(remoteData.calendarCategories));
           localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated));
         }catch(e){}
