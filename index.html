@@ -92,7 +92,7 @@ window.__monoCalendarGetEvents=()=>Array.isArray(data.calendarEvents)?data.calen
 window.__monoCalendarSaveEvents=(events)=>{data.calendarEvents=Array.isArray(events)?events:[];save(false);};
 window.__monoCalendarGetCategories=()=>data.calendarCategories&&typeof data.calendarCategories==='object'?data.calendarCategories:null;
 window.__monoCalendarGetCategoriesUpdated=()=>Number(data.calendarCategoriesUpdatedAt||0);
-window.__monoCalendarSaveCategories=(cats,updatedAt)=>{const copy=(cats&&typeof cats==='object')?JSON.parse(JSON.stringify(cats)):{};const stamp=Number(updatedAt)||Date.now();data.calendarCategories=copy;data.calendarCategoriesUpdatedAt=stamp;try{localStorage.setItem('monocheck-calendar-categories-v1',JSON.stringify(copy));localStorage.setItem('monocheck-calendar-categories-updated',String(stamp));}catch(e){}save(false);try{if(window.__monoCalendarMounted&&window.__monoCalendarRefresh)window.__monoCalendarRefresh();}catch(e){}};
+window.__monoCalendarSaveCategories=(cats,updatedAt)=>{const copy=(cats&&typeof cats==='object')?JSON.parse(JSON.stringify(cats)):{};const stamp=Number(updatedAt)||Date.now();data.calendarCategories=copy;data.calendarCategoriesUpdatedAt=stamp;try{localStorage.setItem('monocheck-calendar-categories-v1',JSON.stringify(copy));localStorage.setItem('monocheck-calendar-categories-updated',String(stamp));}catch(e){}save(false);};
 window.__monoStudyGetSubjects=()=>Array.isArray(data.subjects)?data.subjects:[];
 window.initMonoCalendar=()=>{
   try{
@@ -167,10 +167,11 @@ function loadCategories(){
   const dataUpdated=Number((typeof window.__monoCalendarGetCategoriesUpdated==='function'?window.__monoCalendarGetCategoriesUpdated():0)||0);
   // カテゴリ専用保存が存在する場合は、それを基準にする。
   // ただしクラウド側のカテゴリ更新日時が明確に新しい場合だけクラウドを採用する。
-  if(Object.keys(fromLocal).length && localUpdated >= dataUpdated){
+  if(Object.keys(fromLocal).length){
+    // カテゴリは専用保存領域を正とする。学習データ全体の更新時刻に引きずられて、編集済みカテゴリを古いdataで戻さない。
     CATS=mergeCategorySets(fromLocal,fromData);
   }else{
-    CATS=mergeCategorySets(fromData,fromLocal);
+    CATS=mergeCategorySets(fromData,{});
   }
   // 旧カレンダーの標準カテゴリは必ず残す。既存の設定値があればそれを優先する。
   Object.keys(DEFAULT_CATS).forEach(k=>{
@@ -203,8 +204,8 @@ function saveCategories(){
     catDiagWrite('saveCategories:MONOcheck保存後',{stamp});
     try{if(typeof window.__monoCalendarGetCategories==='function'){const verify=window.__monoCalendarGetCategories();catDiagWrite('saveCategories:bridge確認',{verify});if(!verify||JSON.stringify(verify)!==JSON.stringify(copy)){localStorage.setItem(CATEGORY_LS_KEY,JSON.stringify(copy));localStorage.setItem(CATEGORY_UPDATED_KEY,String(stamp));catDiagWrite('saveCategories:bridge不一致→local再保存');}}}catch(e){catDiagWrite('saveCategories:bridge確認エラー',{message:String(e)});}
     if(window.queueStudyCloudSync)window.queueStudyCloudSync(); catDiagWrite('saveCategories:同期キュー後');
-    try{if(window.__monoCalendarMounted&&window.__monoCalendarRefresh)window.__monoCalendarRefresh();}catch(e){catDiagWrite('saveCategories:再描画エラー',{message:String(e)});
-    }
+    // カテゴリ保存直後はカレンダー全体を再読み込みしない。再読み込みすると同期中の古いdataでCATSが戻る可能性があるため、現在のCATSをそのまま描画する。
+    try{renderAll();renderCategoryManager();fillCatSelect($('#fCat'));}catch(e){catDiagWrite('saveCategories:再描画エラー',{message:String(e)});}
     catDiagWrite('saveCategories:完了');catDiagRender();return true;
   }catch(e){catDiagWrite('saveCategories:保存エラー',{message:String(e)});catDiagRender();console.error('category save failed',e);return false;}
 }
