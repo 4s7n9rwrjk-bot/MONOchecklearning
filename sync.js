@@ -26,8 +26,12 @@ function mergeLocalCategoriesIntoData(target){
     const raw=localStorage.getItem(CAT_LS_KEY); if(!raw)return target;
     const cats=JSON.parse(raw); if(!cats||typeof cats!=='object')return target;
     target=target&&typeof target==='object'?target:{};
-    const current=target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{};
-    target.calendarCategories=Object.assign({},current,cats);
+    const localUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
+    const dataUpdated=Number(target.calendarCategoriesUpdatedAt||0);
+    if(localUpdated>dataUpdated){
+      target.calendarCategories=Object.assign({},target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{},cats);
+      target.calendarCategoriesUpdatedAt=localUpdated;
+    }
   }catch(e){}
   return target;
 }
@@ -188,7 +192,13 @@ window.syncNow=async function(){
     else if(remote>ls){
       const remoteData=r.data||{};
       data=remoteData;
-      data=mergeLocalCategoriesIntoData(data);
+      const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
+      const remoteCatUpdated=Number(data.calendarCategoriesUpdatedAt||0);
+      if(localCatUpdated>remoteCatUpdated){
+        data=mergeLocalCategoriesIntoData(data);
+      } else if(data.calendarCategories&&typeof data.calendarCategories==='object'){
+        try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated||Date.now()));}catch(e){}
+      }
       localStorage.setItem(KEY,JSON.stringify(data));
       localStorage.setItem('monocheck-study-updated',String(remote));
       render();
