@@ -163,20 +163,17 @@ function loadCategories(){
   let fromData={}, fromLocal={};
   try{ const x=typeof window.__monoCalendarGetCategories==='function'?window.__monoCalendarGetCategories():null; fromData=(x&&typeof x==='object'&&!Array.isArray(x))?cloneCats(x):{}; }catch(e){}
   try{ const x=JSON.parse(localStorage.getItem(CATEGORY_LS_KEY)||'null'); fromLocal=(x&&typeof x==='object'&&!Array.isArray(x))?cloneCats(x):{}; }catch(e){}
-  const localUpdated=Number(localStorage.getItem(CATEGORY_UPDATED_KEY)||0);
-  const dataUpdated=Number((typeof window.__monoCalendarGetCategoriesUpdated==='function'?window.__monoCalendarGetCategoriesUpdated():0)||0);
-  // カテゴリ専用保存が存在する場合は、それを基準にする。
-  // ただしクラウド側のカテゴリ更新日時が明確に新しい場合だけクラウドを採用する。
-  if(Object.keys(fromLocal).length){
-    // カテゴリは専用保存領域を正とする。学習データ全体の更新時刻に引きずられて、編集済みカテゴリを古いdataで戻さない。
-    CATS=mergeCategorySets(fromLocal,fromData);
+
+  // 既存カテゴリは「標準カテゴリ」ではなくユーザーの設定値そのもの。
+  // dataにカテゴリが存在する場合は、DEFAULT_CATSで補完・上書きしない。
+  if(Object.keys(fromData).length){
+    CATS=fromData;
+  }else if(Object.keys(fromLocal).length){
+    CATS=fromLocal;
   }else{
-    CATS=mergeCategorySets(fromData,{});
+    CATS=cloneCats(DEFAULT_CATS);
   }
-  // 旧カレンダーの標準カテゴリは必ず残す。既存の設定値があればそれを優先する。
-  Object.keys(DEFAULT_CATS).forEach(k=>{
-    if(!CATS[k] || typeof CATS[k]!=='object' || Array.isArray(CATS[k])) CATS[k]=JSON.parse(JSON.stringify(DEFAULT_CATS[k]));
-  });
+
   Object.keys(CATS).forEach(k=>{
     const c=CATS[k];
     if(!c||typeof c!=='object'||Array.isArray(c)){delete CATS[k];return;}
@@ -186,9 +183,9 @@ function loadCategories(){
     if(c.textColor!=='#000'&&c.textColor!=='#fff') c.textColor='#fff';
     c.fontWeight=c.fontWeight==='700'?'700':'400';
   });
-  if(!CATS.other) CATS.other=JSON.parse(JSON.stringify(DEFAULT_CATS.other));
   catDiagWrite('loadCategories:完了');
 }
+
 const CAT_DIAG_KEY='monocheck-calendar-category-diagnostic-v1';
 function catDiagRead(){let log=[];try{log=JSON.parse(localStorage.getItem(CAT_DIAG_KEY)||'[]');if(!Array.isArray(log))log=[];}catch(e){}return log;}
 function catDiagWrite(stage,extra){try{const rec={time:new Date().toISOString(),stage,cats:cloneCats(CATS),dataCats:cloneCats((typeof data!=='undefined'&&data.calendarCategories)?data.calendarCategories:{}),local:localStorage.getItem(CATEGORY_LS_KEY),localUpdated:localStorage.getItem(CATEGORY_UPDATED_KEY),dataUpdated:(typeof data!=='undefined'?data.calendarCategoriesUpdatedAt:null),events:(Array.isArray(events)?events.map(e=>({id:e.id,title:e.title,cat:e.cat})):[]),extra:extra||null};const log=catDiagRead();log.push(rec);while(log.length>20)log.shift();localStorage.setItem(CAT_DIAG_KEY,JSON.stringify(log));}catch(e){}}
@@ -691,9 +688,6 @@ root.querySelectorAll('.tab').forEach(t=>{
 
 /* ---------- カテゴリ管理 ---------- */
 function renderCategoryManager(){
-  let added=false;
-  Object.keys(DEFAULT_CATS).forEach(k=>{if(!CATS[k]){CATS[k]=JSON.parse(JSON.stringify(DEFAULT_CATS[k]));added=true;}});
-  if(added) saveCategories();
   const box=$('#categoryList'); if(!box)return;
   box.innerHTML=Object.keys(CATS).map(k=>{const c=CATS[k]||{};const tc=c.textColor==='#000'?'#000':'#fff',fw=c.fontWeight==='700'?'700':'400';return '<div class="category-row" data-cat="'+esc(k)+'"><span class="category-dot" style="background:'+c.color+'"></span><input class="cat-label" type="text" value="'+esc(c.label||k)+'" aria-label="カテゴリ名"><input class="cat-color" type="color" value="'+(c.color||'#546e7e')+'" aria-label="カテゴリ色"><select class="cat-text-color" aria-label="文字色"><option value="#fff"'+(tc==='#fff'?' selected':'')+'>白</option><option value="#000"'+(tc==='#000'?' selected':'')+'>黒</option></select><select class="cat-font-weight" aria-label="文字の太さ"><option value="400"'+(fw==='400'?' selected':'')+'>通常</option><option value="700"'+(fw==='700'?' selected':'')+'>太字</option></select><button class="btn" data-action="cat-save">保存</button><button class="btn danger" data-action="cat-delete"'+(k==='other'?' disabled':'')+'>削除</button></div>';}).join('');
   box.querySelectorAll('[data-action="cat-save"]').forEach(btn=>btn.onclick=()=>{const row=btn.closest('.category-row'),k=row.dataset.cat,label=row.querySelector('.cat-label').value.trim(),color=row.querySelector('.cat-color').value;if(!label){alert('カテゴリ名を入力してください。');return;}CATS[k].label=label;CATS[k].short=label.slice(0,12);CATS[k].color=color;CATS[k].textColor=row.querySelector('.cat-text-color').value==='#000'?'#000':'#fff';CATS[k].fontWeight=row.querySelector('.cat-font-weight').value==='700'?'700':'400';saveCategories();fillCatSelect($('#fCat'));renderAll();renderCategoryManager();});
