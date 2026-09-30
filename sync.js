@@ -167,12 +167,9 @@ window.syncNow=async function(){
   if(busy){pendingSync=true;return;}
   busy=true;status('同期中…');
   try{
-    let requestLocalStamp=localStamp();
     let {data:r,error:e}=await client.from('monocheck_study_data').select('data,updated_at').eq('user_id',user.id).maybeSingle();
     if(e)throw e;
-    // 通信中に端末側でカテゴリ等を変更した場合、その変更を古いクラウド値で上書きしない。
-    let ls=localStamp();
-    let remote=r?.updated_at?Date.parse(r.updated_at):0;
+    let ls=localStamp(),remote=r?.updated_at?Date.parse(r.updated_at):0;
     if(!r)await push();
     else if(ls>remote)await push();
     else if(remote>ls){data=r.data;localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem('monocheck-study-updated',String(remote));render();status('クラウドから反映しました');msg('クラウドのデータを反映しました');}
