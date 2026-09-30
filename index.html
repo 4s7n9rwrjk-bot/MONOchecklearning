@@ -198,6 +198,40 @@ function loadLocal(){
 function saveLocal(){
   try { if (window.__monoCalendarSaveEvents) window.__monoCalendarSaveEvents(events); } catch(e){ console.error(e); }
 }
+
+/* 既存予定に残っている旧カテゴリをカテゴリ管理へ自動復元する */
+function migrateLegacyCategoriesFromEvents(){
+  const palette=['#7e57c2','#00897b','#0288d1','#ef6c00','#43a047','#8e24aa','#546e7e','#c62828'];
+  const labelMap={};
+  Object.keys(CATS).forEach(k=>{
+    const c=CATS[k]||{};
+    [c.label,c.short].forEach(v=>{if(typeof v==='string'&&v.trim())labelMap[v.trim()]=k;});
+  });
+  let catsChanged=false, eventsChanged=false, colorIndex=0;
+  (Array.isArray(events)?events:[]).forEach(ev=>{
+    let raw=typeof ev.cat==='string'?ev.cat.trim():'';
+    if(!raw && typeof ev.category==='string') raw=ev.category.trim();
+    if(!raw) raw='other';
+    if(CATS[raw]){
+      if(ev.cat!==raw){ev.cat=raw;eventsChanged=true;}
+      return;
+    }
+    const matched=labelMap[raw];
+    if(matched){
+      if(ev.cat!==matched){ev.cat=matched;eventsChanged=true;}
+      return;
+    }
+    let key='legacy_'+Date.now().toString(36)+'_'+colorIndex;
+    while(CATS[key]){colorIndex++;key='legacy_'+Date.now().toString(36)+'_'+colorIndex;}
+    CATS[key]={label:raw,short:raw.slice(0,12),color:palette[colorIndex%palette.length],textColor:'#fff',fontWeight:'400'};
+    labelMap[raw]=key;
+    ev.cat=key;
+    catsChanged=true; eventsChanged=true; colorIndex++;
+  });
+  if(catsChanged) saveCategories();
+  if(eventsChanged) saveLocal();
+  return {catsChanged,eventsChanged};
+}
 function fbPush(){}
 function fbInit(){}
 /* ---------- 通知 ---------- */
@@ -809,6 +843,8 @@ currentY = now.getFullYear(); currentM = now.getMonth();
 loadCategories();
 fillCatSelect($('#fCat'));
 loadLocal();
+migrateLegacyCategoriesFromEvents();
+fillCatSelect($('#fCat'));
 fbInit();
 notifySetup();
 renderAll();
