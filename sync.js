@@ -19,6 +19,18 @@ function status(t){
   let d=document.getElementById('syncDot');if(d)d.textContent=user?'●':'○';
 }
 function localStamp(){return Number(localStorage.getItem('monocheck-study-updated')||0);}
+const CAT_LS_KEY='monocheck-calendar-categories-v1';
+const CAT_UPDATED_KEY='monocheck-calendar-categories-updated';
+function mergeLocalCategoriesIntoData(target){
+  try{
+    const raw=localStorage.getItem(CAT_LS_KEY); if(!raw)return target;
+    const cats=JSON.parse(raw); if(!cats||typeof cats!=='object')return target;
+    target=target&&typeof target==='object'?target:{};
+    const current=target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{};
+    target.calendarCategories=Object.assign({},current,cats);
+  }catch(e){}
+  return target;
+}
 async function waitForSupabase(){
   if(window.supabase)return true;
   for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,150));if(window.supabase)return true;}
@@ -169,15 +181,26 @@ window.syncNow=async function(){
   try{
     let {data:r,error:e}=await client.from('monocheck_study_data').select('data,updated_at').eq('user_id',user.id).maybeSingle();
     if(e)throw e;
+    data=mergeLocalCategoriesIntoData(data);
     let ls=localStamp(),remote=r?.updated_at?Date.parse(r.updated_at):0;
     if(!r)await push();
     else if(ls>remote)await push();
-    else if(remote>ls){data=r.data;localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem('monocheck-study-updated',String(remote));render();status('クラウドから反映しました');msg('クラウドのデータを反映しました');}
+    else if(remote>ls){
+      const remoteData=r.data||{};
+      data=remoteData;
+      data=mergeLocalCategoriesIntoData(data);
+      localStorage.setItem(KEY,JSON.stringify(data));
+      localStorage.setItem('monocheck-study-updated',String(remote));
+      render();
+      if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
+      status('クラウドから反映しました');msg('クラウドのデータを反映しました');
+    }
     else{status('同期済み');msg('同期済みです');}
   }catch(e){console.error(e);status('同期エラー');msg(e.message||String(e));}
   finally{busy=false;if(pendingSync){pendingSync=false;clearTimeout(timer);timer=setTimeout(()=>syncNow(),300);}}
 };
 async function push(){
+  data=mergeLocalCategoriesIntoData(data);
   let stamp=new Date().toISOString();
   let {error}=await client.from('monocheck_study_data').upsert({user_id:user.id,data:data,updated_at:stamp},{onConflict:'user_id'});
   if(error)throw error;
