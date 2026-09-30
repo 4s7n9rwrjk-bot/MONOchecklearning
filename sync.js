@@ -193,8 +193,7 @@ window.syncNow=async function(){
     else if(ls>remote)await push();
     else if(remote>ls){
       const remoteData=r.data||{};
-      // カテゴリは学習データ全体とは独立して更新日時を比較する。
-      // 新しい側だけを採用し、古いカテゴリ設定で新しい色を上書きしない。
+      // カテゴリは学習データ全体とは別の更新日時で競合解決する。
       const localCatRaw=localStorage.getItem(CAT_LS_KEY);
       const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
       const remoteCatUpdated=Number(remoteData.calendarCategoriesUpdatedAt||0);
@@ -205,13 +204,14 @@ window.syncNow=async function(){
           if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)) localCats=parsed;
         }catch(e){}
       }
-      if(localCats && localCatUpdated>remoteCatUpdated){
+      const categoryLocalIsNewer=!!localCats && localCatUpdated>=remoteCatUpdated;
+      if(categoryLocalIsNewer){
         remoteData.calendarCategories=localCats;
         remoteData.calendarCategoriesUpdatedAt=localCatUpdated;
-      }else if(remoteData.calendarCategories && typeof remoteData.calendarCategories==='object'){
+      }else if(remoteCatUpdated>localCatUpdated && remoteData.calendarCategories){
         try{
           localStorage.setItem(CAT_LS_KEY,JSON.stringify(remoteData.calendarCategories));
-          localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated||remote||Date.now()));
+          localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated));
         }catch(e){}
       }
       try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直前',{remoteCats:remoteData.calendarCategories,localCats:localCatRaw?JSON.parse(localCatRaw):null,remoteUpdated:remoteData.calendarCategoriesUpdatedAt,localUpdated:localCatUpdated});}catch(_){}
@@ -221,19 +221,16 @@ window.syncNow=async function(){
       localStorage.setItem('monocheck-study-updated',String(remote));
       render();
       if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
-      const categoryWasLocalNewer=!!(localCats && localCatUpdated>remoteCatUpdated);
-      if(categoryWasLocalNewer){
-        status('クラウドデータを反映（新しいカテゴリ設定を保持）');
-        msg('カテゴリ設定はこの端末の新しい変更を保持しました');
+      if(categoryLocalIsNewer){
+        status('クラウドデータを反映（カテゴリ設定は端末の新しい値を保持）');msg('カテゴリ設定はこの端末の新しい値を保持しました');
         await push();
-        if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
-      }else{
-        localStorage.setItem(KEY,JSON.stringify(data));
-        localStorage.setItem('monocheck-study-updated',String(remote));
-        render();
-        if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
+      } else {
         status('クラウドから反映しました');msg('クラウドのデータを反映しました');
       }
+      localStorage.setItem(KEY,JSON.stringify(data));
+      localStorage.setItem('monocheck-study-updated',String(categoryLocalIsNewer?Date.now():remote));
+      render();
+      if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
     }
     else{status('同期済み');msg('同期済みです');}
   }catch(e){console.error(e);status('同期エラー');msg(e.message||String(e));}
