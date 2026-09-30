@@ -196,14 +196,22 @@ window.syncNow=async function(){
       const remoteCatUpdated=Number(data.calendarCategoriesUpdatedAt||0);
       if(localCatUpdated>remoteCatUpdated){
         data=mergeLocalCategoriesIntoData(data);
-      } else if(data.calendarCategories&&typeof data.calendarCategories==='object'){
-        try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated||Date.now()));}catch(e){}
+        localStorage.setItem(KEY,JSON.stringify(data));
+        localStorage.setItem('monocheck-study-updated',String(remote));
+        render();
+        if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
+        status('カテゴリ設定を保持しました');msg('クラウドの古いカテゴリ設定を上書きせず保持しました');
+        pendingSync=true;
+      } else {
+        if(data.calendarCategories&&typeof data.calendarCategories==='object'){
+          try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(remoteCatUpdated||Date.now()));}catch(e){}
+        }
+        localStorage.setItem(KEY,JSON.stringify(data));
+        localStorage.setItem('monocheck-study-updated',String(remote));
+        render();
+        if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
+        status('クラウドから反映しました');msg('クラウドのデータを反映しました');
       }
-      localStorage.setItem(KEY,JSON.stringify(data));
-      localStorage.setItem('monocheck-study-updated',String(remote));
-      render();
-      if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
-      status('クラウドから反映しました');msg('クラウドのデータを反映しました');
     }
     else{status('同期済み');msg('同期済みです');}
   }catch(e){console.error(e);status('同期エラー');msg(e.message||String(e));}

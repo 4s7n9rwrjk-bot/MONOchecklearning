@@ -92,7 +92,7 @@ window.__monoCalendarGetEvents=()=>Array.isArray(data.calendarEvents)?data.calen
 window.__monoCalendarSaveEvents=(events)=>{data.calendarEvents=Array.isArray(events)?events:[];save(false);};
 window.__monoCalendarGetCategories=()=>data.calendarCategories&&typeof data.calendarCategories==='object'?data.calendarCategories:null;
 window.__monoCalendarGetCategoriesUpdated=()=>Number(data.calendarCategoriesUpdatedAt||0);
-window.__monoCalendarSaveCategories=(cats,updatedAt)=>{data.calendarCategories=(cats&&typeof cats==='object')?cats:{};data.calendarCategoriesUpdatedAt=Number(updatedAt)||Date.now();save(false);};
+window.__monoCalendarSaveCategories=(cats,updatedAt)=>{const copy=(cats&&typeof cats==='object')?JSON.parse(JSON.stringify(cats)):{};const stamp=Number(updatedAt)||Date.now();data.calendarCategories=copy;data.calendarCategoriesUpdatedAt=stamp;try{localStorage.setItem('monocheck-calendar-categories-v1',JSON.stringify(copy));localStorage.setItem('monocheck-calendar-categories-updated',String(stamp));}catch(e){}save(false);try{if(window.__monoCalendarMounted&&window.__monoCalendarRefresh)window.__monoCalendarRefresh();}catch(e){}};
 window.__monoStudyGetSubjects=()=>Array.isArray(data.subjects)?data.subjects:[];
 window.initMonoCalendar=()=>{
   try{
@@ -112,7 +112,7 @@ if("serviceWorker" in navigator){
   window.addEventListener("load",async()=>{
     try{
       const reg=await navigator.serviceWorker.register(
-        "./service-worker.js?v=20260930-v33",
+        "./service-worker.js?v=20260930-v37",
         {updateViaCache:"none"}
       );
       try{await reg.update()}catch(_){}
@@ -189,7 +189,7 @@ function loadCategories(){
 function saveCategories(){
   try{
     const copy=cloneCats(CATS);
-    const stamp=Date.now();
+    const stamp=Math.max(Date.now(), Number(localStorage.getItem(CATEGORY_UPDATED_KEY)||0)+1);
     // まずカテゴリ専用領域へ即時保存。ここをカテゴリ設定の正本にする。
     localStorage.setItem(CATEGORY_LS_KEY,JSON.stringify(copy));
     localStorage.setItem(CATEGORY_UPDATED_KEY,String(stamp));
@@ -206,6 +206,7 @@ function saveCategories(){
       }
     }catch(e){}
     if(window.queueStudyCloudSync)window.queueStudyCloudSync();
+    try{if(window.__monoCalendarMounted&&window.__monoCalendarRefresh)window.__monoCalendarRefresh();}catch(e){}
     return true;
   }catch(e){console.error('category save failed',e);return false;}
 }
