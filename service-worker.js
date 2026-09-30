@@ -1,4 +1,4 @@
-const CACHE_NAME='monocheck-study-final-v20260929-viewer1';
+const CACHE_NAME='monocheck-study-final-v20260930-catstyle1';
 const APP_SHELL=['./','./manifest.json','./progress-chart.js?v=20260929-viewer1'];
 
 self.addEventListener('install',event=>{
