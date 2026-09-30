@@ -28,7 +28,7 @@ function mergeLocalCategoriesIntoData(target){
     target=target&&typeof target==='object'?target:{};
     const localUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
     const dataUpdated=Number(target.calendarCategoriesUpdatedAt||0);
-    if(localUpdated>dataUpdated){
+    if(localUpdated>=dataUpdated){
       target.calendarCategories=Object.assign({},target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{},cats);
       target.calendarCategoriesUpdatedAt=localUpdated;
     }
