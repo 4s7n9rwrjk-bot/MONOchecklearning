@@ -183,9 +183,11 @@ window.syncNow=async function(){
   if(busy){pendingSync=true;return;}
   busy=true;status('同期中…');
   try{
+    try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:開始',{dataCats:window.cloneCats?window.cloneCats(data.calendarCategories):data.calendarCategories,localCat:localStorage.getItem(CAT_LS_KEY),localUpdated:localStorage.getItem(CAT_UPDATED_KEY)});}catch(_){}
     let {data:r,error:e}=await client.from('monocheck_study_data').select('data,updated_at').eq('user_id',user.id).maybeSingle();
     if(e)throw e;
     data=mergeLocalCategoriesIntoData(data);
+    try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:mergeLocalCategoriesIntoData後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
     let ls=localStamp(),remote=r?.updated_at?Date.parse(r.updated_at):0;
     if(!r)await push();
     else if(ls>remote)await push();
@@ -204,7 +206,9 @@ window.syncNow=async function(){
           }
         }catch(e){}
       }
+      try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直前',{remoteCats:remoteData.calendarCategories,localCats:localCatRaw?JSON.parse(localCatRaw):null,remoteUpdated:remoteData.calendarCategoriesUpdatedAt,localUpdated:localCatUpdated});}catch(_){}
       data=remoteData;
+      try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
       localStorage.setItem(KEY,JSON.stringify(data));
       localStorage.setItem('monocheck-study-updated',String(remote));
       render();
@@ -229,10 +233,13 @@ window.syncNow=async function(){
   finally{busy=false;if(pendingSync){pendingSync=false;clearTimeout(timer);timer=setTimeout(()=>syncNow(),300);}}
 };
 async function push(){
+  try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('push:開始',{before:data.calendarCategories,beforeUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
   data=mergeLocalCategoriesIntoData(data);
+  try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('push:merge後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
   let stamp=new Date().toISOString();
   let {error}=await client.from('monocheck_study_data').upsert({user_id:user.id,data:data,updated_at:stamp},{onConflict:'user_id'});
   if(error)throw error;
+  try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('push:Supabase upsert後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
   localStorage.setItem('monocheck-study-updated',String(Date.parse(stamp)));status('同期済み');msg('クラウドに保存しました');
 }
 window.queueStudyCloudSync=function(){if(window.__monoViewerMode||!user)return;clearTimeout(timer);timer=setTimeout(()=>syncNow(),700);};
