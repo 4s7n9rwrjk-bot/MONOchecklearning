@@ -1060,4 +1060,36 @@ updateAllDayUI();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="sync.js"></script>
+<script>
+/* v69: 同期モーダル表示の最終ガード
+   sync.jsの読み込み状態に左右されず、☁同期ボタンから必ず画面を開けるようにする。 */
+(function(){
+  function forceOpenSyncModal(){
+    const m=document.getElementById('syncModal');
+    if(!m)return false;
+    m.style.display='flex';
+    m.style.visibility='visible';
+    m.style.opacity='1';
+    m.style.zIndex='99999';
+    try{
+      if(typeof window.ensureClient==='function') window.ensureClient().catch(function(){});
+    }catch(e){}
+    return true;
+  }
+  const original=window.openSyncModal;
+  window.openSyncModal=function(){
+    let opened=false;
+    try{if(typeof original==='function') original();}catch(e){console.error('openSyncModal:',e);}
+    opened=forceOpenSyncModal()||opened;
+    return opened;
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    const b=document.querySelector('.actions button[onclick*="openSyncModal"]');
+    if(b){
+      b.removeAttribute('onclick');
+      b.addEventListener('click',function(e){e.preventDefault();window.openSyncModal();});
+    }
+  });
+})();
+</script>
 </body></html>
