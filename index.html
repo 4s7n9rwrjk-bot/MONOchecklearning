@@ -321,13 +321,20 @@ function saveLocal(){
 /* 同一予定の重複を整理する。佛大自動追加はrefKey、その他の予定は主要項目で判定する。 */
 function dedupeEvents(){
   if(!Array.isArray(events)) return false;
-  const seenRef=new Set(), seenSig=new Set(), out=[], dup=[];
+  const seenRef=new Set(), seenSig=new Set(), seenBukyo=new Set(), out=[], dup=[];
+  const isBukyoTitle=t=>/リポート提出期間|科目最終試験|成績開示|単位認定日|スクーリング結果開示|スクーリング|履修登録/.test(String(t||''));
   events.forEach(ev=>{
     if(!ev || !ev.title || !ev.start){ out.push(ev); return; }
     const ref=String(ev.refKey||'').trim();
-    const sig=[String(ev.title||'').trim(),String(ev.start||''),String(ev.end||''),String(ev.cat||'')].join('\x1f');
-    if((ref && seenRef.has(ref)) || seenSig.has(sig)){ dup.push(ev); return; }
+    const title=String(ev.title||'').trim();
+    const start=String(ev.start||'');
+    const end=String(ev.end||'');
+    // 佛大予定はカテゴリ変更・旧カテゴリ移行があっても同一予定として扱う。
+    const bukyoSig=isBukyoTitle(title)?[title,start,end].join('\x1f'):'';
+    const sig=[title,start,end,String(ev.cat||'')].join('\x1f');
+    if((ref && seenRef.has(ref)) || (bukyoSig && seenBukyo.has(bukyoSig)) || seenSig.has(sig)){ dup.push(ev); return; }
     if(ref) seenRef.add(ref);
+    if(bukyoSig) seenBukyo.add(bukyoSig);
     seenSig.add(sig);
     out.push(ev);
   });
@@ -915,14 +922,18 @@ function makeEv(title, cat, start, end, notes, refKey){
 function bulkAdd(list){
   const refs = new Set(events.map(e => String(e.refKey||'').trim()).filter(Boolean));
   const sigs = new Set(events.map(e => [String(e.title||'').trim(),String(e.start||''),String(e.end||''),String(e.cat||'')].join('\x1f')));
+  const bukyoSigs = new Set(events.filter(e => /リポート提出期間|科目最終試験|成績開示|単位認定日|スクーリング結果開示|スクーリング|履修登録/.test(String(e.title||''))).map(e => [String(e.title||'').trim(),String(e.start||''),String(e.end||'')].join('\x1f')));
   let added = 0;
   list.forEach(x => {
     const ref=String(x.refKey||'').trim();
-    const sig=[String(x.title||'').trim(),String(x.start||''),String(x.end||''),String(x.cat||'')].join('\x1f');
-    if((ref && refs.has(ref)) || sigs.has(sig)) return;
+    const title=String(x.title||'').trim();
+    const sig=[title,String(x.start||''),String(x.end||''),String(x.cat||'')].join('\x1f');
+    const bukyoSig=/リポート提出期間|科目最終試験|成績開示|単位認定日|スクーリング結果開示|スクーリング|履修登録/.test(title)?[title,String(x.start||''),String(x.end||'')].join('\x1f'):'';
+    if((ref && refs.has(ref)) || sigs.has(sig) || (bukyoSig && bukyoSigs.has(bukyoSig))) return;
     events.push(x);
     if(ref) refs.add(ref);
     sigs.add(sig);
+    if(bukyoSig) bukyoSigs.add(bukyoSig);
     added++;
   });
   const deduped=dedupeEvents();
