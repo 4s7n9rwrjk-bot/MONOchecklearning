@@ -896,7 +896,17 @@ const BUKYO_EXAMS = [ // [試験月, 開始月, 開始日, 終了月, 終了日,
 ];
 const BUKYO_CREDITS = [ // [月, 日, 年オフセット, 対象試験]
   [9,25,0,'6月試験まで'],[12,20,0,'10月試験まで'],[3,25,1,'12月試験まで'],[5,25,1,'1・2月試験まで']
-];\nconst BUKYO_SCHOOLING_APPS = [\n  ['集中1',4,1,4,5],\n  ['春期',4,25,4,30],\n  ['春期夜間',4,25,4,30],\n  ['夏期',5,25,5,31],\n  ['集中2',5,25,5,31],\n  ['秋期',10,25,10,31],\n  ['秋期夜間',10,25,10,31],\n  ['冬期',11,25,11,30]\n];
+];
+const BUKYO_SCHOOLING_APPS = [
+  ['集中1',4,1,4,5],
+  ['春期',4,25,4,30],
+  ['春期夜間',4,25,4,30],
+  ['夏期',5,25,5,31],
+  ['集中2',5,25,5,31],
+  ['秋期',10,25,10,31],
+  ['秋期夜間',10,25,10,31],
+  ['冬期',11,25,11,30]
+];
 /* 佛大予定はカテゴリ一覧で現在設定されているカテゴリを必ず使う。
    標準IDが残っている場合はそれを優先し、ユーザーがカテゴリIDを作り直した場合は
    カテゴリ名から対応するものを探す。これにより、カテゴリ一覧で変更した色・文字色・太さ・名称が
@@ -983,7 +993,17 @@ root.querySelectorAll('.ref-btn').forEach(b => {
         list.push(makeEv('単位認定日('+x[3]+'に合格した科目)', bukyoCat('credit'), d, '', '2026年度佛教大学公式予定の単位認定日。', 'credit-'+d));
       });
       bulkAdd(list);
-    } else if (kind === 'schooling-app'){\n      const list=[];\n      BUKYO_SCHOOLING_APPS.forEach(x=>{\n        const ss=bukyoDate(x[1],x[2]), ee=bukyoDate(x[3],x[4]);\n        if(ee<todayStr()) return;\n        const title='スクーリング申込期間（'+x[0]+'）';\n        list.push(makeEv(title,bukyoCat('schooling'),ss,ee,'佛教大学通信教育課程 2026年度公式のスクーリング申込期間。B-netから受講申込み。\\n開講種別・科目によって対象や条件が異なるため、申込み前に「スクーリングのしおり」を確認してください。','schooling-app-2026-'+x[0]));\n      });\n      bulkAdd(list);\n    } else if (kind === 'school-results'){
+    } else if (kind === 'schooling-app'){
+      const list=[];
+      BUKYO_SCHOOLING_APPS.forEach(x=>{
+        const ss=bukyoDate(x[1],x[2]), ee=bukyoDate(x[3],x[4]);
+        if(ee<todayStr()) return;
+        const title='スクーリング申込期間（'+x[0]+'）';
+        list.push(makeEv(title,bukyoCat('schooling'),ss,ee,'佛教大学通信教育課程 2026年度公式のスクーリング申込期間。B-netから受講申込み。\
+開講種別・科目によって対象や条件が異なるため、申込み前に「スクーリングのしおり」を確認してください。','schooling-app-2026-'+x[0]));
+      });
+      bulkAdd(list);
+    } else if (kind === 'school-results'){
       const raw=prompt('B-netで確認したスクーリング結果開示日を入力してください。\n複数ある場合はカンマ区切り（例: 2026-10-15,2026-11-10）');
       if(raw===null)return;
       const dates=raw.split(/[,、\s]+/).map(x=>x.trim()).filter(Boolean);
