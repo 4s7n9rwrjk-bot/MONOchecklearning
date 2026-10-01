@@ -79,6 +79,9 @@ function ensureUnits(){
   if(!data.unitManagement || typeof data.unitManagement!=='object') data.unitManagement={requiredUnits:0,courses:[]};
   if(!Array.isArray(data.unitManagement.courses)) data.unitManagement.courses=[];
   if(!Number.isFinite(Number(data.unitManagement.requiredUnits))) data.unitManagement.requiredUnits=0;
+  if(!Number.isFinite(Number(data.unitManagement.entryYear))) data.unitManagement.entryYear=new Date().getFullYear();
+  if(!Array.isArray(data.unitManagement.annualTargets) || data.unitManagement.annualTargets.length!==4) data.unitManagement.annualTargets=[0,0,0,0];
+  data.unitManagement.courses.forEach(c=>{ if(c.acquisitionYear===undefined) c.acquisitionYear=''; });
   return data.unitManagement;
 }
 function unitTotals(){
@@ -95,6 +98,35 @@ function unitTotals(){
   return t;
 }
 function unitRateText(n){return Number(n).toFixed(2).replace(/\.00$/,'')+'%'}
+function unitEvenTargets(){
+  const required=Math.max(0,Number(ensureUnits().requiredUnits)||0);
+  const base=required/4;
+  return [1,2,3,4].map(y=>({year:y,annual:base,cumulative:base*y}));
+}
+function academicYear(){const d=new Date();return d.getMonth()>=3?d.getFullYear():d.getFullYear()-1;}
+function currentStudyYear(){const u=ensureUnits(), n=academicYear()-Number(u.entryYear)+1;return Math.min(4,Math.max(1,n));}
+function currentYearTarget(){return unitCustomTargets()[currentStudyYear()-1]?.annual||0;}
+function currentYearAcquired(){const y=academicYear();return ensureUnits().courses.reduce((sum,c)=>sum+(c.status==='取得済'&&Number(c.acquisitionYear)===y?Math.max(0,Number(c.units)||0):0),0);}
+function currentYearRemaining(){return Math.max(0,currentYearTarget()-currentYearAcquired());}
+function currentYearOver(){return Math.max(0,currentYearAcquired()-currentYearTarget());}
+function setEntryYear(v){ensureUnits().entryYear=Math.floor(Number(v)||new Date().getFullYear());save(true)}
+function unitCustomTargets(){
+  const u=ensureUnits();
+  let cumulative=0;
+  return [0,1,2,3].map(i=>{
+    const annual=Math.max(0,Number(u.annualTargets[i])||0); cumulative+=annual;
+    return {year:i+1,annual,cumulative};
+  });
+}
+function setAnnualTarget(i,v){
+  const u=ensureUnits(); u.annualTargets[i]=Math.max(0,Number(v)||0); save(true);
+}
+function applyEvenTargets(){
+  const u=ensureUnits(), required=Math.max(0,Number(u.requiredUnits)||0);
+  const base=required/4; u.annualTargets=[base,base,base,base]; save(true);
+}
+function customTargetTotal(){return unitCustomTargets().reduce((a,x)=>a+x.annual,0)}
+function unitFmt(n){return Number(n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1')}
 function units(){
   const u=ensureUnits(), t=unitTotals();
   const rows=u.courses.map((c,i)=>`<tr>
@@ -102,6 +134,7 @@ function units(){
     <td><select onchange="updateUnit(${i},'category',this.value)">${['必修','選択必修','選択','その他'].map(x=>`<option ${c.category===x?'selected':''}>${x}</option>`).join('')}</select></td>
     <td class="num"><input type="number" min="0" step="0.5" value="${Number(c.units)||0}" onchange="updateUnit(${i},'units',this.value)"></td>
     <td><select onchange="updateUnit(${i},'status',this.value)">${['未取得','履修中','取得済'].map(x=>`<option ${c.status===x?'selected':''}>${x}</option>`).join('')}</select></td>
+    <td><input type="number" min="2000" max="2100" value="${c.acquisitionYear??''}" placeholder="取得年度" onchange="updateUnit(${i},'acquisitionYear',this.value)"></td>
     <td><input value="${esc(c.note||'')}" placeholder="メモ" onchange="updateUnit(${i},'note',this.value)"></td>
     <td><button class="btn danger" onclick="deleteUnit(${i})">削除</button></td>
   </tr>`).join('');
@@ -116,18 +149,19 @@ function units(){
       <div style="margin:14px 0"><div class="row"><b>単位取得率</b><span>${t.acquired} / ${t.required}単位</span></div><div class="progress"><i style="width:${t.rate}%"></i></div></div>
       <div class="field"><label>卒業・修了に必要な総単位数</label><input id="requiredUnits" type="number" min="0" step="0.5" value="${t.required}" onchange="setRequiredUnits(this.value)"><div class="small">ここは単位取得率の分母です。学習ページ数の進捗率とは別管理です。</div></div>
     </section>
+    <section class="card span12"><div class="row"><div><div class="h">🎯 4年間の単位取得目標</div><div class="muted">「均等に取る場合の目安」と「自分で決める年度別目標」の両方を表示します。</div></div><button class="btn" onclick="applyEvenTargets();render()">↺ 均等目標をセット</button></div><div class="field" style="margin-top:10px"><label>入学年度（4月始まり）</label><input type="number" min="2000" max="2100" value="${ensureUnits().entryYear}" onchange="setEntryYear(this.value)"><div class="small">現在の年度から「何年目か」を自動判定します。</div></div><div class="card" style="margin:10px 0;background:#f8f9ff;box-shadow:none;border:1px solid #e2e2e8"><div class="h">📌 今年度の目標</div><div class="kpi" style="margin-top:8px"><div><div class="small">今年度</div><div class="stat">${academicYear()}年度・${currentStudyYear()}年目</div></div><div><div class="small">今年の目標</div><div class="stat">${unitFmt(currentYearTarget())}単位</div></div><div><div class="small">今年取得済み</div><div class="stat">${unitFmt(currentYearAcquired())}単位</div></div><div><div class="small">あと必要</div><div class="stat">${currentYearOver()?`目標達成（+${unitFmt(currentYearOver())}）`:unitFmt(currentYearRemaining())+'単位'}</div></div></div><div class="small" style="margin-top:8px">「取得済」の科目に取得年度を入力すると、今年度の取得済み単位へ自動集計されます。</div></div><div class="tablewrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>学年</th><th>均等目安</th><th>自分の目標</th><th>累計目標</th></tr></thead><tbody>${unitEvenTargets().map((x,i)=>{const c=unitCustomTargets()[i];return `<tr><td><b>${x.year}年目</b></td><td>${unitFmt(x.annual)}単位</td><td><input type="number" min="0" step="0.5" value="${unitFmt(c.annual)}" onchange="setAnnualTarget(${i},this.value)" style="max-width:120px"></td><td>${unitFmt(c.cumulative)}単位</td></tr>`}).join('')}</tbody></table></div><div class="row" style="margin-top:10px"><span>自分の年度別目標 合計：<b>${unitFmt(customTargetTotal())}単位</b></span><span>必要単位：<b>${unitFmt(ensureUnits().requiredUnits)}単位</b></span></div><div class="small" style="margin-top:8px">例えば124単位なら、均等目安は31・31・31・31単位。実際には「1年30、2年32、3年32、4年30」のように自由に設定できます。</div></section>
     <section class="card span4"><div class="h">📊 状況</div><div class="list">
       <div class="item"><b>${t.acquired}単位</b><div class="small">取得済み</div></div>
       <div class="item"><b>${t.inProgress}単位</b><div class="small">履修中</div></div>
       <div class="item"><b>${t.remaining}単位</b><div class="small">必要単位まで残り</div></div>
       <div class="item"><b>${t.registered}単位</b><div class="small">登録科目の合計</div></div>
     </div></section>
-    <section class="card span8"><div class="h">📚 科目別の取得状況</div><div class="tablewrap"><table class="tbl"><thead><tr><th>科目名</th><th>区分</th><th>単位</th><th>状態</th><th>メモ</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="6">まだ科目が登録されていません。「＋ 科目・単位を追加」から登録してください。</td></tr>'}</tbody></table></div></section>
-    <section class="card span12"><div class="h">🔎 集計について</div><div class="muted">「取得済」の科目だけを取得単位として集計します。「履修中」は取得済みに含めません。単位取得率は <b>取得済み単位 ÷ 必要単位数 × 100</b> です。</div></section>
+    <section class="card span8"><div class="h">📚 科目別の取得状況</div><div class="tablewrap"><table class="tbl"><thead><tr><th>科目名</th><th>区分</th><th>単位</th><th>状態</th><th>取得年度</th><th>メモ</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7">まだ科目が登録されていません。「＋ 科目・単位を追加」から登録してください。</td></tr>'}</tbody></table></div></section>
+    <section class="card span12"><div class="h">🔎 集計について</div><div class="muted">「取得済」の科目だけを取得単位として集計します。「履修中」は取得済みに含めません。取得年度が今年度の「取得済」科目は今年度実績にも自動集計します。単位取得率は <b>取得済み単位 ÷ 必要単位数 × 100</b> です。</div></section>
   </div>`;
 }
 function setRequiredUnits(v){ensureUnits().requiredUnits=Math.max(0,Number(v)||0);save(true)}
-function addUnit(){const u=ensureUnits();u.courses.push({id:'u'+Date.now(),name:'新しい科目',category:'選択',units:2,status:'未取得',note:''});save(true)}
+function addUnit(){const u=ensureUnits();u.courses.push({id:'u'+Date.now(),name:'新しい科目',category:'選択',units:2,status:'未取得',acquisitionYear:'',note:''});save(true)}
 function updateUnit(i,k,v){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(k==='units')c[k]=Math.max(0,Number(v)||0);else c[k]=v;save(true)}
 function deleteUnit(i){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(!confirm('「'+(c.name||'この科目')+'」を単位管理から削除しますか？'))return;u.courses.splice(i,1);save(true)}
 function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
