@@ -744,7 +744,7 @@ function renderItem(container, ev, showDone){
     + '<div class="event-meta">🗓️ ' + period + '</div>'
     + (ev.place ? '<div class="event-meta">📍 ' + esc(ev.place) + '</div>' : '')
     + (ev.notes ? '<div class="event-notes">' + esc(ev.notes) + '</div>' : '');
-  div.querySelector('h4').textContent = ev.title; applyCatTextStyle(div.querySelector('h4'),c);
+  div.querySelector('h4').textContent = ev.title; div.querySelector('h4').style.color='#111827'; div.querySelector('h4').style.fontWeight=(c&&c.fontWeight)==='700'?'700':'600';
   div.onclick = () => openModal(ev.id);
   container.appendChild(div);
 }
