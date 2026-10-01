@@ -427,19 +427,53 @@ function loadCategories(){
       catDiagWrite('loadCategories:v2設定を上書き適用',{v2:cloneCats(v2)});
     }
   }catch(e){}
+  // 表示名の復旧。同期データ側で label が内部キーそのものになった場合でも、
+  // 標準カテゴリは日本語の正式表示名へ戻す。未知の追加カテゴリは削除せず、
+  // ユーザーが後からカテゴリ管理画面で名前を付け直せるよう仮名を付ける。
+  const DISPLAY_FALLBACKS = Object.assign({}, DEFAULT_CATS, {
+    grade:{label:'📊 成績開示日', color:'#1976d2', short:'成績開示'},
+    __uncategorized:{label:'📦 未分類', color:'#7e57c2', short:'未分類'}
+  });
+  let repairedLabels=false;
   Object.keys(CATS).forEach(k=>{
     const c=CATS[k];
     if(!c||typeof c!=='object'||Array.isArray(c)){delete CATS[k];return;}
-    if(typeof c.label!=='string'||!c.label.trim()) c.label=String(k);
+    const oldLabel=typeof c.label==='string'?c.label.trim():'';
+    const fallback=DISPLAY_FALLBACKS[k];
+    // label が空、内部キーそのもの、または英字キーと同一なら表示名を復旧。
+    if((!oldLabel || oldLabel===k || /^[a-z_]+$/.test(oldLabel)) && fallback){
+      c.label=fallback.label;
+      if(!c.short||c.short===k||c.short===oldLabel)c.short=fallback.short;
+      if(!c.color||c.color==='#546e7e' || c.color===fallback.color && k==='grade'){}
+      repairedLabels=true;
+    } else if(!oldLabel){
+      c.label=k.startsWith('cat_')?'追加カテゴリ':'未設定カテゴリ';
+      c.short=c.label.slice(0,12);
+      repairedLabels=true;
+    } else if(oldLabel===k && k.startsWith('cat_')){
+      c.label='追加カテゴリ';
+      c.short='追加カテゴリ';
+      repairedLabels=true;
+    }
     if(typeof c.short!=='string'||!c.short.trim()) c.short=c.label.slice(0,12);
     if(typeof c.color!=='string'||!/^#[0-9a-f]{6}$/i.test(c.color)) c.color='#546e7e';
     if(c.textColor!=='#000'&&c.textColor!=='#fff') c.textColor='#fff';
     c.fontWeight=c.fontWeight==='700'?'700':'400';
   });
-  // 初回だけ現在の有効なカテゴリ設定をv2へ退避する。以後はv2を同期データより優先する。
+  // 修復した表示名は端末側・MONOcheckデータ側にも保存し、再読込で英字キーへ戻らないようにする。
   try{
-    const existing=localStorage.getItem(CATEGORY_SETTINGS_V2_KEY);
-    if(!existing) localStorage.setItem(CATEGORY_SETTINGS_V2_KEY,JSON.stringify(cloneCats(CATS)));
+    const fixed=JSON.stringify(cloneCats(CATS));
+    if(repairedLabels){
+      localStorage.setItem(CATEGORY_LS_KEY,fixed);
+      localStorage.setItem(CATEGORY_SETTINGS_V2_KEY,fixed);
+      const stamp=Math.max(Date.now(),Number(localStorage.getItem(CATEGORY_UPDATED_KEY)||0)+1);
+      localStorage.setItem(CATEGORY_UPDATED_KEY,String(stamp));
+      if(window.__monoCalendarSaveCategories) window.__monoCalendarSaveCategories(cloneCats(CATS),stamp);
+      if(window.queueStudyCloudSync) window.queueStudyCloudSync();
+    } else {
+      const existing=localStorage.getItem(CATEGORY_SETTINGS_V2_KEY);
+      if(!existing) localStorage.setItem(CATEGORY_SETTINGS_V2_KEY,fixed);
+    }
   }catch(e){}
   catDiagWrite('loadCategories:完了');
 }
