@@ -69,7 +69,7 @@ body.viewer-mode .owner-only{display:none!important} body.viewer-mode #main butt
 .prep-wrap{display:grid;grid-template-columns:repeat(6,minmax(220px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px}.prep-col{border:1px solid var(--line);border-radius:12px;background:#f8fafc;min-height:360px;padding:9px;display:flex;flex-direction:column}.prep-head{font-weight:900;font-size:12px;line-height:1.35;min-height:54px;padding:7px;border-radius:9px;background:#eef2ff;display:flex;gap:6px;align-items:flex-start}.prep-no{background:#2563eb;color:#fff;border-radius:999px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}.prep-entries{display:grid;gap:7px;margin:8px 0;flex:1}.prep-entry{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px}.prep-entry textarea{min-height:82px;font-size:12px}.prep-del{padding:5px 7px;font-size:11px;margin-top:5px}.prep-add{width:100%;padding:7px;font-size:11px}
 #calendarMount{width:100%;min-height:calc(100vh - 110px);display:block;}
 .app{max-width:1400px;}
-</style></head><body><div class="app"><header class="top"><div class="brand">MONOcheck <small>学習管理</small></div><div class="actions"><button class="btn owner-only" id="exportDataBtn" onclick="exportData()">データ書出し</button><button class="btn owner-only" onclick="document.getElementById('importFile').click()">データ読込</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"><button class="btn primary owner-only" id="topSaveBtn" onclick="save(true)">保存</button><button class="btn" onclick="openSyncModal()">☁ 同期 <span id="syncDot">●</span></button><button class="btn" id="themeToggleBtn" type="button" onclick="toggleTheme()">🌙 ダーク</button></div></header><div class="nav" id="nav"></div><main id="main"></main><div id="calendarMount" style="display:none"></div></div><div id="toast" class="toast">保存しました</div><script src="./progress-chart.js?v=20261001-unit80"></script><script>
+</style></head><body><div class="app"><header class="top"><div class="brand">MONOcheck <small>学習管理</small></div><div class="actions"><button class="btn owner-only" id="exportDataBtn" onclick="exportData()">データ書出し</button><button class="btn owner-only" onclick="document.getElementById('importFile').click()">データ読込</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"><button class="btn primary owner-only" id="topSaveBtn" onclick="save(true)">保存</button><button class="btn" onclick="openSyncModal()">☁ 同期 <span id="syncDot">●</span></button><button class="btn" id="themeToggleBtn" type="button" onclick="toggleTheme()">🌙 ダーク</button></div></header><div class="nav" id="nav"></div><main id="main"></main><div id="calendarMount" style="display:none"></div></div><div id="toast" class="toast">保存しました</div><script src="./progress-chart.js?v=20261001-unit82"></script><script>
 const KEY='monocheck-study-v2';
 const seed={"subjects":[{"id":"literature","name":"文学入門","textbook":"","totalPages":414,"contents":[{"title":"解体新書　全現代語訳 / 近代医学への道を開いた書","start":3,"end":6},{"title":"読者への手引き","start":7,"end":16},{"title":"解体新書を出版するにあたっての序文","start":17,"end":23},{"title":"凡例","start":24,"end":37},{"title":"自序","start":38,"end":42},{"title":"巻の一 / 第一　解体大意篇","start":43,"end":45},{"title":"第二　形体名目篇","start":46,"end":54},{"title":"第三　格致篇","start":55,"end":63},{"title":"第四　骨節分類篇","start":64,"end":68},{"title":"第五　骨節篇","start":69,"end":84},{"title":"巻の二 / 第六　頭、ならびに皮毛篇","start":85,"end":88},{"title":"第七　唇口篇","start":89,"end":92},{"title":"第八　脳髄、ならびに神経篇","start":93,"end":102},{"title":"第九　眼目篇","start":103,"end":112},{"title":"第十　耳篇","start":113,"end":118},{"title":"第十一　鼻篇","start":119,"end":122},{"title":"第十二　舌篇","start":123,"end":126},{"title":"巻の三 / 第十三　胸ならびに角膜篇","start":127,"end":131},{"title":"第十四　肺篇","start":132,"end":136},{"title":"第十五　心篇","start":137,"end":141},{"title":"第十六　動脈篇","start":142,"end":145},{"title":"第十七　血脈篇","start":146,"end":150},{"title":"第十八　門脈篇","start":151,"end":155},{"title":"第十九　腹篇","start":156,"end":159},{"title":"第二十　腸胃篇","start":160,"end":165},{"title":"第二十一　下角膜、および液道篇","start":166,"end":169},{"title":"第二十二　大キリイル篇","start":170,"end":172},{"title":"巻の四 / 第二十三　脾篇","start":173,"end":177},{"title":"第二十四　肝胆篇","start":178,"end":182},{"title":"第二十五　腎、膀胱篇","start":183,"end":187},{"title":"第二十六　陰器篇","start":188,"end":193},{"title":"第二十七　妊娠篇","start":194,"end":200},{"title":"第二十八　筋篇","start":201,"end":233},{"title":"『解体新書』の時代","start":234,"end":256},{"title":"前野良沢　生涯一日のごとく / 第二章 / （はじめに）","start":17,"end":18},{"title":"一　前野良沢の出生と家系","start":19,"end":22},{"title":"二　中津藩江戸屋敷と「医師」の格","start":23,"end":25},{"title":"三　オランダ語との出会い","start":26,"end":29},{"title":"四　明和六年の長崎遊学","start":30,"end":44},{"title":"五　長崎遊学の成果","start":45,"end":52},{"title":"第三章 / （はじめに）","start":53,"end":54},{"title":"一　杉田玄白と「ターヘル・アナトミア」","start":55,"end":66},{"title":"二　翻訳開始とその方法","start":67,"end":79},{"title":"三　良沢のオランダ語指導","start":80,"end":94},{"title":"四　『解体新書』完成へ","start":95,"end":112},{"title":"五　良沢にとっての『解体新書』","start":113,"end":124},{"title":"第四章 / （はじめに）","start":125,"end":126},{"title":"一　『解体新書』後の玄白と良沢","start":127,"end":128},{"title":"二　安永時代の著訳書","start":129,"end":148},{"title":"三　大槻玄沢との出会い","start":149,"end":154},{"title":"四　天明時代の良沢の著訳書","start":155,"end":176}],"schedule":[{"date":"2026-09-15","planned":11},{"date":"2026-09-16","planned":10},{"date":"2026-09-17","planned":11},{"date":"2026-09-18","planned":11},{"date":"2026-09-19","planned":0},{"date":"2026-09-20","planned":0},{"date":"2026-09-21","planned":11},{"date":"2026-09-22","planned":11},{"date":"2026-09-23","planned":10},{"date":"2026-09-24","planned":11},{"date":"2026-09-25","planned":11},{"date":"2026-09-26","planned":5},{"date":"2026-09-27","planned":0},{"date":"2026-09-28","planned":11},{"date":"2026-09-29","planned":11},{"date":"2026-09-30","planned":10},{"date":"2026-10-01","planned":11},{"date":"2026-10-02","planned":11},{"date":"2026-10-03","planned":10},{"date":"2026-10-04","planned":0},{"date":"2026-10-05","planned":11},{"date":"2026-10-06","planned":11},{"date":"2026-10-07","planned":10},{"date":"2026-10-08","planned":11},{"date":"2026-10-09","planned":5},{"date":"2026-10-10","planned":10},{"date":"2026-10-11","planned":0},{"date":"2026-10-12","planned":11},{"date":"2026-10-13","planned":11},{"date":"2026-10-14","planned":10},{"date":"2026-10-15","planned":11},{"date":"2026-10-16","planned":11},{"date":"2026-10-17","planned":10},{"date":"2026-10-18","planned":0},{"date":"2026-10-19","planned":11},{"date":"2026-10-20","planned":11},{"date":"2026-10-21","planned":10},{"date":"2026-10-22","planned":11},{"date":"2026-10-23","planned":11},{"date":"2026-10-24","planned":10},{"date":"2026-10-25","planned":0},{"date":"2026-10-26","planned":11},{"date":"2026-10-27","planned":11},{"date":"2026-10-28","planned":10},{"date":"2026-10-29","planned":11},{"date":"2026-10-30","planned":11},{"date":"2026-10-31","planned":8}],"actuals":{"2026-09-15":0,"2026-09-16":4,"2026-09-17":0,"2026-09-18":39,"2026-09-19":0,"2026-09-20":0,"2026-09-21":11,"2026-09-22":12},"notes":{},"reportPrep":[{"id":"q1","title":"設題①","question":"","steps":["","","","","",""]}],"createdFrom":"文学入門　進捗管理表.xlsx"}],"active":"literature","version":2};
 let data=JSON.parse(localStorage.getItem(KEY)||'null')||seed;let view='home',prepIndex=0;
@@ -119,9 +119,31 @@ function save(force){
 function planned(s){return s.schedule.reduce((a,x)=>a+(Number(x.planned)||0),0)}
 function actual(s){return Object.values(s.actuals).reduce((a,x)=>a+(Number(x)||0),0)}
 function total(s){return Number(s.totalPages)||s.contents.reduce((a,x)=>a+Math.max(0,x.end-x.start+1),0)}
-function pct(s){return window.progressPercent?window.progressPercent(s):(window.calcProgress?window.calcProgress(s).percent:(total(s)?Math.min(100,Math.round(actual(s)/total(s)*100)):0))}
-function readPages(s){return window.calcProgress?window.calcProgress(s).completedPages:Math.min(total(s),actual(s))}
-function remainingPages(s){return window.calcProgress?window.calcProgress(s).remainingPages:Math.max(0,total(s)-actual(s))}
+function excelProgress(s){
+  // 「文学入門 進捗管理表.xlsx」の「進捗率管理表」と同じ考え方で計算。
+  // 総ページ数 H1 = 目次F列の合計（または科目のtotalPages）
+  // G = 実績累計、H = H1-G、I = G / その前日時点のH、最終進捗率 = I列の最大値。
+  // Excelの表示形式「0%」に合わせて最終表示は四捨五入する。
+  const t=total(s);
+  if(t<=0)return 0;
+  const actuals=s.actuals&&typeof s.actuals==='object'?s.actuals:{};
+  const dates=Object.keys(actuals).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  let cumulative=0,maxRatio=0;
+  for(const d of dates){
+    const raw=actuals[d];
+    if(raw===''||raw==null)continue;
+    const v=Math.max(0,Number(raw)||0);
+    const beforeRemaining=t-cumulative;
+    cumulative+=v;
+    if(beforeRemaining>0)maxRatio=Math.max(maxRatio,cumulative/beforeRemaining);
+  }
+  // 実績がまだ日別に入っていない旧データでも、累計値からExcel型の率を算出。
+  if(!dates.length){const a=actual(s);return Math.max(0,Math.min(100,Math.round(a/t*100)));}
+  return Math.max(0,Math.min(100,Math.round(maxRatio*100)));
+}
+function pct(s){return excelProgress(s)}
+function readPages(s){return Math.min(total(s),actual(s))}
+function remainingPages(s){return Math.max(0,total(s)-actual(s))}
 function renderNav(){let items=[['home','🏠 ホーム'],['study','📖 学習'],['contents','📚 目次・計画'],['calendar','📅 予定管理'],['daily','🗓️ 日別記録'],['units','🎓 単位管理'],['prep','📝 レポート準備'],['subjects','⚙️ 科目管理']];$('#nav').innerHTML=items.map(([k,t])=>`<button class="btn ${view===k?'active':''}" onclick="view='${k}';render()">${t}</button>`).join('')}
 function render(){renderNav();let s=subject();const main=$('#main'),mount=$('#calendarMount');if(view==='calendar'){main.style.display='none';mount.style.display='block';if(window.initMonoCalendar)window.initMonoCalendar();return;}main.style.display='block';mount.style.display='none';({home,study,contents,daily,units,prep,subjects}[view])(s);if(['home','study','daily'].includes(view)&&window.renderProgressChart)window.renderProgressChart(s)}
 function home(s){let p=pct(s),a=readPages(s),t=total(s),today=new Date().toISOString().slice(0,10),rec=s.schedule.find(x=>x.date===today);$('#main').innerHTML=`<div class="grid"><section class="card span8"><div class="h">${esc(s.name)}</div><div class="muted">教材 ${esc(s.textbook||'未設定')} ／ 全${t}ページ</div><div style="margin:16px 0"><div class="row"><b>学習進捗</b><b>${p}%</b></div><div class="progress"><i style="width:${p}%"></i></div></div><div class="kpi"><div><div class="small">累計実績</div><b>${a}ページ</b></div><div><div class="small">残り</div><b>${remainingPages(s)}ページ</b></div><div><div class="small">今日の予定</div><b>${rec?rec.planned:0}ページ</b></div></div></section><section class="card span4"><div class="h">今日</div>${rec?`<div class="stat">${rec.planned}p</div><div class="muted">${today}</div><button class="btn primary" style="margin-top:12px" onclick="view='daily';render()">実績を入力</button>`:`<div class="muted">今日の予定はありません。</div>`}</section><section class="card span12"><div class="h">このアプリで管理すること</div><div class="list"><div class="item">📚 目次・ページ範囲から学習計画を作成</div><div class="item">🗓️ 日ごとの予定ページと実際に読んだページを記録</div><div class="item">📊 累計・残り・進捗率を自動計算</div><div class="item">📝 レポートは本文を書かず、設題を考えるためのメモだけ残す</div></div></section></div>`}
@@ -248,7 +270,148 @@ function setRequiredUnits(v){ensureUnits().requiredUnits=Math.max(0,Number(v)||0
 function addUnit(){const u=ensureUnits();u.courses.push({id:'u'+Date.now(),name:'新しい科目',category:'選択',units:2,status:'未取得',acquisitionYear:'',note:''});save(true)}
 function updateUnit(i,k,v){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(k==='units')c[k]=Math.max(0,Number(v)||0);else c[k]=v;save(true)}
 function deleteUnit(i){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(!confirm('「'+(c.name||'この科目')+'」を単位管理から削除しますか？'))return;u.courses.splice(i,1);save(true)}
-function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
+
+/* ===== Excel/CSV 学習データ取り込み ===== */
+function csvDecodeBuffer(buf){
+  const bytes=new Uint8Array(buf);
+  // UTF-8 BOM
+  if(bytes[0]===0xEF&&bytes[1]===0xBB&&bytes[2]===0xBF) return new TextDecoder('utf-8').decode(bytes);
+  try{
+    const utf=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+    if(!/[�]/.test(utf)) return utf;
+  }catch(e){}
+  try{return new TextDecoder('shift_jis').decode(bytes);}catch(e){return new TextDecoder('utf-8').decode(bytes);}
+}
+function parseCsvText(text){
+  text=String(text||'').replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rows=[]; let row=[], cell='', quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"'){
+        if(text[i+1]==='"'){cell+='"';i++;}
+        else quoted=false;
+      }else cell+=ch;
+    }else{
+      if(ch==='"') quoted=true;
+      else if(ch===','){row.push(cell);cell='';}
+      else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell='';}
+      else cell+=ch;
+    }
+  }
+  row.push(cell); if(row.length>1||row[0]!=='' ) rows.push(row);
+  return rows.filter(r=>r.some(x=>String(x).trim()!==''));
+}
+function csvNorm(v){return String(v??'').trim().replace(/\s+/g,'').replace(/[（）()［］\[\]【】「」『』]/g,'').toLowerCase();}
+function csvFindHeader(headers,names){
+  const wanted=names.map(csvNorm);
+  return headers.findIndex(h=>wanted.includes(csvNorm(h)));
+}
+function csvNumber(v){
+  if(v===null||v===undefined||String(v).trim()==='') return null;
+  const n=Number(String(v).replace(/,/g,'').replace(/[^\d.-]/g,''));
+  return Number.isFinite(n)?n:null;
+}
+function csvDate(v){
+  let s=String(v??'').trim();
+  if(!s)return null;
+  s=s.replace(/[年月]/g,'-').replace(/日/g,'').replace(/\//g,'-').replace(/\./g,'-');
+  const m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(!m)return null;
+  return m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0');
+}
+function importStudyCsv(ev){
+  const file=ev.target.files?.[0]; if(!file)return;
+  const mode=document.getElementById('studyCsvMode')?.value||'merge';
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const rows=parseCsvText(csvDecodeBuffer(reader.result));
+      if(rows.length<2) throw new Error('CSVにデータ行がありません。');
+      const headers=rows[0].map(x=>String(x).trim());
+      const dataRows=rows.slice(1);
+      const s=subject();
+      const hDate=csvFindHeader(headers,['日付','日','date']);
+      const hPlan=csvFindHeader(headers,['予定','予定ページ','予定枚数','計画','計画ページ','planned']);
+      const hActual=csvFindHeader(headers,['実績','実際','実際に読んだページ','実績ページ','読んだページ','actual']);
+      const hCum=csvFindHeader(headers,['実績累計','累計実績','実績の累計','cumulativeactual']);
+      const hTotal=csvFindHeader(headers,['総ページ数','教材総ページ数','総ページ','totalpages','total']);
+      const hTitle=csvFindHeader(headers,['項目','項目名','章','節','目次','タイトル','title']);
+      const hStart=csvFindHeader(headers,['開始','開始ページ','start','開始頁']);
+      const hEnd=csvFindHeader(headers,['終了','終了ページ','end','終了頁']);
+      const hPage=csvFindHeader(headers,['ページ数','枚数','pagecount','pages']);
+      const hSubject=csvFindHeader(headers,['科目','科目名','subject','subjectname']);
+      const planned={}, actual={}, contents=[];
+      let runningCum=0, importedPlan=0, importedActual=0, importedContents=0, totalFromCsv=null, subjectName='';
+      dataRows.forEach(row=>{
+        const val=i=>i>=0?row[i]:'';
+        if(hSubject>=0 && val(hSubject).trim()) subjectName=val(hSubject).trim();
+        if(hTotal>=0){const n=csvNumber(val(hTotal)); if(n!==null) totalFromCsv=n;}
+        const d=hDate>=0?csvDate(val(hDate)):null;
+        if(d){
+          if(hPlan>=0){const n=csvNumber(val(hPlan)); if(n!==null){planned[d]=Math.max(0,n);importedPlan++;}}
+          if(hActual>=0){const n=csvNumber(val(hActual)); if(n!==null){actual[d]=Math.max(0,n);importedActual++;}}
+          if(hCum>=0){
+            const n=csvNumber(val(hCum));
+            if(n!==null){
+              const delta=Math.max(0,n-runningCum);
+              actual[d]=delta;
+              runningCum=n;
+              importedActual++;
+            }
+          }
+        }
+        if(hTitle>=0 && (hStart>=0||hEnd>=0||hPage>=0)){
+          const title=val(hTitle).trim();
+          if(title){
+            let start=hStart>=0?csvNumber(val(hStart)):null;
+            let end=hEnd>=0?csvNumber(val(hEnd)):null;
+            const pages=hPage>=0?csvNumber(val(hPage)):null;
+            if(start!==null && end===null && pages!==null) end=start+pages-1;
+            if(start===null && end!==null && pages!==null) start=end-pages+1;
+            if(start!==null && end===null) end=start;
+            if(start!==null && end!==null){
+              contents.push({title,start,end});
+              importedContents++;
+            }
+          }
+        }
+      });
+      const hasDaily=Object.keys(planned).length||Object.keys(actual).length;
+      const hasContents=contents.length;
+      const hasTotal=totalFromCsv!==null;
+      if(!hasDaily&&!hasContents&&!hasTotal) throw new Error('対応できる列が見つかりませんでした。見出しに「日付・予定・実績」または「項目・開始・終了」などを入れてください。');
+      if(mode==='replace'){
+        if(hasDaily){s.schedule=[];s.actuals={};}
+        if(hasContents)s.contents=[];
+      }
+      if(hasTotal)s.totalPages=Math.max(0,totalFromCsv);
+      if(hasContents){
+        const byTitle=new Map(s.contents.map(c=>[String(c.title||'').trim(),c]));
+        contents.forEach(c=>{
+          const old=byTitle.get(c.title);
+          if(old){old.start=c.start;old.end=c.end;}
+          else s.contents.push(c);
+        });
+        if(!hasTotal) s.totalPages=s.contents.reduce((sum,c)=>sum+Math.max(0,Number(c.end)-Number(c.start)+1),0);
+      }
+      Object.entries(planned).forEach(([d,n])=>{
+        const old=s.schedule.find(x=>x.date===d);
+        if(old) old.planned=n; else s.schedule.push({date:d,planned:n});
+      });
+      Object.entries(actual).forEach(([d,n])=>{ if(n===0||n>0) s.actuals[d]=n; });
+      s.schedule.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+      if(subjectName && data.subjects.length===1 && s.name==='文学入門') s.name=subjectName;
+      s.createdFrom=(s.createdFrom||'')+' / CSV取込';
+      save(true);
+      alert(`CSVを読み込みました。\\n予定 ${importedPlan}行 / 実績 ${importedActual}行 / 目次 ${importedContents}件${hasTotal?' / 総ページ数 '+s.totalPages+'ページ':''}\\n現在の実績進捗率：${pct(s)}%`);
+    }catch(err){alert('CSVの読み込みに失敗しました：'+err.message);}
+    ev.target.value='';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="card" style="margin-top:12px;padding:12px;background:#f8fafc;box-shadow:none;"><div class="subh" style="margin-top:0">📥 Excel（CSV）と連携</div><div class="muted">Excelで管理している学習表をCSV形式で読み込み、現在選択中の科目の「目次・予定・実績・総ページ数」に反映します。日別の実績は「実績」または「実績累計」列から読み取ります。</div><div class="field"><label>読み込み方法</label><select id="studyCsvMode"><option value="merge">既存データに追加・更新</option><option value="replace">現在の目次・予定・実績をCSVで置き換える</option></select></div><label class="btn file-btn" style="margin-top:8px;text-align:center;display:block;cursor:pointer">📥 CSVファイルを読み込む<input id="studyCsvFile" type="file" accept=".csv,text/csv" hidden onchange="importStudyCsv(event)"></label><div class="small" style="margin-top:7px">対応例：日付／予定／実績、日付／予定ページ／実際に読んだページ、目次の項目／開始／終了／ページ数、総ページ数。UTF-8・Shift-JISに対応。</div></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
 function updateContent(i,key,val){let s=subject();if(!s.contents[i])return;s.contents[i][key]=key==='title'?val:Number(val)||0;syncTotal();render()}
 function deleteContent(i){let s=subject();if(!s.contents[i])return;s.contents.splice(i,1);syncTotal();render()}
 function updateSubjectField(key,val){let s=subject();if(!s)return;s[key]=key==='name'||key==='textbook'?val:Number(val)||0;save();render()}
@@ -795,6 +958,14 @@ $('#fStart').addEventListener('change', updateDayInfo);
 /* ==END-CAL== */
 
 /* ---------- 表示ユーティリティ ---------- */
+function categoryDisplayLabel(id){
+  const canonical=CATEGORY_DISPLAY_LABELS[id];
+  if(canonical) return canonical;
+  const c=CATS[id];
+  const label=String(c?.label||'').trim();
+  if(!label || label===id || /^[A-Za-z_][A-Za-z0-9_]*$/.test(label)) return '未設定カテゴリ';
+  return label;
+}
 function catOf(id){
   const fallbackLabel=CATEGORY_DISPLAY_LABELS[id];
   let c=CATS[id];
@@ -803,7 +974,9 @@ function catOf(id){
     c=CATS[id]={...base,label:fallbackLabel,short:fallbackLabel.slice(0,12)};
   }
   c=c || CATS.other || {label:'📌 その他',color:'#546e7e',short:'その他',textColor:'#fff',fontWeight:'400'};
-  if(fallbackLabel && (id==='cat_muoy8ytr' || !c.label || c.label===id || /^[A-Za-z_][A-Za-z0-9_]*$/.test(String(c.label)))){ c.label=fallbackLabel; c.short=fallbackLabel.slice(0,12); }
+  // システムカテゴリは保存データが壊れていても、表示時には必ず正式な日本語名を使う。
+  if(fallbackLabel){ c.label=fallbackLabel; c.short=fallbackLabel.slice(0,12); }
+  else if(!c.label || c.label===id || /^[A-Za-z_][A-Za-z0-9_]*$/.test(String(c.label))) c.label='未設定カテゴリ';
   return c;
 }
 function applyCatTextStyle(el,c){ if(!el)return; const tc=(c&&c.textColor)==='#000'?'#000':'#fff'; el.style.color=tc; el.style.fontWeight=(c&&c.fontWeight)==='700'?'700':'400'; }
@@ -992,7 +1165,7 @@ function updateAllDayUI(){const on=$('#fAllDay').checked;$('#fTime').disabled=on
 
 /* ---------- モーダル ---------- */
 function fillCatSelect(sel){
-  sel.innerHTML = Object.keys(CATS).map(k => '<option value="'+k+'">'+catOf(k).label+'</option>').join('');
+  sel.innerHTML = Object.keys(CATS).map(k => '<option value="'+k+'">'+esc(categoryDisplayLabel(k))+'</option>').join('');
 }
 function openModal(id){
   if(window.__monoViewerMode) return;

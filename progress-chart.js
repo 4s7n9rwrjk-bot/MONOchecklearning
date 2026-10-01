@@ -27,7 +27,10 @@
 
   // 進捗率バーと円グラフ（ドーナツ）は必ず同じ数値を使う。共通の入口をここに一本化する。
   window.progressPercent = function(subject){
-    return window.calcProgress(subject).percent;
+    const total = Math.max(0, Number(subject?.totalPages)||0);
+    const actual = subject?.actuals && typeof subject.actuals==='object'
+      ? Object.values(subject.actuals).reduce((sum,v)=>sum+Math.max(0,Number(v)||0),0) : 0;
+    return total>0 ? Math.max(0,Math.min(100,Math.round(actual/total*100))) : 0;
   };
   window.progressPercentText = function(subject){
     return window.progressPercent(subject) + '%';
