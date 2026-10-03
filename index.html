@@ -1,14 +1,98 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#172033"><link rel="manifest" href="manifest.json"><title>MONOcheck 学習管理</title><style>
 :root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e5e7eb;--accent:#2563eb;--accent2:#eef2ff;--ok:#16a34a;--warn:#d97706;--shadow:0 8px 28px rgba(15,23,42,.07)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif}.app{max-width:1180px;margin:auto;padding:16px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.brand{font-weight:900;font-size:21px}.brand small{font-size:12px;color:var(--muted);margin-left:6px}.actions{display:flex;gap:7px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:11px;padding:9px 12px;font-weight:700}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#b91c1c}.nav{display:flex;gap:7px;overflow:auto;padding-bottom:4px;margin-bottom:14px}.nav button{white-space:nowrap}.nav .active{background:#111827;color:#fff;border-color:#111827}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.span12{grid-column:span 12}.span8{grid-column:span 8}.span6{grid-column:span 6}.span4{grid-column:span 4}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}.h{font-size:17px;font-weight:900;margin-bottom:10px}.subh{font-weight:800;margin:14px 0 8px}.muted{color:var(--muted);font-size:13px}.stat{font-size:31px;font-weight:900}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.field{display:grid;gap:6px;margin:9px 0}.field label{font-size:12px;font-weight:800}.field input,.field textarea,.field select{width:100%;border:1px solid #d9dde5;border-radius:10px;padding:9px;background:#fff;color:var(--text)}textarea{min-height:90px;resize:vertical}.progress{height:11px;background:#edf0f5;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);border-radius:99px}.pill{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;background:#f2f4f7}.pill.ok{background:#dcfce7;color:#166534}.pill.warn{background:#fef3c7;color:#92400e}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.tbl{width:100%;border-collapse:collapse;min-width:650px}.tbl th,.tbl td{padding:9px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.tbl th{background:#f8fafc;font-weight:900}.num{width:100px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tabs button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px}.tabs button.sel{background:var(--accent2);border-color:#c7d2fe}.toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:10px 13px;border-radius:11px;display:none}.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.kpi>div{border:1px solid var(--line);border-radius:12px;padding:11px}.small{font-size:11px;color:var(--muted)}.checkline{display:flex;gap:8px;align-items:center}.checkline input{width:18px;height:18px}@media(max-width:800px){.span8,.span6,.span4{grid-column:span 12}.app{padding:11px}.card{padding:13px}.kpi{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+
+/* ===== ダークモード ===== */
+body.dark-mode{--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--line:#374151;--accent:#60a5fa;--accent2:#1e3a5f;--ok:#4ade80;--warn:#f59e0b;--shadow:0 8px 28px rgba(0,0,0,.28);}
+body.dark-mode .btn{background:#1f2937;color:var(--text);border-color:#4b5563;}
+body.dark-mode .btn.primary{background:#2563eb;color:#fff;border-color:#2563eb;}
+body.dark-mode .btn.danger{color:#fca5a5;border-color:#b91c1c;}
+body.dark-mode .nav .active{background:#e5e7eb;color:#111827;border-color:#e5e7eb;}
+body.dark-mode .item{background:#1f2937;}
+body.dark-mode .field input,body.dark-mode .field textarea,body.dark-mode .field select{background:#111827;color:#f3f4f6;border-color:#4b5563;}
+body.dark-mode .progress{background:#374151;}
+body.dark-mode .pill{background:#374151;}
+body.dark-mode .pill.ok{background:#14532d;color:#bbf7d0;}
+body.dark-mode .pill.warn{background:#78350f;color:#fde68a;}
+body.dark-mode .tbl th{background:#111827;}
+body.dark-mode code{background:#374151;color:#e5e7eb;}
+body.dark-mode .prep-col{background:#111827;}
+body.dark-mode .prep-head{background:#1e3a5f;}
+body.dark-mode .prep-entry{background:#1f2937;}
+body.dark-mode .toast{background:#f3f4f6;color:#111827;}
+body.dark-mode #syncModal{background:rgba(0,0,0,.72)!important;}
+body.dark-mode #syncModal>.card{background:#1f2937!important;color:#f3f4f6;border-color:#374151!important;}
+body.dark-mode #syncModal input{background:#111827!important;color:#f3f4f6!important;border-color:#4b5563!important;}
+body.dark-mode #syncModal .small,body.dark-mode #syncModal .muted{color:#9ca3af!important;}
+body.dark-mode #syncModal [style*="border-top"]{border-color:#374151!important;}
+body.dark-mode #themeToggleBtn{border-color:#60a5fa;}
+/* 単位管理のダークモード補正 */
+body.dark-mode .tablewrap{background:#1f2937;border-color:#374151;}
+body.dark-mode .tbl td{color:#f3f4f6;border-color:#374151;}
+body.dark-mode .tbl th{color:#f3f4f6;background:#111827;}
+body.dark-mode .tbl input,body.dark-mode .tbl select{background:#111827!important;color:#f3f4f6!important;border-color:#4b5563!important;}
+body.dark-mode .kpi>div{background:#1f2937;}
+body.dark-mode .card[style*="background:#f8f9ff"]{background:#18212f!important;border-color:#374151!important;color:#f3f4f6;}
+body.dark-mode .card[style*="background:#f8f9ff"] .small,body.dark-mode .card[style*="background:#f8f9ff"] .muted{color:#9ca3af!important;}
+/* 単位管理：リスト・表内の文字色をダークテーマに統一 */
+body.dark-mode #main .item,
+body.dark-mode #main .item b,
+body.dark-mode #main .item div,
+body.dark-mode #main .tbl td,
+body.dark-mode #main .tbl td b,
+body.dark-mode #main .tbl td span,
+body.dark-mode #main .tbl th,
+body.dark-mode #main .tbl label,
+body.dark-mode #main .kpi>div,
+body.dark-mode #main .kpi .stat,
+body.dark-mode #main .kpi b,
+body.dark-mode #main .row,
+body.dark-mode #main .row b{color:#f3f4f6!important;}
+body.dark-mode #main .small,
+body.dark-mode #main .muted{color:#c4cad4!important;}
+/* 予定リストの「あと○日」表示 */
+body.dark-mode #calendarMount .badge-days{color:#f3f4f6!important;background:#374151!important;}
+body.dark-mode #calendarMount .badge-days[style*="background:#c62828"]{background:#b91c1c!important;color:#fff!important;}
+body.dark-mode #calendarMount .badge-days[style*="background:#ef6c00"]{background:#c2410c!important;color:#fff!important;}
+body.dark-mode #main .list,body.dark-mode #main .list *,body.dark-mode #main .item,body.dark-mode #main .item *,body.dark-mode #main .tablewrap,body.dark-mode #main .tablewrap *,body.dark-mode #main .tbl,body.dark-mode #main .tbl *,body.dark-mode #main .field label,body.dark-mode #main .field,body.dark-mode #main .row{color:#f3f4f6!important;}
+body.dark-mode #main .list .small,body.dark-mode #main .item .small,body.dark-mode #main .tablewrap .small,body.dark-mode #main .tbl .small,body.dark-mode #main .field .small{color:#c4cad4!important;}
+body.dark-mode #main .tbl input,
+body.dark-mode #main .tbl select,
+body.dark-mode #main .tbl option,
+body.dark-mode #main .field input,
+body.dark-mode #main .field select,
+body.dark-mode #main .field textarea{background:#111827!important;color:#f3f4f6!important;border-color:#4b5563!important;}
+body.dark-mode #main .tbl select option{background:#111827!important;color:#f3f4f6!important;}
+
+
 body.viewer-mode .owner-only{display:none!important} body.viewer-mode #main button:not([data-viewer-allow]),body.viewer-mode #main input[type="file"]{display:none!important} body.viewer-mode #main input,body.viewer-mode #main select,body.viewer-mode #main textarea{pointer-events:none;background:#f8fafc} body.viewer-mode #main .file-btn{display:none!important} body.viewer-mode #main .danger{display:none!important}
 
 .prep-wrap{display:grid;grid-template-columns:repeat(6,minmax(220px,1fr));gap:8px;overflow-x:auto;padding-bottom:4px}.prep-col{border:1px solid var(--line);border-radius:12px;background:#f8fafc;min-height:360px;padding:9px;display:flex;flex-direction:column}.prep-head{font-weight:900;font-size:12px;line-height:1.35;min-height:54px;padding:7px;border-radius:9px;background:#eef2ff;display:flex;gap:6px;align-items:flex-start}.prep-no{background:#2563eb;color:#fff;border-radius:999px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}.prep-entries{display:grid;gap:7px;margin:8px 0;flex:1}.prep-entry{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px}.prep-entry textarea{min-height:82px;font-size:12px}.prep-del{padding:5px 7px;font-size:11px;margin-top:5px}.prep-add{width:100%;padding:7px;font-size:11px}
 #calendarMount{width:100%;min-height:calc(100vh - 110px);display:block;}
 .app{max-width:1400px;}
-</style></head><body><div class="app"><header class="top"><div class="brand">MONOcheck <small>学習管理</small></div><div class="actions"><button class="btn owner-only" id="exportDataBtn" onclick="exportData()">データ書出し</button><button class="btn owner-only" onclick="document.getElementById('importFile').click()">データ読込</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"><button class="btn primary owner-only" id="topSaveBtn" onclick="save(true)">保存</button><button class="btn" onclick="openSyncModal()">☁ 同期 <span id="syncDot">●</span></button></div></header><div class="nav" id="nav"></div><main id="main"></main><div id="calendarMount" style="display:none"></div></div><div id="toast" class="toast">保存しました</div><script src="./progress-chart.js?v=20260930-v47"></script><script>
+</style></head><body><div class="app"><header class="top"><div class="brand">MONOcheck <small>学習管理</small></div><div class="actions"><button class="btn owner-only" id="exportDataBtn" onclick="exportData()">データ書出し</button><button class="btn owner-only" onclick="document.getElementById('importFile').click()">データ読込</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"><button class="btn primary owner-only" id="topSaveBtn" onclick="save(true)">保存</button><button class="btn" onclick="applyBundledExcelData()">📥 Excel同期</button><button class="btn" onclick="openSyncModal()">☁ 同期 <span id="syncDot">●</span></button><button class="btn" id="themeToggleBtn" type="button" onclick="toggleTheme()">🌙 ダーク</button></div></header><div class="nav" id="nav"></div><main id="main"></main><div id="calendarMount" style="display:none"></div></div><div id="toast" class="toast">保存しました</div><script src="./progress-chart.js?v=20261003-unit84"></script><script>
 const KEY='monocheck-study-v2';
 const seed={"subjects":[{"id":"literature","name":"文学入門","textbook":"","totalPages":414,"contents":[{"title":"解体新書　全現代語訳 / 近代医学への道を開いた書","start":3,"end":6},{"title":"読者への手引き","start":7,"end":16},{"title":"解体新書を出版するにあたっての序文","start":17,"end":23},{"title":"凡例","start":24,"end":37},{"title":"自序","start":38,"end":42},{"title":"巻の一 / 第一　解体大意篇","start":43,"end":45},{"title":"第二　形体名目篇","start":46,"end":54},{"title":"第三　格致篇","start":55,"end":63},{"title":"第四　骨節分類篇","start":64,"end":68},{"title":"第五　骨節篇","start":69,"end":84},{"title":"巻の二 / 第六　頭、ならびに皮毛篇","start":85,"end":88},{"title":"第七　唇口篇","start":89,"end":92},{"title":"第八　脳髄、ならびに神経篇","start":93,"end":102},{"title":"第九　眼目篇","start":103,"end":112},{"title":"第十　耳篇","start":113,"end":118},{"title":"第十一　鼻篇","start":119,"end":122},{"title":"第十二　舌篇","start":123,"end":126},{"title":"巻の三 / 第十三　胸ならびに角膜篇","start":127,"end":131},{"title":"第十四　肺篇","start":132,"end":136},{"title":"第十五　心篇","start":137,"end":141},{"title":"第十六　動脈篇","start":142,"end":145},{"title":"第十七　血脈篇","start":146,"end":150},{"title":"第十八　門脈篇","start":151,"end":155},{"title":"第十九　腹篇","start":156,"end":159},{"title":"第二十　腸胃篇","start":160,"end":165},{"title":"第二十一　下角膜、および液道篇","start":166,"end":169},{"title":"第二十二　大キリイル篇","start":170,"end":172},{"title":"巻の四 / 第二十三　脾篇","start":173,"end":177},{"title":"第二十四　肝胆篇","start":178,"end":182},{"title":"第二十五　腎、膀胱篇","start":183,"end":187},{"title":"第二十六　陰器篇","start":188,"end":193},{"title":"第二十七　妊娠篇","start":194,"end":200},{"title":"第二十八　筋篇","start":201,"end":233},{"title":"『解体新書』の時代","start":234,"end":256},{"title":"前野良沢　生涯一日のごとく / 第二章 / （はじめに）","start":17,"end":18},{"title":"一　前野良沢の出生と家系","start":19,"end":22},{"title":"二　中津藩江戸屋敷と「医師」の格","start":23,"end":25},{"title":"三　オランダ語との出会い","start":26,"end":29},{"title":"四　明和六年の長崎遊学","start":30,"end":44},{"title":"五　長崎遊学の成果","start":45,"end":52},{"title":"第三章 / （はじめに）","start":53,"end":54},{"title":"一　杉田玄白と「ターヘル・アナトミア」","start":55,"end":66},{"title":"二　翻訳開始とその方法","start":67,"end":79},{"title":"三　良沢のオランダ語指導","start":80,"end":94},{"title":"四　『解体新書』完成へ","start":95,"end":112},{"title":"五　良沢にとっての『解体新書』","start":113,"end":124},{"title":"第四章 / （はじめに）","start":125,"end":126},{"title":"一　『解体新書』後の玄白と良沢","start":127,"end":128},{"title":"二　安永時代の著訳書","start":129,"end":148},{"title":"三　大槻玄沢との出会い","start":149,"end":154},{"title":"四　天明時代の良沢の著訳書","start":155,"end":176}],"schedule":[{"date":"2026-09-15","planned":11},{"date":"2026-09-16","planned":10},{"date":"2026-09-17","planned":11},{"date":"2026-09-18","planned":11},{"date":"2026-09-19","planned":0},{"date":"2026-09-20","planned":0},{"date":"2026-09-21","planned":11},{"date":"2026-09-22","planned":11},{"date":"2026-09-23","planned":10},{"date":"2026-09-24","planned":11},{"date":"2026-09-25","planned":11},{"date":"2026-09-26","planned":5},{"date":"2026-09-27","planned":0},{"date":"2026-09-28","planned":11},{"date":"2026-09-29","planned":11},{"date":"2026-09-30","planned":10},{"date":"2026-10-01","planned":11},{"date":"2026-10-02","planned":11},{"date":"2026-10-03","planned":10},{"date":"2026-10-04","planned":0},{"date":"2026-10-05","planned":11},{"date":"2026-10-06","planned":11},{"date":"2026-10-07","planned":10},{"date":"2026-10-08","planned":11},{"date":"2026-10-09","planned":5},{"date":"2026-10-10","planned":10},{"date":"2026-10-11","planned":0},{"date":"2026-10-12","planned":11},{"date":"2026-10-13","planned":11},{"date":"2026-10-14","planned":10},{"date":"2026-10-15","planned":11},{"date":"2026-10-16","planned":11},{"date":"2026-10-17","planned":10},{"date":"2026-10-18","planned":0},{"date":"2026-10-19","planned":11},{"date":"2026-10-20","planned":11},{"date":"2026-10-21","planned":10},{"date":"2026-10-22","planned":11},{"date":"2026-10-23","planned":11},{"date":"2026-10-24","planned":10},{"date":"2026-10-25","planned":0},{"date":"2026-10-26","planned":11},{"date":"2026-10-27","planned":11},{"date":"2026-10-28","planned":10},{"date":"2026-10-29","planned":11},{"date":"2026-10-30","planned":11},{"date":"2026-10-31","planned":8}],"actuals":{"2026-09-15":0,"2026-09-16":4,"2026-09-17":0,"2026-09-18":39,"2026-09-19":0,"2026-09-20":0,"2026-09-21":11,"2026-09-22":12},"notes":{},"reportPrep":[{"id":"q1","title":"設題①","question":"","steps":["","","","","",""]}],"createdFrom":"文学入門　進捗管理表.xlsx"}],"active":"literature","version":2};
 let data=JSON.parse(localStorage.getItem(KEY)||'null')||seed;let view='home',prepIndex=0;
+
+/* ===== テーマ切替 ===== */
+const THEME_KEY='monocheck-study-theme-v1';
+function applyTheme(theme){
+  const dark=theme==='dark';
+  document.body.classList.toggle('dark-mode',dark);
+  const b=document.getElementById('themeToggleBtn');
+  if(b){b.textContent=dark?'☀️ ライト':'🌙 ダーク';b.setAttribute('aria-label',dark?'ライトモードに切り替え':'ダークモードに切り替え');}
+  const host=document.getElementById('calendarMount');
+  if(host)host.classList.toggle('dark-calendar',dark);
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute('content',dark?'#111827':'#172033');
+}
+function toggleTheme(){
+  const next=document.body.classList.contains('dark-mode')?'light':'dark';
+  localStorage.setItem(THEME_KEY,next);
+  applyTheme(next);
+}
+function initTheme(){applyTheme(localStorage.getItem(THEME_KEY)==='dark'?'dark':'light');}
+
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function subject(){return data.subjects.find(s=>s.id===data.active)||data.subjects[0]}
 function toast(message='保存しました'){
@@ -35,9 +119,31 @@ function save(force){
 function planned(s){return s.schedule.reduce((a,x)=>a+(Number(x.planned)||0),0)}
 function actual(s){return Object.values(s.actuals).reduce((a,x)=>a+(Number(x)||0),0)}
 function total(s){return Number(s.totalPages)||s.contents.reduce((a,x)=>a+Math.max(0,x.end-x.start+1),0)}
-function pct(s){return window.progressPercent?window.progressPercent(s):(window.calcProgress?window.calcProgress(s).percent:(total(s)?Math.min(100,Math.round(actual(s)/total(s)*100)):0))}
-function readPages(s){return window.calcProgress?window.calcProgress(s).completedPages:Math.min(total(s),actual(s))}
-function remainingPages(s){return window.calcProgress?window.calcProgress(s).remainingPages:Math.max(0,total(s)-actual(s))}
+function excelProgress(s){
+  // 「文学入門 進捗管理表.xlsx」の「進捗率管理表」と同じ考え方で計算。
+  // 総ページ数 H1 = 目次F列の合計（または科目のtotalPages）
+  // G = 実績累計、H = H1-G、I = G / その前日時点のH、最終進捗率 = I列の最大値。
+  // Excelの表示形式「0%」に合わせて最終表示は四捨五入する。
+  const t=total(s);
+  if(t<=0)return 0;
+  const actuals=s.actuals&&typeof s.actuals==='object'?s.actuals:{};
+  const dates=Object.keys(actuals).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  let cumulative=0,maxRatio=0;
+  for(const d of dates){
+    const raw=actuals[d];
+    if(raw===''||raw==null)continue;
+    const v=Math.max(0,Number(raw)||0);
+    const beforeRemaining=t-cumulative;
+    cumulative+=v;
+    if(beforeRemaining>0)maxRatio=Math.max(maxRatio,cumulative/beforeRemaining);
+  }
+  // 実績がまだ日別に入っていない旧データでも、累計値からExcel型の率を算出。
+  if(!dates.length){const a=actual(s);return Math.max(0,Math.min(100,Math.round(a/t*100)));}
+  return Math.max(0,Math.min(100,Math.round(maxRatio*100)));
+}
+function pct(s){return typeof window.progressPercent==='function'?window.progressPercent(s):excelProgress(s)}
+function readPages(s){return Math.min(total(s),actual(s))}
+function remainingPages(s){return Math.max(0,total(s)-actual(s))}
 function renderNav(){let items=[['home','🏠 ホーム'],['study','📖 学習'],['contents','📚 目次・計画'],['calendar','📅 予定管理'],['daily','🗓️ 日別記録'],['units','🎓 単位管理'],['prep','📝 レポート準備'],['subjects','⚙️ 科目管理']];$('#nav').innerHTML=items.map(([k,t])=>`<button class="btn ${view===k?'active':''}" onclick="view='${k}';render()">${t}</button>`).join('')}
 function render(){renderNav();let s=subject();const main=$('#main'),mount=$('#calendarMount');if(view==='calendar'){main.style.display='none';mount.style.display='block';if(window.initMonoCalendar)window.initMonoCalendar();return;}main.style.display='block';mount.style.display='none';({home,study,contents,daily,units,prep,subjects}[view])(s);if(['home','study','daily'].includes(view)&&window.renderProgressChart)window.renderProgressChart(s)}
 function home(s){let p=pct(s),a=readPages(s),t=total(s),today=new Date().toISOString().slice(0,10),rec=s.schedule.find(x=>x.date===today);$('#main').innerHTML=`<div class="grid"><section class="card span8"><div class="h">${esc(s.name)}</div><div class="muted">教材 ${esc(s.textbook||'未設定')} ／ 全${t}ページ</div><div style="margin:16px 0"><div class="row"><b>学習進捗</b><b>${p}%</b></div><div class="progress"><i style="width:${p}%"></i></div></div><div class="kpi"><div><div class="small">累計実績</div><b>${a}ページ</b></div><div><div class="small">残り</div><b>${remainingPages(s)}ページ</b></div><div><div class="small">今日の予定</div><b>${rec?rec.planned:0}ページ</b></div></div></section><section class="card span4"><div class="h">今日</div>${rec?`<div class="stat">${rec.planned}p</div><div class="muted">${today}</div><button class="btn primary" style="margin-top:12px" onclick="view='daily';render()">実績を入力</button>`:`<div class="muted">今日の予定はありません。</div>`}</section><section class="card span12"><div class="h">このアプリで管理すること</div><div class="list"><div class="item">📚 目次・ページ範囲から学習計画を作成</div><div class="item">🗓️ 日ごとの予定ページと実際に読んだページを記録</div><div class="item">📊 累計・残り・進捗率を自動計算</div><div class="item">📝 レポートは本文を書かず、設題を考えるためのメモだけ残す</div></div></section></div>`}
@@ -79,6 +185,9 @@ function ensureUnits(){
   if(!data.unitManagement || typeof data.unitManagement!=='object') data.unitManagement={requiredUnits:0,courses:[]};
   if(!Array.isArray(data.unitManagement.courses)) data.unitManagement.courses=[];
   if(!Number.isFinite(Number(data.unitManagement.requiredUnits))) data.unitManagement.requiredUnits=0;
+  if(!Number.isFinite(Number(data.unitManagement.entryYear))) data.unitManagement.entryYear=new Date().getFullYear();
+  if(!Array.isArray(data.unitManagement.annualTargets) || data.unitManagement.annualTargets.length!==4) data.unitManagement.annualTargets=[0,0,0,0];
+  data.unitManagement.courses.forEach(c=>{ if(c.acquisitionYear===undefined) c.acquisitionYear=''; });
   return data.unitManagement;
 }
 function unitTotals(){
@@ -95,6 +204,35 @@ function unitTotals(){
   return t;
 }
 function unitRateText(n){return Number(n).toFixed(2).replace(/\.00$/,'')+'%'}
+function unitEvenTargets(){
+  const required=Math.max(0,Number(ensureUnits().requiredUnits)||0);
+  const base=required/4;
+  return [1,2,3,4].map(y=>({year:y,annual:base,cumulative:base*y}));
+}
+function academicYear(){const d=new Date();return d.getMonth()>=3?d.getFullYear():d.getFullYear()-1;}
+function currentStudyYear(){const u=ensureUnits(), n=academicYear()-Number(u.entryYear)+1;return Math.min(4,Math.max(1,n));}
+function currentYearTarget(){return unitCustomTargets()[currentStudyYear()-1]?.annual||0;}
+function currentYearAcquired(){const y=academicYear();return ensureUnits().courses.reduce((sum,c)=>sum+(c.status==='取得済'&&Number(c.acquisitionYear)===y?Math.max(0,Number(c.units)||0):0),0);}
+function currentYearRemaining(){return Math.max(0,currentYearTarget()-currentYearAcquired());}
+function currentYearOver(){return Math.max(0,currentYearAcquired()-currentYearTarget());}
+function setEntryYear(v){ensureUnits().entryYear=Math.floor(Number(v)||new Date().getFullYear());save(true)}
+function unitCustomTargets(){
+  const u=ensureUnits();
+  let cumulative=0;
+  return [0,1,2,3].map(i=>{
+    const annual=Math.max(0,Number(u.annualTargets[i])||0); cumulative+=annual;
+    return {year:i+1,annual,cumulative};
+  });
+}
+function setAnnualTarget(i,v){
+  const u=ensureUnits(); u.annualTargets[i]=Math.max(0,Number(v)||0); save(true);
+}
+function applyEvenTargets(){
+  const u=ensureUnits(), required=Math.max(0,Number(u.requiredUnits)||0);
+  const base=required/4; u.annualTargets=[base,base,base,base]; save(true);
+}
+function customTargetTotal(){return unitCustomTargets().reduce((a,x)=>a+x.annual,0)}
+function unitFmt(n){return Number(n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1')}
 function units(){
   const u=ensureUnits(), t=unitTotals();
   const rows=u.courses.map((c,i)=>`<tr>
@@ -102,6 +240,7 @@ function units(){
     <td><select onchange="updateUnit(${i},'category',this.value)">${['必修','選択必修','選択','その他'].map(x=>`<option ${c.category===x?'selected':''}>${x}</option>`).join('')}</select></td>
     <td class="num"><input type="number" min="0" step="0.5" value="${Number(c.units)||0}" onchange="updateUnit(${i},'units',this.value)"></td>
     <td><select onchange="updateUnit(${i},'status',this.value)">${['未取得','履修中','取得済'].map(x=>`<option ${c.status===x?'selected':''}>${x}</option>`).join('')}</select></td>
+    <td><input type="number" min="2000" max="2100" value="${c.acquisitionYear??''}" placeholder="取得年度" onchange="updateUnit(${i},'acquisitionYear',this.value)"></td>
     <td><input value="${esc(c.note||'')}" placeholder="メモ" onchange="updateUnit(${i},'note',this.value)"></td>
     <td><button class="btn danger" onclick="deleteUnit(${i})">削除</button></td>
   </tr>`).join('');
@@ -116,21 +255,183 @@ function units(){
       <div style="margin:14px 0"><div class="row"><b>単位取得率</b><span>${t.acquired} / ${t.required}単位</span></div><div class="progress"><i style="width:${t.rate}%"></i></div></div>
       <div class="field"><label>卒業・修了に必要な総単位数</label><input id="requiredUnits" type="number" min="0" step="0.5" value="${t.required}" onchange="setRequiredUnits(this.value)"><div class="small">ここは単位取得率の分母です。学習ページ数の進捗率とは別管理です。</div></div>
     </section>
+    <section class="card span12"><div class="row"><div><div class="h">🎯 4年間の単位取得目標</div><div class="muted">「均等に取る場合の目安」と「自分で決める年度別目標」の両方を表示します。</div></div><button class="btn" onclick="applyEvenTargets();render()">↺ 均等目標をセット</button></div><div class="field" style="margin-top:10px"><label>入学年度（4月始まり）</label><input type="number" min="2000" max="2100" value="${ensureUnits().entryYear}" onchange="setEntryYear(this.value)"><div class="small">現在の年度から「何年目か」を自動判定します。</div></div><div class="card" style="margin:10px 0;background:#f8f9ff;box-shadow:none;border:1px solid #e2e2e8"><div class="h">📌 今年度の目標</div><div class="kpi" style="margin-top:8px"><div><div class="small">今年度</div><div class="stat">${academicYear()}年度・${currentStudyYear()}年目</div></div><div><div class="small">今年の目標</div><div class="stat">${unitFmt(currentYearTarget())}単位</div></div><div><div class="small">今年取得済み</div><div class="stat">${unitFmt(currentYearAcquired())}単位</div></div><div><div class="small">あと必要</div><div class="stat">${currentYearOver()?`目標達成（+${unitFmt(currentYearOver())}）`:unitFmt(currentYearRemaining())+'単位'}</div></div></div><div class="small" style="margin-top:8px">「取得済」の科目に取得年度を入力すると、今年度の取得済み単位へ自動集計されます。</div></div><div class="tablewrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>学年</th><th>均等目安</th><th>自分の目標</th><th>累計目標</th></tr></thead><tbody>${unitEvenTargets().map((x,i)=>{const c=unitCustomTargets()[i];return `<tr><td><b>${x.year}年目</b></td><td>${unitFmt(x.annual)}単位</td><td><input type="number" min="0" step="0.5" value="${unitFmt(c.annual)}" onchange="setAnnualTarget(${i},this.value)" style="max-width:120px"></td><td>${unitFmt(c.cumulative)}単位</td></tr>`}).join('')}</tbody></table></div><div class="row" style="margin-top:10px"><span>自分の年度別目標 合計：<b>${unitFmt(customTargetTotal())}単位</b></span><span>必要単位：<b>${unitFmt(ensureUnits().requiredUnits)}単位</b></span></div><div class="small" style="margin-top:8px">例えば124単位なら、均等目安は31・31・31・31単位。実際には「1年30、2年32、3年32、4年30」のように自由に設定できます。</div></section>
     <section class="card span4"><div class="h">📊 状況</div><div class="list">
       <div class="item"><b>${t.acquired}単位</b><div class="small">取得済み</div></div>
       <div class="item"><b>${t.inProgress}単位</b><div class="small">履修中</div></div>
       <div class="item"><b>${t.remaining}単位</b><div class="small">必要単位まで残り</div></div>
       <div class="item"><b>${t.registered}単位</b><div class="small">登録科目の合計</div></div>
     </div></section>
-    <section class="card span8"><div class="h">📚 科目別の取得状況</div><div class="tablewrap"><table class="tbl"><thead><tr><th>科目名</th><th>区分</th><th>単位</th><th>状態</th><th>メモ</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="6">まだ科目が登録されていません。「＋ 科目・単位を追加」から登録してください。</td></tr>'}</tbody></table></div></section>
-    <section class="card span12"><div class="h">🔎 集計について</div><div class="muted">「取得済」の科目だけを取得単位として集計します。「履修中」は取得済みに含めません。単位取得率は <b>取得済み単位 ÷ 必要単位数 × 100</b> です。</div></section>
+    <section class="card span8"><div class="h">📚 科目別の取得状況</div><div class="tablewrap"><table class="tbl"><thead><tr><th>科目名</th><th>区分</th><th>単位</th><th>状態</th><th>取得年度</th><th>メモ</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7">まだ科目が登録されていません。「＋ 科目・単位を追加」から登録してください。</td></tr>'}</tbody></table></div></section>
+    <section class="card span12"><div class="h">🔎 集計について</div><div class="muted">「取得済」の科目だけを取得単位として集計します。「履修中」は取得済みに含めません。取得年度が今年度の「取得済」科目は今年度実績にも自動集計します。単位取得率は <b>取得済み単位 ÷ 必要単位数 × 100</b> です。</div></section>
   </div>`;
 }
 function setRequiredUnits(v){ensureUnits().requiredUnits=Math.max(0,Number(v)||0);save(true)}
-function addUnit(){const u=ensureUnits();u.courses.push({id:'u'+Date.now(),name:'新しい科目',category:'選択',units:2,status:'未取得',note:''});save(true)}
+function addUnit(){const u=ensureUnits();u.courses.push({id:'u'+Date.now(),name:'新しい科目',category:'選択',units:2,status:'未取得',acquisitionYear:'',note:''});save(true)}
 function updateUnit(i,k,v){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(k==='units')c[k]=Math.max(0,Number(v)||0);else c[k]=v;save(true)}
 function deleteUnit(i){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(!confirm('「'+(c.name||'この科目')+'」を単位管理から削除しますか？'))return;u.courses.splice(i,1);save(true)}
-function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
+
+/* ===== Excel/CSV 学習データ取り込み ===== */
+function csvDecodeBuffer(buf){
+  const bytes=new Uint8Array(buf);
+  // UTF-8 BOM
+  if(bytes[0]===0xEF&&bytes[1]===0xBB&&bytes[2]===0xBF) return new TextDecoder('utf-8').decode(bytes);
+  try{
+    const utf=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+    if(!/[�]/.test(utf)) return utf;
+  }catch(e){}
+  try{return new TextDecoder('shift_jis').decode(bytes);}catch(e){return new TextDecoder('utf-8').decode(bytes);}
+}
+function parseCsvText(text){
+  text=String(text||'').replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rows=[]; let row=[], cell='', quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"'){
+        if(text[i+1]==='"'){cell+='"';i++;}
+        else quoted=false;
+      }else cell+=ch;
+    }else{
+      if(ch==='"') quoted=true;
+      else if(ch===','){row.push(cell);cell='';}
+      else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell='';}
+      else cell+=ch;
+    }
+  }
+  row.push(cell); if(row.length>1||row[0]!=='' ) rows.push(row);
+  return rows.filter(r=>r.some(x=>String(x).trim()!==''));
+}
+function csvNorm(v){return String(v??'').trim().replace(/\s+/g,'').replace(/[（）()［］\[\]【】「」『』]/g,'').toLowerCase();}
+function csvFindHeader(headers,names){
+  const wanted=names.map(csvNorm);
+  return headers.findIndex(h=>wanted.includes(csvNorm(h)));
+}
+function csvNumber(v){
+  if(v===null||v===undefined||String(v).trim()==='') return null;
+  const n=Number(String(v).replace(/,/g,'').replace(/[^\d.-]/g,''));
+  return Number.isFinite(n)?n:null;
+}
+function csvDate(v){
+  let s=String(v??'').trim();
+  if(!s)return null;
+  s=s.replace(/[年月]/g,'-').replace(/日/g,'').replace(/\//g,'-').replace(/\./g,'-');
+  const m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(!m)return null;
+  return m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0');
+}
+function importStudyCsv(ev){
+  const file=ev.target.files?.[0]; if(!file)return;
+  const mode=document.getElementById('studyCsvMode')?.value||'merge';
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const rows=parseCsvText(csvDecodeBuffer(reader.result));
+      if(rows.length<2) throw new Error('CSVにデータ行がありません。');
+      const headers=rows[0].map(x=>String(x).trim());
+      const dataRows=rows.slice(1);
+      const s=subject();
+      const hDate=csvFindHeader(headers,['日付','日','date']);
+      const hPlan=csvFindHeader(headers,['予定','予定ページ','予定枚数','計画','計画ページ','planned']);
+      const hActual=csvFindHeader(headers,['実績','実際','実際に読んだページ','実績ページ','読んだページ','actual']);
+      const hCum=csvFindHeader(headers,['実績累計','累計実績','実績の累計','cumulativeactual']);
+      const hTotal=csvFindHeader(headers,['総ページ数','教材総ページ数','総ページ','totalpages','total']);
+      const hTitle=csvFindHeader(headers,['項目','項目名','章','節','目次','タイトル','title']);
+      const hStart=csvFindHeader(headers,['開始','開始ページ','start','開始頁']);
+      const hEnd=csvFindHeader(headers,['終了','終了ページ','end','終了頁']);
+      const hPage=csvFindHeader(headers,['ページ数','枚数','pagecount','pages']);
+      const hSubject=csvFindHeader(headers,['科目','科目名','subject','subjectname']);
+      const planned={}, actual={}, contents=[];
+      let runningCum=0, importedPlan=0, importedActual=0, importedContents=0, totalFromCsv=null, subjectName='';
+      dataRows.forEach(row=>{
+        const val=i=>i>=0?row[i]:'';
+        if(hSubject>=0 && val(hSubject).trim()) subjectName=val(hSubject).trim();
+        if(hTotal>=0){const n=csvNumber(val(hTotal)); if(n!==null) totalFromCsv=n;}
+        const d=hDate>=0?csvDate(val(hDate)):null;
+        if(d){
+          if(hPlan>=0){const n=csvNumber(val(hPlan)); if(n!==null){planned[d]=Math.max(0,n);importedPlan++;}}
+          if(hActual>=0){const n=csvNumber(val(hActual)); if(n!==null){actual[d]=Math.max(0,n);importedActual++;}}
+          if(hCum>=0){
+            const n=csvNumber(val(hCum));
+            if(n!==null){
+              const delta=Math.max(0,n-runningCum);
+              actual[d]=delta;
+              runningCum=n;
+              importedActual++;
+            }
+          }
+        }
+        if(hTitle>=0 && (hStart>=0||hEnd>=0||hPage>=0)){
+          const title=val(hTitle).trim();
+          if(title){
+            let start=hStart>=0?csvNumber(val(hStart)):null;
+            let end=hEnd>=0?csvNumber(val(hEnd)):null;
+            const pages=hPage>=0?csvNumber(val(hPage)):null;
+            if(start!==null && end===null && pages!==null) end=start+pages-1;
+            if(start===null && end!==null && pages!==null) start=end-pages+1;
+            if(start!==null && end===null) end=start;
+            if(start!==null && end!==null){
+              contents.push({title,start,end});
+              importedContents++;
+            }
+          }
+        }
+      });
+      const hasDaily=Object.keys(planned).length||Object.keys(actual).length;
+      const hasContents=contents.length;
+      const hasTotal=totalFromCsv!==null;
+      if(!hasDaily&&!hasContents&&!hasTotal) throw new Error('対応できる列が見つかりませんでした。見出しに「日付・予定・実績」または「項目・開始・終了」などを入れてください。');
+      if(mode==='replace'){
+        if(hasDaily){s.schedule=[];s.actuals={};}
+        if(hasContents)s.contents=[];
+      }
+      if(hasTotal)s.totalPages=Math.max(0,totalFromCsv);
+      if(hasContents){
+        const byTitle=new Map(s.contents.map(c=>[String(c.title||'').trim(),c]));
+        contents.forEach(c=>{
+          const old=byTitle.get(c.title);
+          if(old){old.start=c.start;old.end=c.end;}
+          else s.contents.push(c);
+        });
+        if(!hasTotal) s.totalPages=s.contents.reduce((sum,c)=>sum+Math.max(0,Number(c.end)-Number(c.start)+1),0);
+      }
+      Object.entries(planned).forEach(([d,n])=>{
+        const old=s.schedule.find(x=>x.date===d);
+        if(old) old.planned=n; else s.schedule.push({date:d,planned:n});
+      });
+      Object.entries(actual).forEach(([d,n])=>{ if(n===0||n>0) s.actuals[d]=n; });
+      s.schedule.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+      if(subjectName && data.subjects.length===1 && s.name==='文学入門') s.name=subjectName;
+      s.createdFrom=(s.createdFrom||'')+' / CSV取込';
+      save(true);
+      alert(`CSVを読み込みました。\\n予定 ${importedPlan}行 / 実績 ${importedActual}行 / 目次 ${importedContents}件${hasTotal?' / 総ページ数 '+s.totalPages+'ページ':''}\\n現在の実績進捗率：${pct(s)}%`);
+    }catch(err){alert('CSVの読み込みに失敗しました：'+err.message);}
+    ev.target.value='';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function applyBundledExcelData(){
+  const bundled=seed&&Array.isArray(seed.subjects)?seed.subjects.find(x=>x.id==='literature')||seed.subjects[0]:null;
+  if(!bundled){alert('Excel由来の初期データが見つかりません。');return;}
+  const current=subject();
+  const target=current||bundled;
+  const keep={id:target.id,name:target.name,textbook:target.textbook,totalPages:target.totalPages,contents:target.contents,schedule:target.schedule,actuals:target.actuals,notes:target.notes,reportPrep:target.reportPrep,createdFrom:target.createdFrom};
+  const incoming=JSON.parse(JSON.stringify(bundled));
+  // Excel由来の学習データだけを反映し、単位管理・カレンダー・レポート等は壊さない。
+  target.name=incoming.name;
+  target.textbook=incoming.textbook||target.textbook||'';
+  target.totalPages=incoming.totalPages;
+  target.contents=incoming.contents;
+  target.schedule=incoming.schedule;
+  target.actuals=incoming.actuals;
+  target.createdFrom='文学入門　進捗管理表.xlsx（Excel同期済み）';
+  data.excelSyncAt=Date.now();
+  save(true);
+  alert('渡してもらったExcel由来データを反映しました。\n総ページ数: '+target.totalPages+'ページ\n目次: '+target.contents.length+'件\n実績: '+Object.keys(target.actuals||{}).length+'日\n進捗率: '+pct(target)+'%');
+}
+
+function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="card" style="margin-top:12px;padding:12px;background:#f8fafc;box-shadow:none;"><div class="subh" style="margin-top:0">📥 Excel連携</div><button class="btn primary" type="button" onclick="applyBundledExcelData()" style="margin:8px 0">📊 渡したExcelデータを反映</button><div class="subh" style="margin-top:8px">CSVから追加同期</div><div class="muted">Excelで管理している学習表をCSV形式で読み込み、現在選択中の科目の「目次・予定・実績・総ページ数」に反映します。日別の実績は「実績」または「実績累計」列から読み取ります。</div><div class="field"><label>読み込み方法</label><select id="studyCsvMode"><option value="merge">既存データに追加・更新</option><option value="replace">現在の目次・予定・実績をCSVで置き換える</option></select></div><label class="btn file-btn" style="margin-top:8px;text-align:center;display:block;cursor:pointer">📥 ExcelをCSV化したファイルを読み込む<input id="studyCsvFile" type="file" accept=".csv,text/csv" hidden onchange="importStudyCsv(event)"></label><div class="small" style="margin-top:7px">対応例：日付／予定／実績、日付／予定ページ／実際に読んだページ、目次の項目／開始／終了／ページ数、総ページ数。UTF-8・Shift-JISに対応。</div></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
 function updateContent(i,key,val){let s=subject();if(!s.contents[i])return;s.contents[i][key]=key==='title'?val:Number(val)||0;syncTotal();render()}
 function deleteContent(i){let s=subject();if(!s.contents[i])return;s.contents.splice(i,1);syncTotal();render()}
 function updateSubjectField(key,val){let s=subject();if(!s)return;s[key]=key==='name'||key==='textbook'?val:Number(val)||0;save();render()}
@@ -170,7 +471,7 @@ if("serviceWorker" in navigator){
   window.addEventListener("load",async()=>{
     try{
       const reg=await navigator.serviceWorker.register(
-        "./service-worker.js?v=20260930-v47",
+        "./service-worker.js?v=20261003-unit84",
         {updateViaCache:"none"}
       );
       try{await reg.update()}catch(_){}
@@ -181,6 +482,7 @@ if("serviceWorker" in navigator){
     }
   });
 }
+initTheme();
 render();
 </script>
 <script>
@@ -190,9 +492,58 @@ window.__mountMonoCalendar=function(){
   let shadow=host.shadowRoot;
   if(!shadow){
     shadow=host.attachShadow({mode:'open'});
-    shadow.innerHTML='<style>'+"\n:host{display:block;min-height:calc(100vh - 110px);--primary:#3f51b5;--primary-dark:#303f9f;--primary-weak:#e8eaf6;--bg:#f4f5f9;--card:#ffffff;--text:#1f1f1f;--muted:#767676;--border:#e2e2e8;--danger:#c62828;}\n*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}\nbody{margin:0;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Hiragino Kaku Gothic ProN\",\"Hiragino Sans\",\"Noto Sans JP\",Meiryo,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;}\nheader{background:var(--primary);color:#fff;padding:12px 14px 0;position:sticky;top:0;z-index:20;box-shadow:0 2px 6px rgba(0,0,0,.15);}\n.header-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}\nh1{font-size:17px;margin:0;font-weight:700;}\n.tabs{display:flex;gap:2px;margin-top:6px;}\n.tab{flex:1;background:none;border:none;color:rgba(255,255,255,.72);padding:10px 2px;font-size:13.5px;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;}\n.tab.active{color:#fff;border-bottom-color:#fff;font-weight:700;}\nmain{padding:10px 10px 90px;max-width:none;width:100%;margin:0 auto;}\n.hidden{display:none!important;}\n/* ---- 月表示 ---- */\n.month-bar{display:flex;align-items:center;gap:6px;padding:6px 2px;}\n#monthLabel{font-size:17px;font-weight:700;min-width:104px;text-align:center;}\n.icon-btn{border:1px solid var(--border);background:#fff;border-radius:8px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--text);line-height:1;}\n.mini-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;margin-left:auto;font-family:inherit;}\n.view-switch{display:flex;gap:6px;margin:0 0 8px;padding:0 2px;}\n.view-switch .mini-btn{margin-left:0;flex:0 0 auto;}\n.view-switch .mini-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}\n.week-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}\n.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;padding:0 2px;}\n.week-head{background:var(--primary-weak);border-radius:6px 6px 0 0;text-align:center;font-size:11px;font-weight:700;padding:5px 2px;color:var(--text);}\n.week-day{background:var(--card);min-height:calc(100vh - 250px);border:1px solid var(--border);border-radius:0 0 7px 7px;padding:4px;overflow:auto;cursor:pointer;}\n.week-day.today{border:2px solid var(--primary);background:var(--primary-weak);}\n.week-empty{color:var(--muted);font-size:11px;text-align:center;padding:10px 2px;}\n.day-detail{background:var(--card);border-radius:10px;padding:12px;margin:10px 4px 4px;box-shadow:0 1px 3px rgba(0,0,0,.07);border:1px solid var(--border);}\n.day-detail-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}\n.day-detail-head h3{margin:0;font-size:15px;flex:1;}\n.detail-learning{font-size:12px;padding:7px 9px;border-radius:7px;margin:5px 0;background:#fff3e0;border-left:4px solid #ef6c00;}\n.detail-learning.done{background:#e8f5e9;border-left-color:#2e7d32;}\n.detail-event{padding:8px 9px;margin:5px 0;border-left:4px solid;border-radius:7px;background:#fafafa;cursor:pointer;}\n.detail-event-title{font-weight:600;font-size:13px;}\n.detail-event-meta{font-size:11px;color:var(--muted);margin-top:2px;}\n.weekday-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--muted);padding:0 4px 2px;}\n.weekday-row div:first-child{color:#e53935;}\n.weekday-row div:last-child{color:#1e88e5;}\n.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 4px;}\n.day-cell{background:var(--card);border-radius:6px;min-height:110px;padding:2px;overflow:hidden;cursor:pointer;border:1px solid transparent;}\n.day-cell.out{opacity:.42;}\n.day-cell.today{border-color:var(--primary);background:var(--primary-weak);}\n.day-num{font-size:11px;font-weight:600;margin-bottom:1px;padding-left:3px;}\n.day-num.sun{color:#e53935;}\n.day-num.sat{color:#1e88e5;}\n.chip{font-size:10px;line-height:1.25;border-left:3px solid;padding:1px 3px;margin:1px 0;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}\n.learning-chip{font-size:9.5px;line-height:1.25;border-left:3px solid #3f51b5;padding:2px 3px;margin:1px 0;border-radius:3px;background:#e8eaf6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .learning-chip.done{border-left-color:#2e7d32;background:#e8f5e9;color:#1b5e20;} .learning-chip.miss{border-left-color:#ef6c00;background:#fff3e0;color:#8a4b00;}\n.more{font-size:9px;color:var(--muted);padding-left:3px;}\n.legend{display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 6px;font-size:11px;color:var(--muted);}\n.legend span{display:inline-flex;align-items:center;gap:4px;}\n.legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}\n/* ---- リスト・直近 ---- */\n.list-month{font-size:14px;color:var(--muted);margin:16px 4px 4px;font-weight:700;}\n.event-item{background:var(--card);border-radius:8px;padding:10px 12px;margin:8px 0;border-left:5px solid;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;}\n.event-item:hover{box-shadow:0 2px 6px rgba(0,0,0,.12);}\n.event-item h4{margin:0;font-size:15px;font-weight:600;display:inline;}\n.cat-badge{display:inline-block;font-size:10px;color:#fff;padding:1px 7px;border-radius:9px;margin-left:8px;vertical-align:2px;}\n.event-meta{font-size:12px;color:var(--muted);margin-top:3px;}\n.event-notes{font-size:12px;color:var(--muted);margin-top:4px;white-space:pre-wrap;}\n.badge-days{float:right;font-size:12px;font-weight:700;color:var(--danger);background:#ffebee;padding:2px 8px;border-radius:10px;}\n.event-item.urgent{background:#fff8f8;}\n.empty{color:var(--muted);text-align:center;padding:40px 10px;font-size:14px;white-space:pre-line;}\n/* ---- 設定 ---- */\n.card{background:var(--card);border-radius:12px;padding:14px;margin:10px 0;box-shadow:0 1px 3px rgba(0,0,0,.07);}\n.card h2{font-size:15px;margin:0 0 8px;color:var(--primary-dark);}\n.note{font-size:12.5px;color:var(--muted);line-height:1.65;margin:6px 0;}\n.btn-col{display:flex;flex-direction:column;gap:8px;margin:10px 0;}\n.btn{padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:14px;cursor:pointer;font-family:inherit;color:var(--text);}\n.btn:hover{filter:brightness(.97);}\n.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}\n.btn.danger{color:var(--danger);border-color:var(--danger);}\n.file-btn{display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}\n.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;}\n#fbConfig{font-family:monospace;font-size:12px;}\n.ref-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}\n.ref-table th,.ref-table td{border:1px solid var(--border);padding:5px 8px;text-align:left;}\n.ref-table th{background:var(--primary-weak);color:var(--primary-dark);}\ncode{background:#f0f0f4;padding:1px 5px;border-radius:4px;font-size:11.5px;word-break:break-all;}\ndetails{font-size:13px;margin-top:8px;}\nsummary{cursor:pointer;color:var(--primary);font-weight:600;}\na{color:var(--primary);}\n/* ---- モーダル ---- */\n.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:30;}\n@media(min-width:600px){.overlay{align-items:center;}}\n.modal{background:#fff;width:100%;max-width:520px;border-radius:14px 14px 0 0;padding:18px;max-height:92vh;overflow:auto;}\n@media(min-width:600px){.modal{border-radius:14px;}}\n.modal h2{font-size:16px;margin:0 0 6px;}\nlabel{display:block;font-size:12px;color:var(--muted);margin:10px 0 2px;}\ninput,select,textarea{width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:var(--text);}\n.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}\n.hint{font-size:11.5px;color:var(--muted);margin:4px 0 0;}\n.day-holiday{font-size:9px;color:#e53935;line-height:1.15;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-left:3px;}\n.day-rokuyo{font-size:9px;color:#8a8fa8;line-height:1.15;padding-left:3px;}\n.day-moon{font-size:8px;margin-left:2px;}\n#dayInfo{font-size:12px;color:var(--primary-dark);background:var(--primary-weak);border-radius:8px;padding:6px 10px;margin-top:10px;}\n.modal-actions{display:flex;gap:8px;margin-top:16px;align-items:center;}\n.spacer{flex:1;}\n/* ---- FAB ---- */\n#fab{position:fixed;right:18px;bottom:22px;width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:26px;box-shadow:0 4px 10px rgba(0,0,0,.3);cursor:pointer;z-index:15;}\n#fab:hover{filter:brightness(1.08);}\n.all-day-toggle{display:flex;align-items:center;gap:7px;color:var(--text);font-size:13px;margin:8px 0 2px;cursor:pointer;}\n.all-day-toggle input{width:17px;height:17px;margin:0;}\n.category-add-row{display:grid;grid-template-columns:1fr 48px auto;gap:6px;align-items:center;margin-top:10px;}\n.category-add-row input[type=color]{width:48px;height:38px;padding:2px;border:1px solid var(--border);border-radius:8px;background:#fff;}\n.category-row{display:grid;grid-template-columns:10px 1fr 48px auto auto;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}\n.category-dot{width:10px;height:10px;border-radius:50%;}\n.category-row input[type=text]{min-width:0;}\n.category-row input[type=color]{width:42px;height:34px;padding:2px;border:1px solid var(--border);border-radius:7px;background:#fff;}\n.category-row select{min-width:0;padding:7px 5px;font-size:12px;}\n@media(max-width:600px){\n  main{padding:4px 0 84px;}\n  h1{font-size:15px;}\n  .month-bar,.view-switch{padding-left:5px;padding-right:5px;}\n  .weekday-row{padding-left:1px;padding-right:1px;}\n  .month-grid{padding:0 1px;gap:1px;}\n  .day-cell{min-height:calc((100vw - 8px) / 7 * 1.08);padding:2px 1px;border-radius:4px;}\n  .day-num{font-size:10px;padding-left:2px;}\n  .chip{font-size:8.5px;margin:1px 0;padding:1px 2px;}\n  .learning-chip{font-size:8.5px;padding:1px 2px;}\n  .day-holiday,.day-rokuyo{font-size:8px;}\n  .tab{font-size:12.5px;padding:9px 1px;}\n  #view-week{overflow:hidden;}\n  #weekScroll{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 4px 8px;scrollbar-width:thin;}\n  #weekGrid{width:820px;min-width:820px;gap:4px;padding:0;}\n  .week-head{font-size:12px;padding:7px 2px;}\n  .week-day{min-height:250px;height:250px;padding:6px;overflow-y:auto;overflow-x:hidden;border-radius:0 0 8px 8px;}\n  .week-day .learning-chip{font-size:11px;white-space:normal;overflow:visible;text-overflow:clip;}\n  .week-day .chip{font-size:10px;white-space:normal;overflow:visible;text-overflow:clip;padding:3px 4px;}\n  .week-empty{font-size:12px;padding:18px 4px;}\n  .day-detail{margin:8px 5px 4px;}\n  .category-add-row{grid-template-columns:1fr 44px auto;}\n  .category-row{grid-template-columns:10px minmax(0,1fr) 42px 64px 64px auto auto;gap:5px;}\n  .category-row .btn{padding:7px 8px;font-size:12px;}\n}\n"+'</style>'+"\n<header>\n  <div class=\"header-row\"><h1>📅 予定管理カレンダー <span style=\"font-size:11px;font-weight:400;opacity:.85;\">佛大通信対応</span></h1></div>\n  <nav class=\"tabs\">\n    <button class=\"tab active\" data-view=\"month\">月</button>\n    <button class=\"tab\" data-view=\"list\">リスト</button>\n    <button class=\"tab\" data-view=\"upcoming\">直近・締切</button>\n    <button class=\"tab\" data-view=\"settings\">設定</button>\n  </nav>\n</header>\n<main>\n  <section id=\"view-month\" class=\"view\">\n    <div class=\"view-switch\"><button id=\"monthModeBtn\" class=\"mini-btn active\">月表示</button><button id=\"weekModeBtn\" class=\"mini-btn\">週表示</button></div>\n    <div class=\"month-bar\"><button id=\"prevMonth\" class=\"icon-btn\">‹</button><div id=\"monthLabel\"></div><button id=\"nextMonth\" class=\"icon-btn\">›</button><button id=\"todayBtn\" class=\"mini-btn\">今日</button></div>\n    <div class=\"weekday-row\"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>\n    <div id=\"monthGrid\" class=\"month-grid\"></div><div id=\"legend\" class=\"legend\"></div><div id=\"dayDetail\" class=\"day-detail hidden\"></div>\n  </section>\n\n  <section id=\"view-week\" class=\"view hidden\" data-view=\"week\">\n    <div class=\"view-switch\"><button id=\"weekMonthModeBtn\" class=\"mini-btn\">月表示</button><button class=\"mini-btn active\">週表示</button></div>\n    <div class=\"month-bar\"><button id=\"prevWeek\" class=\"icon-btn\">‹</button><div id=\"weekLabel\"></div><button id=\"nextWeek\" class=\"icon-btn\">›</button><button id=\"weekTodayBtn\" class=\"mini-btn\">今週</button></div>\n    <div id=\"weekScroll\" class=\"week-scroll\"><div id=\"weekGrid\" class=\"week-grid\"></div></div>\n  </section>\n\n  <section id=\"view-list\" class=\"view hidden\">\n    <div id=\"listContainer\"></div>\n  </section>\n\n  <section id=\"view-upcoming\" class=\"view hidden\">\n    <div id=\"upcomingContainer\"></div>\n  </section>\n\n  <section id=\"view-settings\" class=\"view hidden\">\n    <div class=\"card\" style=\"border:2px solid var(--primary-weak);\">\n      <h2>🎓 佛大通信 年間スケジュール登録</h2>\n      <p class=\"note\">佛教大学通信教育課程の年間スケジュールを、下のボタンで一括登録できます(公式発表の2026年度値に基づく)。登録済み・終了済みの日程は自動でスキップされます。大学が日程を変更・発表した場合は各予定をタップして編集してください。</p>\n      <div class=\"btn-col\">\n        <button class=\"btn ref-btn\" data-ref=\"reports\">📝 毎月のリポート提出日(直近12か月分・1日〜7日)</button>\n        <button class=\"btn ref-btn\" data-ref=\"exams\">📄 科目最終試験(今日以降の分を登録)</button>\n        <button class=\"btn ref-btn\" data-ref=\"credits\">🎓 単位認定日(今日以降の分を登録)</button>\n      </div>\n      <details>\n        <summary>参考:2026年度 科目最終試験実施日・単位認定日一覧(公式)</summary>\n        <table class=\"ref-table\">\n          <tr><th>試験</th><th>試験日</th><th>単位認定日</th></tr>\n          <tr><td>5月試験</td><td>5/2(土)・3(日)</td><td rowspan=\"2\">9月25日</td></tr>\n          <tr><td>6月試験</td><td>5/31(日)・6/1(月)</td></tr>\n          <tr><td>7月試験</td><td>7/4(土)・5(日)</td><td rowspan=\"4\">12月20日</td></tr>\n          <tr><td>8月試験</td><td>8/1(土)・2(日)</td></tr>\n          <tr><td>9月試験</td><td>9/5(土)・6(日)</td></tr>\n          <tr><td>10月試験</td><td>10/3(土)・4(日)</td></tr>\n          <tr><td>11月試験</td><td>10/31(土)・11/1(日)</td><td rowspan=\"2\">3月25日</td></tr>\n          <tr><td>12月試験</td><td>11/29(日)・30(月)</td></tr>\n          <tr><td>1月試験</td><td>1/10(日)・11(月)</td><td rowspan=\"2\">5月25日(予定)</td></tr>\n          <tr><td>2月試験</td><td>2/7(日)・8(月)</td></tr>\n        </table>\n        <p class=\"note\">リポートは毎月1日〜7日に提出し、すべて受理されると翌月の科目最終試験から受験できます。スクーリングは春期・夏期・秋期・冬期・夜間の種別があり、開講形態は対面(紫野キャンパス)/オンライン(Zoom)/オンデマンド併用。受講には所定期間内の申込みが必要です。最新の日程は必ず学生ポータルや「佛大通信」で確認してください。<br>出典:佛教大学通信教育課程「テキスト履修」「スクーリング履修」ページ(https://tsushin.bukkyo-u.ac.jp/learn/text/ ほか)</p>\n      </details>\n    </div>\n\n    <div class=\"card owner-only-cat-settings\" id=\"categorySettingsCard\">\n      <h2>🏷️ カテゴリ管理</h2>\n      <p class=\"note\">予定に使うカテゴリを追加・編集・削除できます。削除したカテゴリを使っている既存予定は「その他」に変更されます。</p>\n      <div id=\"categoryList\"></div>\n      <div class=\"card\" style=\"margin-top:12px;padding:10px;background:#f8f9ff;box-shadow:none;border:1px solid #e2e2e8;\">\n        <div class=\"row\"><div><b>🔎 カテゴリ診断</b><div class=\"note\">カテゴリ変更がどの段階で戻っているかを自動記録します。</div></div><button id=\"catDiagRefresh\" class=\"btn\">診断を更新</button></div>\n        <pre id=\"catDiagOutput\" style=\"white-space:pre-wrap;word-break:break-all;font-size:11px;max-height:420px;overflow:auto;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;margin-top:8px;\"></pre>\n      </div>\n      <div class=\"category-add-row\">\n        <input id=\"newCatLabel\" type=\"text\" placeholder=\"カテゴリ名（例：家族）\">\n        <input id=\"newCatColor\" type=\"color\" value=\"#7e57c2\" aria-label=\"カテゴリ色\">\n        <button id=\"addCatBtn\" class=\"btn primary\">＋ 追加</button>\n      </div>\n    </div>\n\n    <div class=\"card\">\n      <h2>📊 データ</h2>\n      <p class=\"note\" id=\"dataCount\"></p>\n      <p class=\"note\">予定はMONOcheckの学習データと一緒に保存されます。MONOcheckのデータ書出しでもバックアップできます。</p>\n      <div class=\"btn-col\">\n        <button id=\"exportJsonBtn\" class=\"btn\">⬇️ JSONで書き出す(バックアップ)</button>\n        <label class=\"btn file-btn\">⬆️ JSONを取り込む(復元・他端末から移行)<input id=\"importFile\" type=\"file\" accept=\".json,application/json\"></label>\n        <button id=\"exportIcsBtn\" class=\"btn\">📅 カレンダーファイル(.ics)を書き出す</button>\n      </div>\n      <p class=\"note\">.ics は Googleカレンダー(PC版 → 設定 →「インポート」)や iPhone標準カレンダーに読み込めます。※書き出した時点の予定なので、変更した場合は再書き出し・再読み込みが必要です。</p>\n    </div>\n    <div class=\"card\">\n      <h2>☁ MONOcheck PC・スマホ同期</h2>\n      <p class=\"note\">この予定データはMONOcheck 学習管理のデータに統合して保存されます。MONOcheckの「☁ 同期」でログインしていれば、学習記録・目次・レポート準備と一緒にPCとスマホへ同期されます。</p>\n    </div>\n\n    <div class=\"card\">\n      <h2>🔔 通知リマインダー(任意)</h2>\n      <p class=\"note\">アプリを開いたとき、今日・明日の予定を通知でお知らせします。ブラウザや端末の設定により動作が変わります(iPhoneではホーム画面に追加した場合に通知できることがあります)。</p>\n      <button id=\"notifyBtn\" class=\"btn\">通知を許可する</button>\n      <p class=\"note\" id=\"notifyStatus\"></p>\n    </div>\n\n    <div class=\"card\">\n      <h2>🗑️ データ消去</h2>\n      <p class=\"note\">この端末の予定をすべて削除します(Firebase同期が有効な場合はクラウド上のデータも削除され、他の端末からも消えます)。</p>\n      <button id=\"clearAllBtn\" class=\"btn danger\">この端末の全予定を削除</button>\n    </div>\n\n    <div class=\"card\">\n      <h2>ℹ️ このアプリについて</h2>\n      <p class=\"note\">受診・佛教大学通信教育課程の予定(リポート提出/科目最終試験/スクーリング/単位認定日/履修登録)・旅行などをまとめて管理するカレンダーアプリです。単一のHTMLファイルで動作し、通信なしでも使えます(自動同期を使うときだけ通信します)。</p>\n      <p class=\"note\">スマホで使いやすくするには、ブラウザのメニューから「ホーム画面に追加」を選ぶと、アイコンからアプリのように起動できます。</p>\n    </div>\n  </section>\n</main>\n\n<button id=\"fab\" aria-label=\"予定を追加\">＋</button>\n\n<div id=\"modalOverlay\" class=\"overlay hidden\">\n  <div class=\"modal\" role=\"dialog\" aria-modal=\"true\">\n    <h2 id=\"modalTitle\">予定を追加</h2>\n    <div id=\"dayInfo\" class=\"hidden\"></div>\n    <label for=\"fTitle\">タイトル</label>\n    <input id=\"fTitle\" type=\"text\" placeholder=\"例: 内科 受診 / 10月リポート提出 / 10月科目最終試験 / 夏期スクーリング\">\n    <label for=\"fCat\">カテゴリ</label>\n    <select id=\"fCat\"></select>\n    <div class=\"row2\">\n      <div>\n        <label for=\"fStart\">開始日</label>\n        <input id=\"fStart\" type=\"date\">\n      </div>\n      <div>\n        <label for=\"fTime\">開始時刻</label>\n        <input id=\"fTime\" type=\"time\">\n      </div>\n    </div>\n    <label class=\"all-day-toggle\"><input id=\"fAllDay\" type=\"checkbox\"> 終日</label>\n    <label for=\"fEnd\">終了日(期間の場合のみ・任意)</label>\n    <input id=\"fEnd\" type=\"date\">\n    <div class=\"row2\"><div><label for=\"fEndTime\">終了時刻(任意)</label><input id=\"fEndTime\" type=\"time\"></div><div></div></div>\n    <p class=\"hint\">リポート提出(1日〜7日)・スクーリング・履修登録・旅行など、数日にまたがる予定は終了日も入力してください。</p>\n    <div class=\"card\" style=\"margin:10px 0;padding:10px;background:#f8f9ff;box-shadow:none;border:1px solid #e2e2e8;\">\n      <label for=\"fRepeat\">繰り返し</label><select id=\"fRepeat\"><option value=\"none\">繰り返さない</option><option value=\"weekly\">毎週</option></select>\n      <div id=\"repeatFields\" class=\"hidden\"><label for=\"fRepeatEnd\">繰り返し終了日</label><input id=\"fRepeatEnd\" type=\"date\"><label>曜日</label>\n      <div id=\"weekdayChecks\" style=\"display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:12px;\"><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"0\"> 日</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"1\"> 月</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"2\"> 火</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"3\"> 水</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"4\"> 木</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"5\"> 金</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"6\"> 土</label></div><p class=\"hint\">例：10/1〜10/31、毎週 火・木、19:00〜21:00。</p></div></div>\n    <label for=\"fPlace\">場所(任意)</label>\n    <input id=\"fPlace\" type=\"text\" placeholder=\"例: 紫野キャンパス / オンライン(Zoom) / 病院名 / 宿泊先\">\n    <label for=\"fNotes\">メモ(任意)</label>\n    <textarea id=\"fNotes\" rows=\"3\"></textarea>\n    <div class=\"modal-actions\">\n      <button id=\"deleteBtn\" class=\"btn danger hidden\">削除</button>\n      <span class=\"spacer\"></span>\n      <button id=\"cancelBtn\" class=\"btn\">キャンセル</button>\n      <button id=\"saveBtn\" class=\"btn primary\">保存</button>\n    </div>\n  </div>\n</div>\n";
+    shadow.innerHTML='<style>'+"\n:host{display:block;min-height:calc(100vh - 110px);--primary:#3f51b5;--primary-dark:#303f9f;--primary-weak:#e8eaf6;--bg:#f4f5f9;--card:#ffffff;--text:#1f1f1f;--muted:#767676;--border:#e2e2e8;--danger:#c62828;}\n*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}\nbody{margin:0;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"Hiragino Kaku Gothic ProN\",\"Hiragino Sans\",\"Noto Sans JP\",Meiryo,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;}\nheader{background:var(--primary);color:#fff;padding:12px 14px 0;position:sticky;top:0;z-index:20;box-shadow:0 2px 6px rgba(0,0,0,.15);}\n.header-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}\nh1{font-size:17px;margin:0;font-weight:700;}\n.tabs{display:flex;gap:2px;margin-top:6px;}\n.tab{flex:1;background:none;border:none;color:rgba(255,255,255,.72);padding:10px 2px;font-size:13.5px;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;}\n.tab.active{color:#fff;border-bottom-color:#fff;font-weight:700;}\nmain{padding:10px 10px 90px;max-width:none;width:100%;margin:0 auto;}\n.hidden{display:none!important;}\n/* ---- 月表示 ---- */\n.month-bar{display:flex;align-items:center;gap:6px;padding:6px 2px;}\n#monthLabel{font-size:17px;font-weight:700;min-width:104px;text-align:center;}\n.icon-btn{border:1px solid var(--border);background:#fff;border-radius:8px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--text);line-height:1;}\n.mini-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;margin-left:auto;font-family:inherit;}\n.view-switch{display:flex;gap:6px;margin:0 0 8px;padding:0 2px;}\n.view-switch .mini-btn{margin-left:0;flex:0 0 auto;}\n.view-switch .mini-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}\n.week-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}\n.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;padding:0 2px;}\n.week-head{background:var(--primary-weak);border-radius:6px 6px 0 0;text-align:center;font-size:11px;font-weight:700;padding:5px 2px;color:var(--text);}\n.week-day{background:var(--card);min-height:calc(100vh - 250px);border:1px solid var(--border);border-radius:0 0 7px 7px;padding:4px;overflow:auto;cursor:pointer;}\n.week-day.today{border:2px solid var(--primary);background:var(--primary-weak);}\n.week-empty{color:var(--muted);font-size:11px;text-align:center;padding:10px 2px;}\n.day-detail{background:var(--card);border-radius:10px;padding:12px;margin:10px 4px 4px;box-shadow:0 1px 3px rgba(0,0,0,.07);border:1px solid var(--border);}\n.day-detail-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}\n.day-detail-head h3{margin:0;font-size:15px;flex:1;}\n.detail-learning{font-size:12px;padding:7px 9px;border-radius:7px;margin:5px 0;background:#fff3e0;border-left:4px solid #ef6c00;}\n.detail-learning.done{background:#e8f5e9;border-left-color:#2e7d32;}\n.detail-event{padding:8px 9px;margin:5px 0;border-left:4px solid;border-radius:7px;background:#fafafa;cursor:pointer;}\n.detail-event-title{font-weight:600;font-size:13px;}\n.detail-event-meta{font-size:11px;color:var(--muted);margin-top:2px;}\n.weekday-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--muted);padding:0 4px 2px;}\n.weekday-row div:first-child{color:#e53935;}\n.weekday-row div:last-child{color:#1e88e5;}\n.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 4px;}\n.day-cell{background:var(--card);border-radius:6px;min-height:110px;padding:2px;overflow:hidden;cursor:pointer;border:1px solid transparent;}\n.day-cell.out{opacity:.42;}\n.day-cell.today{border-color:var(--primary);background:var(--primary-weak);}\n.day-num{font-size:11px;font-weight:600;margin-bottom:1px;padding-left:3px;}\n.day-num.sun{color:#e53935;}\n.day-num.sat{color:#1e88e5;}\n.chip{font-size:10px;line-height:1.25;border-left:3px solid;padding:1px 3px;margin:1px 0;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}\n.learning-chip{font-size:9.5px;line-height:1.25;border-left:3px solid #3f51b5;padding:2px 3px;margin:1px 0;border-radius:3px;background:#e8eaf6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .learning-chip.done{border-left-color:#2e7d32;background:#e8f5e9;color:#1b5e20;} .learning-chip.miss{border-left-color:#ef6c00;background:#fff3e0;color:#8a4b00;}\n.more{font-size:9px;color:var(--muted);padding-left:3px;}\n.legend{display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 6px;font-size:11px;color:var(--muted);}\n.legend span{display:inline-flex;align-items:center;gap:4px;}\n.legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}\n/* ---- リスト・直近 ---- */\n.list-month{font-size:14px;color:var(--muted);margin:16px 4px 4px;font-weight:700;}\n.event-item{background:var(--card);border-radius:8px;padding:10px 12px;margin:8px 0;border-left:5px solid;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;}\n.event-item:hover{box-shadow:0 2px 6px rgba(0,0,0,.12);}\n.event-item h4{margin:0;font-size:15px;font-weight:600;display:inline;}\n.cat-badge{display:inline-block;font-size:10px;color:#fff;padding:1px 7px;border-radius:9px;margin-left:8px;vertical-align:2px;}\n.event-meta{font-size:12px;color:var(--muted);margin-top:3px;}\n.event-notes{font-size:12px;color:var(--muted);margin-top:4px;white-space:pre-wrap;}\n.badge-days{float:right;font-size:12px;font-weight:700;color:var(--danger);background:#ffebee;padding:2px 8px;border-radius:10px;}\n.event-item.urgent{background:#fff8f8;}\n.empty{color:var(--muted);text-align:center;padding:40px 10px;font-size:14px;white-space:pre-line;}\n/* ---- 設定 ---- */\n.card{background:var(--card);border-radius:12px;padding:14px;margin:10px 0;box-shadow:0 1px 3px rgba(0,0,0,.07);}\n.card h2{font-size:15px;margin:0 0 8px;color:var(--primary-dark);}\n.note{font-size:12.5px;color:var(--muted);line-height:1.65;margin:6px 0;}\n.btn-col{display:flex;flex-direction:column;gap:8px;margin:10px 0;}\n.btn{padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:14px;cursor:pointer;font-family:inherit;color:var(--text);}\n.btn:hover{filter:brightness(.97);}\n.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary);}\n.btn.danger{color:var(--danger);border-color:var(--danger);}\n.file-btn{display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}\n.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;}\n#fbConfig{font-family:monospace;font-size:12px;}\n.ref-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}\n.ref-table th,.ref-table td{border:1px solid var(--border);padding:5px 8px;text-align:left;}\n.ref-table th{background:var(--primary-weak);color:var(--primary-dark);}\ncode{background:#f0f0f4;padding:1px 5px;border-radius:4px;font-size:11.5px;word-break:break-all;}\ndetails{font-size:13px;margin-top:8px;}\nsummary{cursor:pointer;color:var(--primary);font-weight:600;}\na{color:var(--primary);}\n/* ---- モーダル ---- */\n.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:30;}\n@media(min-width:600px){.overlay{align-items:center;}}\n.modal{background:#fff;width:100%;max-width:520px;border-radius:14px 14px 0 0;padding:18px;max-height:92vh;overflow:auto;}\n@media(min-width:600px){.modal{border-radius:14px;}}\n.modal h2{font-size:16px;margin:0 0 6px;}\nlabel{display:block;font-size:12px;color:var(--muted);margin:10px 0 2px;}\ninput,select,textarea{width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:var(--text);}\n.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}\n.hint{font-size:11.5px;color:var(--muted);margin:4px 0 0;}\n.day-holiday{font-size:9px;color:#e53935;line-height:1.15;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-left:3px;}\n.day-rokuyo{font-size:9px;color:#8a8fa8;line-height:1.15;padding-left:3px;}\n.day-moon{font-size:8px;margin-left:2px;}\n#dayInfo{font-size:12px;color:var(--primary-dark);background:var(--primary-weak);border-radius:8px;padding:6px 10px;margin-top:10px;}\n.modal-actions{display:flex;gap:8px;margin-top:16px;align-items:center;}\n.spacer{flex:1;}\n/* ---- FAB ---- */\n#fab{position:fixed;right:18px;bottom:22px;width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:26px;box-shadow:0 4px 10px rgba(0,0,0,.3);cursor:pointer;z-index:15;}\n#fab:hover{filter:brightness(1.08);}\n.all-day-toggle{display:flex;align-items:center;gap:7px;color:var(--text);font-size:13px;margin:8px 0 2px;cursor:pointer;}\n.all-day-toggle input{width:17px;height:17px;margin:0;}\n.category-add-row{display:grid;grid-template-columns:1fr 48px auto;gap:6px;align-items:center;margin-top:10px;}\n.category-add-row input[type=color]{width:48px;height:38px;padding:2px;border:1px solid var(--border);border-radius:8px;background:#fff;}\n.category-row{display:grid;grid-template-columns:10px 1fr 48px auto auto;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}\n.category-dot{width:10px;height:10px;border-radius:50%;}\n.category-row input[type=text]{min-width:0;}\n.category-row input[type=color]{width:42px;height:34px;padding:2px;border:1px solid var(--border);border-radius:7px;background:#fff;}\n.category-row select{min-width:0;padding:7px 5px;font-size:12px;}\n@media(max-width:600px){\n  main{padding:4px 0 84px;}\n  h1{font-size:15px;}\n  .month-bar,.view-switch{padding-left:5px;padding-right:5px;}\n  .weekday-row{padding-left:1px;padding-right:1px;}\n  .month-grid{padding:0 1px;gap:1px;}\n  .day-cell{min-height:calc((100vw - 8px) / 7 * 1.08);padding:2px 1px;border-radius:4px;}\n  .day-num{font-size:10px;padding-left:2px;}\n  .chip{font-size:8.5px;margin:1px 0;padding:1px 2px;}\n  .learning-chip{font-size:8.5px;padding:1px 2px;}\n  .day-holiday,.day-rokuyo{font-size:8px;}\n  .tab{font-size:12.5px;padding:9px 1px;}\n  #view-week{overflow:hidden;}\n  #weekScroll{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0 4px 8px;scrollbar-width:thin;}\n  #weekGrid{width:820px;min-width:820px;gap:4px;padding:0;}\n  .week-head{font-size:12px;padding:7px 2px;}\n  .week-day{min-height:250px;height:250px;padding:6px;overflow-y:auto;overflow-x:hidden;border-radius:0 0 8px 8px;}\n  .week-day .learning-chip{font-size:11px;white-space:normal;overflow:visible;text-overflow:clip;}\n  .week-day .chip{font-size:10px;white-space:normal;overflow:visible;text-overflow:clip;padding:3px 4px;}\n  .week-empty{font-size:12px;padding:18px 4px;}\n  .day-detail{margin:8px 5px 4px;}\n  .category-add-row{grid-template-columns:1fr 44px auto;}\n  .category-row{grid-template-columns:10px minmax(0,1fr) 42px 64px 64px auto auto;gap:5px;}\n  .category-row .btn{padding:7px 8px;font-size:12px;}\n}\n"+'</style>'+"\n<header>\n  <div class=\"header-row\"><h1>📅 予定管理カレンダー <span style=\"font-size:11px;font-weight:400;opacity:.85;\">佛大通信対応</span></h1></div>\n  <nav class=\"tabs\">\n    <button class=\"tab active\" data-view=\"month\">月</button>\n    <button class=\"tab\" data-view=\"list\">リスト</button>\n    <button class=\"tab\" data-view=\"upcoming\">直近・締切</button>\n    <button class=\"tab\" data-view=\"settings\">設定</button>\n  </nav>\n</header>\n<main>\n  <section id=\"view-month\" class=\"view\">\n    <div class=\"view-switch\"><button id=\"monthModeBtn\" class=\"mini-btn active\">月表示</button><button id=\"weekModeBtn\" class=\"mini-btn\">週表示</button></div>\n    <div class=\"month-bar\"><button id=\"prevMonth\" class=\"icon-btn\">‹</button><div id=\"monthLabel\"></div><button id=\"nextMonth\" class=\"icon-btn\">›</button><button id=\"todayBtn\" class=\"mini-btn\">今日</button></div>\n    <div class=\"weekday-row\"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>\n    <div id=\"monthGrid\" class=\"month-grid\"></div><div id=\"legend\" class=\"legend\"></div><div id=\"dayDetail\" class=\"day-detail hidden\"></div>\n  </section>\n\n  <section id=\"view-week\" class=\"view hidden\" data-view=\"week\">\n    <div class=\"view-switch\"><button id=\"weekMonthModeBtn\" class=\"mini-btn\">月表示</button><button class=\"mini-btn active\">週表示</button></div>\n    <div class=\"month-bar\"><button id=\"prevWeek\" class=\"icon-btn\">‹</button><div id=\"weekLabel\"></div><button id=\"nextWeek\" class=\"icon-btn\">›</button><button id=\"weekTodayBtn\" class=\"mini-btn\">今週</button></div>\n    <div id=\"weekScroll\" class=\"week-scroll\"><div id=\"weekGrid\" class=\"week-grid\"></div></div>\n  </section>\n\n  <section id=\"view-list\" class=\"view hidden\">\n    <div id=\"listContainer\"></div>\n  </section>\n\n  <section id=\"view-upcoming\" class=\"view hidden\">\n    <div id=\"upcomingContainer\"></div>\n  </section>\n\n  <section id=\"view-settings\" class=\"view hidden\">\n    <div class=\"card\" style=\"border:2px solid var(--primary-weak);\">\n      <h2>🎓 佛大通信 年間スケジュール登録</h2>\n      <p class=\"note\">佛教大学通信教育課程の年間スケジュールを、下のボタンで一括登録できます(公式発表の2026年度値に基づく)。登録済み・終了済みの日程は自動でスキップされます。大学が日程を変更・発表した場合は各予定をタップして編集してください。</p>\n      <div class=\"btn-col\"><button class=\"btn primary\" id=\"bulkAllRefBtn\">🚀 6項目をまとめて自動追加</button>\n        <button class=\"btn ref-btn\" data-ref=\"reports\">📝 リポート提出期間(毎月1〜7日)</button>\n        <button class=\"btn ref-btn\" data-ref=\"exams\">📄 科目最終試験日(2026年度・今日以降)</button>\n        <button class=\"btn ref-btn\" data-ref=\"grades\">📊 成績開示日(毎月末・今日以降)</button>\n        <button class=\"btn ref-btn\" data-ref=\"credits\">🎓 単位認定日(2026年度・今日以降)</button>\n        <button class=\"btn ref-btn\" data-ref=\"schoolingResults\">📢 スクーリング結果開示日(B-netで確認した日を入力)</button>\n        <button class=\"btn ref-btn\" data-ref=\"schoolingApply\">🏫 スクーリング申込期間(2026年度)</button>\n      </div>\n      <details>\n        <summary>参考:2026年度 科目最終試験実施日・単位認定日一覧(公式)</summary>\n        <table class=\"ref-table\">\n          <tr><th>試験</th><th>試験日</th><th>単位認定日</th></tr>\n          <tr><td>5月試験</td><td>5/2(土)・3(日)</td><td rowspan=\"2\">9月25日</td></tr>\n          <tr><td>6月試験</td><td>5/31(日)・6/1(月)</td></tr>\n          <tr><td>7月試験</td><td>7/4(土)・5(日)</td><td rowspan=\"4\">12月20日</td></tr>\n          <tr><td>8月試験</td><td>8/1(土)・2(日)</td></tr>\n          <tr><td>9月試験</td><td>9/5(土)・6(日)</td></tr>\n          <tr><td>10月試験</td><td>10/3(土)・4(日)</td></tr>\n          <tr><td>11月試験</td><td>10/31(土)・11/1(日)</td><td rowspan=\"2\">3月25日</td></tr>\n          <tr><td>12月試験</td><td>11/29(日)・30(月)</td></tr>\n          <tr><td>1月試験</td><td>1/10(日)・11(月)</td><td rowspan=\"2\">5月25日(予定)</td></tr>\n          <tr><td>2月試験</td><td>2/7(日)・8(月)</td></tr>\n        </table>\n        <p class=\"note\">リポートは毎月1日〜7日に提出し、すべて受理されると翌月の科目最終試験から受験できます。スクーリングは春期・夏期・秋期・冬期・夜間の種別があり、開講形態は対面(紫野キャンパス)/オンライン(Zoom)/オンデマンド併用。受講には所定期間内の申込みが必要です。最新の日程は必ず学生ポータルや「佛大通信」で確認してください。<br>出典:佛教大学通信教育課程「テキスト履修」「スクーリング履修」ページ(https://tsushin.bukkyo-u.ac.jp/learn/text/ ほか)</p>\n      </details>\n    </div>\n\n    <div class=\"card owner-only-cat-settings\" id=\"categorySettingsCard\">\n      <h2>🏷️ カテゴリ管理</h2>\n      <p class=\"note\">予定に使うカテゴリを追加・編集・削除できます。削除したカテゴリを使っている既存予定は「その他」に変更されます。</p>\n      <div id=\"categoryList\"></div>\n      <div class=\"card\" style=\"margin-top:12px;padding:10px;background:#f8f9ff;box-shadow:none;border:1px solid #e2e2e8;\">\n        <div class=\"row\"><div><b>🔎 カテゴリ診断</b><div class=\"note\">カテゴリ変更がどの段階で戻っているかを自動記録します。</div></div><button id=\"catDiagRefresh\" class=\"btn\">診断を更新</button></div>\n        <pre id=\"catDiagOutput\" style=\"white-space:pre-wrap;word-break:break-all;font-size:11px;max-height:420px;overflow:auto;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;margin-top:8px;\"></pre>\n      </div>\n      <div class=\"category-add-row\">\n        <input id=\"newCatLabel\" type=\"text\" placeholder=\"カテゴリ名（例：家族）\">\n        <input id=\"newCatColor\" type=\"color\" value=\"#7e57c2\" aria-label=\"カテゴリ色\">\n        <button id=\"addCatBtn\" class=\"btn primary\">＋ 追加</button>\n      </div>\n    </div>\n\n    <div class=\"card\">\n      <h2>📊 データ</h2>\n      <p class=\"note\" id=\"dataCount\"></p>\n      <p class=\"note\">予定はMONOcheckの学習データと一緒に保存されます。MONOcheckのデータ書出しでもバックアップできます。</p>\n      <div class=\"btn-col\">\n        <button id=\"exportJsonBtn\" class=\"btn\">⬇️ JSONで書き出す(バックアップ)</button>\n        <label class=\"btn file-btn\">⬆️ JSONを取り込む(復元・他端末から移行)<input id=\"importFile\" type=\"file\" accept=\".json,application/json\"></label>\n        <button id=\"exportIcsBtn\" class=\"btn\">📅 カレンダーファイル(.ics)を書き出す</button>\n      </div>\n      <p class=\"note\">.ics は Googleカレンダー(PC版 → 設定 →「インポート」)や iPhone標準カレンダーに読み込めます。※書き出した時点の予定なので、変更した場合は再書き出し・再読み込みが必要です。</p>\n    </div>\n    <div class=\"card\">\n      <h2>☁ MONOcheck PC・スマホ同期</h2>\n      <p class=\"note\">この予定データはMONOcheck 学習管理のデータに統合して保存されます。MONOcheckの「☁ 同期」でログインしていれば、学習記録・目次・レポート準備と一緒にPCとスマホへ同期されます。</p>\n    </div>\n\n    <div class=\"card\">\n      <h2>🔔 通知リマインダー(任意)</h2>\n      <p class=\"note\">アプリを開いたとき、今日・明日の予定を通知でお知らせします。ブラウザや端末の設定により動作が変わります(iPhoneではホーム画面に追加した場合に通知できることがあります)。</p>\n      <button id=\"notifyBtn\" class=\"btn\">通知を許可する</button>\n      <p class=\"note\" id=\"notifyStatus\"></p>\n    </div>\n\n    <div class=\"card\">\n      <h2>🗑️ データ消去</h2>\n      <p class=\"note\">この端末の予定をすべて削除します(Firebase同期が有効な場合はクラウド上のデータも削除され、他の端末からも消えます)。</p>\n      <button id=\"clearAllBtn\" class=\"btn danger\">この端末の全予定を削除</button>\n    </div>\n\n    <div class=\"card\">\n      <h2>ℹ️ このアプリについて</h2>\n      <p class=\"note\">受診・佛教大学通信教育課程の予定(リポート提出/科目最終試験/スクーリング/単位認定日/履修登録)・旅行などをまとめて管理するカレンダーアプリです。単一のHTMLファイルで動作し、通信なしでも使えます(自動同期を使うときだけ通信します)。</p>\n      <p class=\"note\">スマホで使いやすくするには、ブラウザのメニューから「ホーム画面に追加」を選ぶと、アイコンからアプリのように起動できます。</p>\n    </div>\n  </section>\n</main>\n\n<button id=\"fab\" aria-label=\"予定を追加\">＋</button>\n\n<div id=\"modalOverlay\" class=\"overlay hidden\">\n  <div class=\"modal\" role=\"dialog\" aria-modal=\"true\">\n    <h2 id=\"modalTitle\">予定を追加</h2>\n    <div id=\"dayInfo\" class=\"hidden\"></div>\n    <label for=\"fTitle\">タイトル</label>\n    <input id=\"fTitle\" type=\"text\" placeholder=\"例: 内科 受診 / 10月リポート提出 / 10月科目最終試験 / 夏期スクーリング\">\n    <label for=\"fCat\">カテゴリ</label>\n    <select id=\"fCat\"></select>\n    <div class=\"row2\">\n      <div>\n        <label for=\"fStart\">開始日</label>\n        <input id=\"fStart\" type=\"date\">\n      </div>\n      <div>\n        <label for=\"fTime\">開始時刻</label>\n        <input id=\"fTime\" type=\"time\">\n      </div>\n    </div>\n    <label class=\"all-day-toggle\"><input id=\"fAllDay\" type=\"checkbox\"> 終日</label>\n    <label for=\"fEnd\">終了日(期間の場合のみ・任意)</label>\n    <input id=\"fEnd\" type=\"date\">\n    <div class=\"row2\"><div><label for=\"fEndTime\">終了時刻(任意)</label><input id=\"fEndTime\" type=\"time\"></div><div></div></div>\n    <p class=\"hint\">リポート提出(1日〜7日)・スクーリング・履修登録・旅行など、数日にまたがる予定は終了日も入力してください。</p>\n    <div class=\"card\" style=\"margin:10px 0;padding:10px;background:#f8f9ff;box-shadow:none;border:1px solid #e2e2e8;\">\n      <label for=\"fRepeat\">繰り返し</label><select id=\"fRepeat\"><option value=\"none\">繰り返さない</option><option value=\"weekly\">毎週</option></select>\n      <div id=\"repeatFields\" class=\"hidden\"><label for=\"fRepeatEnd\">繰り返し終了日</label><input id=\"fRepeatEnd\" type=\"date\"><label>曜日</label>\n      <div id=\"weekdayChecks\" style=\"display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:12px;\"><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"0\"> 日</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"1\"> 月</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"2\"> 火</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"3\"> 水</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"4\"> 木</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"5\"> 金</label><label style=\"margin:0;text-align:center\"><input type=\"checkbox\" value=\"6\"> 土</label></div><p class=\"hint\">例：10/1〜10/31、毎週 火・木、19:00〜21:00。</p></div></div>\n    <label for=\"fPlace\">場所(任意)</label>\n    <input id=\"fPlace\" type=\"text\" placeholder=\"例: 紫野キャンパス / オンライン(Zoom) / 病院名 / 宿泊先\">\n    <label for=\"fNotes\">メモ(任意)</label>\n    <textarea id=\"fNotes\" rows=\"3\"></textarea>\n    <div class=\"modal-actions\">\n      <button id=\"deleteBtn\" class=\"btn danger hidden\">削除</button>\n      <span class=\"spacer\"></span>\n      <button id=\"cancelBtn\" class=\"btn\">キャンセル</button>\n      <button id=\"saveBtn\" class=\"btn primary\">保存</button>\n    </div>\n  </div>\n</div>\n";
   }
   const root=shadow;
+  if(!shadow.getElementById('monoCalendarDarkStyle')){
+    const ds=document.createElement('style');
+    ds.id='monoCalendarDarkStyle';
+    ds.textContent=`
+      :host(.dark-calendar){--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--border:#374151;--primary-weak:#253b5d;}
+      :host(.dark-calendar) .icon-btn,:host(.dark-calendar) .mini-btn,:host(.dark-calendar) .btn,:host(.dark-calendar) input,:host(.dark-calendar) select,:host(.dark-calendar) textarea{background:#1f2937!important;color:#f3f4f6!important;border-color:#4b5563!important;}
+      :host(.dark-calendar) .week-head{background:#253b5d!important;}
+      :host(.dark-calendar) .detail-learning{background:#4a341b!important;}
+      :host(.dark-calendar) .detail-learning.done{background:#173b28!important;}
+      :host(.dark-calendar) .detail-event{background:#18212f!important;}
+      :host(.dark-calendar) .event-item{background:#1f2937!important;}
+      :host(.dark-calendar) .event-item.urgent{background:#3a2024!important;}
+      :host(.dark-calendar) .learning-chip{background:#253b5d!important;color:#dbeafe!important;}
+      :host(.dark-calendar) .learning-chip.done{background:#173b28!important;color:#bbf7d0!important;}
+      :host(.dark-calendar) .learning-chip.miss{background:#4a341b!important;color:#fde68a!important;}
+      :host(.dark-calendar) code{background:#374151!important;color:#e5e7eb!important;}
+      :host(.dark-calendar) .category-add-row input[type=color],:host(.dark-calendar) .category-row input[type=color]{background:#1f2937!important;}
+      :host(.dark-calendar) .modal{background:#1f2937!important;color:#f3f4f6!important;}
+      :host(.dark-calendar) .overlay{background:rgba(0,0,0,.72)!important;}
+      :host(.dark-calendar) .card[style*="background:#f8f9ff"]{background:#18212f!important;border-color:#374151!important;}
+      :host(.dark-calendar) pre{background:#111827!important;color:#e5e7eb!important;border-color:#374151!important;}
+      :host(.dark-calendar) .event-item,:host(.dark-calendar) .event-item *,:host(.dark-calendar) .list-month,:host(.dark-calendar) .empty,:host(.dark-calendar) .legend,:host(.dark-calendar) .legend *{color:#f3f4f6!important;}
+      :host(.dark-calendar) .event-meta,:host(.dark-calendar) .event-notes,:host(.dark-calendar) .more,:host(.dark-calendar) .note{color:#c4cad4!important;}
+      :host(.dark-calendar) .event-item{background:#1f2937!important;}
+      :host(.dark-calendar) .detail-event,:host(.dark-calendar) .day-detail,:host(.dark-calendar) .week-day,:host(.dark-calendar) .day-cell{background:#1f2937!important;color:#f3f4f6!important;border-color:#374151!important;}
+      :host(.dark-calendar) .detail-event *,:host(.dark-calendar) .day-detail *,:host(.dark-calendar) .week-day *,:host(.dark-calendar) .day-cell *{color:#f3f4f6!important;}
+      :host(.dark-calendar) .detail-event-meta,:host(.dark-calendar) .day-rokuyo,:host(.dark-calendar) .weekday-row,:host(.dark-calendar) .week-empty{color:#c4cad4!important;}
+      /* ライトモードのカレンダー文字を見やすく */
+      :host(:not(.dark-calendar)) .list-month{color:#374151!important;}
+      :host(:not(.dark-calendar)) .event-item h4{color:#1f2937!important;}
+      :host(:not(.dark-calendar)) .event-meta,:host(:not(.dark-calendar)) .event-notes{color:#4b5563!important;}
+      :host(:not(.dark-calendar)) .more,:host(:not(.dark-calendar)) .legend{color:#4b5563!important;}
+      :host(:not(.dark-calendar)) .week-empty{color:#6b7280!important;}
+      :host(:not(.dark-calendar)) .day-num{color:#374151;}
+      :host(:not(.dark-calendar)) .day-num.sun{color:#c62828!important;}
+      :host(:not(.dark-calendar)) .day-num.sat{color:#1565c0!important;}
+      :host(:not(.dark-calendar)) .day-holiday{color:#c62828!important;}
+      :host(:not(.dark-calendar)) .day-rokuyo{color:#6b7280!important;}
+      :host(:not(.dark-calendar)) .detail-event-meta{color:#4b5563!important;}
+      :host(:not(.dark-calendar)) .weekday-row{color:#5f6368!important;}
+      :host(:not(.dark-calendar)) .weekday-row div:first-child{color:#c62828!important;}
+      :host(:not(.dark-calendar)) .weekday-row div:last-child{color:#1565c0!important;}
+      :host(:not(.dark-calendar)) .badge-days{color:#b71c1c!important;background:#ffebee!important;}
+      :host(:not(.dark-calendar)) .badge-days[style*="background:#c62828"]{color:#fff!important;background:#c62828!important;}
+      :host(:not(.dark-calendar)) .badge-days[style*="background:#ef6c00"]{color:#fff!important;background:#ef6c00!important;}
+    `;
+    shadow.appendChild(ds);
+  }
+  applyTheme(localStorage.getItem(THEME_KEY)==='dark'?'dark':'light');
 
 /* ===== 予定管理カレンダー(佛大通信対応) ===== */
 'use strict';
@@ -203,9 +554,26 @@ const DEFAULT_CATS = {
   exam:      {label:'📄 科目最終試験', color:'#6d4c41', short:'科目末試験'},
   schooling: {label:'🏫 スクーリング', color:'#00897b', short:'スクーリング'},
   credit:    {label:'🎓 単位認定日', color:'#f9a825', short:'単位認定'},
+  grade:     {label:'📊 成績開示日', color:'#1976d2', short:'成績開示'},
+  schooling_result: {label:'📢 スクーリング結果開示日', color:'#8e24aa', short:'スクーリング結果'},
   regist:    {label:'🗓️ 履修登録期間', color:'#3949ab', short:'履修登録'},
   travel:   {label:'✈️ 旅行', color:'#0288d1', short:'旅行'},
-  other:    {label:'📌 その他', color:'#546e7e', short:'その他'}
+  other:    {label:'📌 その他', color:'#546e7e', short:'その他'},
+  __uncategorized: {label:'📦 未分類', color:'#7e57c2', short:'未分類'}
+};
+const CATEGORY_DISPLAY_LABELS={
+  cat_muoy8ytr:'重要',
+  medical:'受診',
+  report:'リポート提出期間',
+  exam:'期末最終試験日',
+  schooling:'スクーリング',
+  credit:'単位認定日',
+  grade:'成績開示日',
+  schooling_result:'スクーリング結果開示日',
+  regist:'履修登録期間',
+  travel:'旅行',
+  other:'その他',
+  __uncategorized:'未分類'
 };
 const CATEGORY_LS_KEY='monocheck-calendar-categories-v1';
 const CATEGORY_UPDATED_KEY='monocheck-calendar-categories-updated';
@@ -248,31 +616,36 @@ function loadCategories(){
     CATS=cloneCats(DEFAULT_CATS);
   }
 
-  // v2専用保存を最優先で重ねる。ここは同期データで上書きしない。
+  // v2専用保存を最優先で重ねる。起動時は保存・同期しない。
   try{
     const rawV2=localStorage.getItem(CATEGORY_SETTINGS_V2_KEY);
     const v2=rawV2?JSON.parse(rawV2):null;
     if(v2&&typeof v2==='object'&&!Array.isArray(v2)){
-      Object.keys(v2).forEach(k=>{
-        if(v2[k]&&typeof v2[k]==='object'&&!Array.isArray(v2[k])) CATS[k]=Object.assign({},CATS[k]||{},cloneCats(v2[k]));
-      });
-      catDiagWrite('loadCategories:v2設定を上書き適用',{v2:cloneCats(v2)});
+      Object.keys(v2).forEach(k=>{ if(v2[k]&&typeof v2[k]==='object'&&!Array.isArray(v2[k])) CATS[k]=Object.assign({},CATS[k]||{},cloneCats(v2[k])); });
     }
   }catch(e){}
+  // 壊れた版で内部キーがそのままカテゴリ名になった場合は、表示上だけ正式名へ復旧。
+  // ここでbridgeSave/queueStudyCloudSyncは呼ばない。起動時の古い同期データによる上書きを防ぐ。
+  const DISPLAY_FALLBACKS=Object.assign({},DEFAULT_CATS);
   Object.keys(CATS).forEach(k=>{
-    const c=CATS[k];
-    if(!c||typeof c!=='object'||Array.isArray(c)){delete CATS[k];return;}
-    if(typeof c.label!=='string'||!c.label.trim()) c.label=String(k);
-    if(typeof c.short!=='string'||!c.short.trim()) c.short=c.label.slice(0,12);
-    if(typeof c.color!=='string'||!/^#[0-9a-f]{6}$/i.test(c.color)) c.color='#546e7e';
-    if(c.textColor!=='#000'&&c.textColor!=='#fff') c.textColor='#fff';
-    c.fontWeight=c.fontWeight==='700'?'700':'400';
+    const c=CATS[k]; if(!c||typeof c!=='object'||Array.isArray(c)){delete CATS[k];return;}
+    const label=typeof c.label==='string'?c.label.trim():''; const fb=DISPLAY_FALLBACKS[k];
+    if(fb && (!label || label===k || /^[a-z_]+$/.test(label))){ c.label=fb.label; if(!c.short||c.short===k||c.short===label)c.short=fb.short; }
+    else if(!label){ c.label=k.startsWith('cat_')?'追加カテゴリ':'未設定カテゴリ'; c.short=c.label.slice(0,12); }
+    if(typeof c.short!=='string'||!c.short.trim())c.short=c.label.slice(0,12);
+    if(typeof c.color!=='string'||!/^#[0-9a-f]{6}$/i.test(c.color))c.color=fb?.color||'#546e7e';
+    if(c.textColor!=='#000'&&c.textColor!=='#fff')c.textColor='#fff'; c.fontWeight=c.fontWeight==='700'?'700':'400';
   });
-  // 初回だけ現在の有効なカテゴリ設定をv2へ退避する。以後はv2を同期データより優先する。
-  try{
-    const existing=localStorage.getItem(CATEGORY_SETTINGS_V2_KEY);
-    if(!existing) localStorage.setItem(CATEGORY_SETTINGS_V2_KEY,JSON.stringify(cloneCats(CATS)));
-  }catch(e){}
+  // 内部キーがそのままカテゴリ名として表示されている場合は、
+  // 利用者が意味をすぐ判別できる日本語名へ戻す。
+  // 既に利用者が日本語で変更したカテゴリ名は上書きしない。
+  Object.keys(CATEGORY_DISPLAY_LABELS).forEach(k=>{
+    if(!CATS[k] || typeof CATS[k]!=='object') return;
+    const c=CATS[k], current=String(c.label||'').trim(), canonical=CATEGORY_DISPLAY_LABELS[k];
+    if(!current || current===k || /^[A-Za-z_][A-Za-z0-9_]*$/.test(current) || k==='cat_muoy8ytr'){
+      c.label=canonical; c.short=canonical.slice(0,12);
+    }
+  });
   catDiagWrite('loadCategories:完了');
 }
 
@@ -306,6 +679,8 @@ const REF_TEXT = {
   schooling: '受講するスクーリングの種別と科目名を入力してください(種別: 春期・夏期・秋期・冬期・夜間)。\n※受講には所定期間内の申込みが必要です。対面(紫野キャンパス)/オンライン(Zoom)/オンデマンド併用の別もメモに記録できます。',
   regist: '科目の履修登録期間を入力してください。',
   credit: '科目最終試験に合格した科目の単位が認定(修得)される日。\n6月試験まで→9月25日 / 10月試験まで→12月20日 / 12月試験まで→3月25日 / 翌年度4月試験まで→6月20日',
+  grade: '佛大通信の成績開示日。原則として毎月月末に開示されます。',
+  schooling_result: 'スクーリング結果開示日。固定日程は推測せず、B-netで確認した日を登録してください。',
   medical: '病院・クリニック名や診察内容、持参物などをメモできます。',
   travel: '行き先・交通・宿泊などの情報をメモできます。'
 };
@@ -603,7 +978,27 @@ $('#fStart').addEventListener('change', updateDayInfo);
 /* ==END-CAL== */
 
 /* ---------- 表示ユーティリティ ---------- */
-function catOf(id){ return CATS[id] || CATS.other || {label:'📌 その他',color:'#546e7e',short:'その他',textColor:'#fff',fontWeight:'400'}; }
+function categoryDisplayLabel(id){
+  const canonical=CATEGORY_DISPLAY_LABELS[id];
+  if(canonical) return canonical;
+  const c=CATS[id];
+  const label=String(c?.label||'').trim();
+  if(!label || label===id || /^[A-Za-z_][A-Za-z0-9_]*$/.test(label)) return '未設定カテゴリ';
+  return label;
+}
+function catOf(id){
+  const fallbackLabel=CATEGORY_DISPLAY_LABELS[id];
+  let c=CATS[id];
+  if(!c && fallbackLabel){
+    const base=DEFAULT_CATS[id]||{color:'#546e7e',short:fallbackLabel};
+    c=CATS[id]={...base,label:fallbackLabel,short:fallbackLabel.slice(0,12)};
+  }
+  c=c || CATS.other || {label:'📌 その他',color:'#546e7e',short:'その他',textColor:'#fff',fontWeight:'400'};
+  // システムカテゴリは保存データが壊れていても、表示時には必ず正式な日本語名を使う。
+  if(fallbackLabel){ c.label=fallbackLabel; c.short=fallbackLabel.slice(0,12); }
+  else if(!c.label || c.label===id || /^[A-Za-z_][A-Za-z0-9_]*$/.test(String(c.label))) c.label='未設定カテゴリ';
+  return c;
+}
 function applyCatTextStyle(el,c){ if(!el)return; const tc=(c&&c.textColor)==='#000'?'#000':'#fff'; el.style.color=tc; el.style.fontWeight=(c&&c.fontWeight)==='700'?'700':'400'; }
 function sortEv(a,b){ return (a.start + (a.time||'')).localeCompare(b.start + (b.time||'')); }
 function datesBetween(s,e){
@@ -710,7 +1105,7 @@ function renderItem(container, ev, showDone){
     + '<div class="event-meta">🗓️ ' + period + '</div>'
     + (ev.place ? '<div class="event-meta">📍 ' + esc(ev.place) + '</div>' : '')
     + (ev.notes ? '<div class="event-notes">' + esc(ev.notes) + '</div>' : '');
-  div.querySelector('h4').textContent = ev.title; applyCatTextStyle(div.querySelector('h4'),c);
+  div.querySelector('h4').textContent = ev.title; div.querySelector('h4').style.color='#111827'; div.querySelector('h4').style.fontWeight=(c&&c.fontWeight)==='700'?'700':'600';
   div.onclick = () => openModal(ev.id);
   container.appendChild(div);
 }
@@ -781,7 +1176,7 @@ root.querySelectorAll('.tab').forEach(t=>{
 /* ---------- カテゴリ管理 ---------- */
 function renderCategoryManager(){
   const box=$('#categoryList'); if(!box)return;
-  box.innerHTML=Object.keys(CATS).map(k=>{const c=CATS[k]||{};const tc=c.textColor==='#000'?'#000':'#fff',fw=c.fontWeight==='700'?'700':'400';return '<div class="category-row" data-cat="'+esc(k)+'"><span class="category-dot" style="background:'+c.color+'"></span><input class="cat-label" type="text" value="'+esc(c.label||k)+'" aria-label="カテゴリ名"><input class="cat-color" type="color" value="'+(c.color||'#546e7e')+'" aria-label="カテゴリ色"><select class="cat-text-color" aria-label="文字色"><option value="#fff"'+(tc==='#fff'?' selected':'')+'>白</option><option value="#000"'+(tc==='#000'?' selected':'')+'>黒</option></select><select class="cat-font-weight" aria-label="文字の太さ"><option value="400"'+(fw==='400'?' selected':'')+'>通常</option><option value="700"'+(fw==='700'?' selected':'')+'>太字</option></select><button class="btn" data-action="cat-save">保存</button><button class="btn danger" data-action="cat-delete"'+(k==='other'?' disabled':'')+'>削除</button></div>';}).join('');
+  box.innerHTML=Object.keys(CATS).map(k=>{const c=catOf(k),tc=c.textColor==='#000'?'#000':'#fff',fw=c.fontWeight==='700'?'700':'400';return '<div class="category-row" data-cat="'+esc(k)+'"><span class="category-dot" style="background:'+c.color+'"></span><input class="cat-label" type="text" value="'+esc(c.label||CATEGORY_DISPLAY_LABELS[k]||k)+'" aria-label="カテゴリ名"><input class="cat-color" type="color" value="'+(c.color||'#546e7e')+'" aria-label="カテゴリ色"><select class="cat-text-color" aria-label="文字色"><option value="#fff"'+(tc==='#fff'?' selected':'')+'>白</option><option value="#000"'+(tc==='#000'?' selected':'')+'>黒</option></select><select class="cat-font-weight" aria-label="文字の太さ"><option value="400"'+(fw==='400'?' selected':'')+'>通常</option><option value="700"'+(fw==='700'?' selected':'')+'>太字</option></select><button class="btn" data-action="cat-save">保存</button><button class="btn danger" data-action="cat-delete"'+(k==='other'?' disabled':'')+'>削除</button></div>';}).join('');
   box.querySelectorAll('[data-action="cat-save"]').forEach(btn=>btn.onclick=()=>{const row=btn.closest('.category-row'),k=row.dataset.cat,label=row.querySelector('.cat-label').value.trim(),color=row.querySelector('.cat-color').value;if(!label){alert('カテゴリ名を入力してください。');return;}CATS[k].label=label;CATS[k].short=label.slice(0,12);CATS[k].color=color;CATS[k].textColor=row.querySelector('.cat-text-color').value==='#000'?'#000':'#fff';CATS[k].fontWeight=row.querySelector('.cat-font-weight').value==='700'?'700':'400';saveCategories();fillCatSelect($('#fCat'));renderAll();renderCategoryManager();});
   box.querySelectorAll('[data-action="cat-delete"]').forEach(btn=>btn.onclick=()=>{const row=btn.closest('.category-row'),k=row.dataset.cat;if(k==='other')return;if(!confirm('このカテゴリを削除しますか？\nこのカテゴリを使っている既存予定は「その他」に変更されます。'))return;events.forEach(ev=>{if(ev.cat===k)ev.cat='other';});delete CATS[k];saveCategories();saveLocal();fillCatSelect($('#fCat'));renderAll();renderCategoryManager();});
 }
@@ -790,7 +1185,7 @@ function updateAllDayUI(){const on=$('#fAllDay').checked;$('#fTime').disabled=on
 
 /* ---------- モーダル ---------- */
 function fillCatSelect(sel){
-  sel.innerHTML = Object.keys(CATS).map(k => '<option value="'+k+'">'+CATS[k].label+'</option>').join('');
+  sel.innerHTML = Object.keys(CATS).map(k => '<option value="'+k+'">'+esc(categoryDisplayLabel(k))+'</option>').join('');
 }
 function openModal(id){
   if(window.__monoViewerMode) return;
@@ -878,13 +1273,49 @@ const BUKYO_CREDITS = [ // [月, 日, 年オフセット, 対象試験]
 function makeEv(title, cat, start, end, notes, refKey){
   return { id:'e'+Date.now()+Math.random().toString(36).slice(2,7)+refKey, title, cat, start, end:end||'', allDay:true, time:'', endTime:'', place:'', notes:notes||'', refKey:refKey||'' };
 }
-function bulkAdd(list){
-  const ids = new Set(events.map(e => e.refKey));
+function bulkAdd(list, silent=false){
+  const ids = new Set(events.filter(e=>e&&e.refKey).map(e => e.refKey));
   let added = 0;
-  list.forEach(x => { if (x.refKey && ids.has(x.refKey)) return; events.push(x); added++; });
+  (list||[]).forEach(x => {
+    if(!x || !x.start) return;
+    if(!x.refKey) x.refKey='auto-'+x.cat+'-'+x.start+'-'+x.title;
+    if(ids.has(x.refKey)) return;
+    // 自動追加予定も、登録済みカテゴリの最新設定をそのまま使う。
+    if(!CATS[x.cat]){
+      const base=DEFAULT_CATS[x.cat]||{label:categoryDisplayLabel(x.cat),color:'#546e7e',short:categoryDisplayLabel(x.cat).slice(0,12),textColor:'#fff',fontWeight:'400'};
+      CATS[x.cat]=cloneCats(base);
+    }
+    events.push(x); ids.add(x.refKey); added++;
+  });
   saveLocal(); fbPush(); renderAll();
-  alert(added + '件の予定を登録しました(登録済み・終了済みのものはスキップ)。');
+  if(!silent) alert(added + '件の予定を登録しました（登録済み・終了済み・重複はスキップ）。');
+  return added;
 }
+function buildAllAutomaticEvents(){
+  const all=[];
+  // reports
+  for(let i=0;i<12;i++){
+    const d=new Date(BUKYO_Y,9+i,1),m=d.getMonth()+1,y=d.getFullYear();
+    all.push(makeEv(m+'月リポート提出','report',y+'-'+pad(m)+'-01',y+'-'+pad(m)+'-07','佛大通信: 毎月1日〜7日に提出。受理で翌月の科目最終試験から受験可。','rep-'+y+'-'+pad(m)));
+  }
+  // exams
+  BUKYO_EXAMS.forEach(x=>{const st=bukyoDate(x[1],x[2]),en=bukyoDate(x[3],x[4]);if(en>=todayStr())all.push(makeEv(x[0]+'月科目最終試験','exam',st,en,'受験資格: 前月までに設題をすべて提出・受理。\n合格時の単位認定日: '+x[5],'exam-'+st));});
+  // grades
+  for(let i=0;i<12;i++){const d=new Date(BUKYO_Y,9+i+1,0),ds=dstr(d);if(ds>=todayStr())all.push(makeEv((d.getMonth()+1)+'月成績開示','grade',ds,'','佛大通信: 成績開示は毎月月末。','grade-'+ds));}
+  // credits
+  BUKYO_CREDITS.forEach(x=>{const d=(BUKYO_Y+x[2])+'-'+pad(x[0])+'-'+pad(x[1]);if(d>=todayStr())all.push(makeEv('単位認定日('+x[3]+'に合格した科目)','credit',d,'','佛大通信の単位認定日。','credit-'+d));});
+  // schooling application periods
+  const apply=[['集中1',4,1,4,5],['春期',4,25,4,30],['春期夜間',4,25,4,30],['夏期',5,25,5,31],['集中2',5,25,5,31],['秋期',10,25,10,31],['秋期夜間',10,25,10,31],['冬期',11,25,11,30]];
+  apply.forEach(x=>{const st=bukyoDate(x[1],x[2]),en=bukyoDate(x[3],x[4]);if(en>=todayStr())all.push(makeEv(x[0]+'スクーリング申込期間','schooling',st,en,'佛大通信: 2026年度スクーリング申込期間。','schooling-apply-'+x[0]+'-'+st));});
+  return all;
+}
+function autoAddAllSix(){
+  if(window.__monoViewerMode)return;
+  const list=buildAllAutomaticEvents();
+  const added=bulkAdd(list,true);
+  alert('佛大通信の自動追加を実行しました。\n追加: '+added+'件\n既存・終了済み・重複はスキップ。\n※スクーリング結果開示日はB-net確認日を手入力する仕様のため、ここでは自動生成しません。');
+}
+
 root.querySelectorAll('.ref-btn').forEach(b => {
   b.onclick = () => { if(window.__monoViewerMode) return;
     const kind = b.dataset.ref;
@@ -905,6 +1336,17 @@ root.querySelectorAll('.ref-btn').forEach(b => {
         list.push(makeEv(x[0]+'月科目最終試験', 'exam', s, e, '受験資格: 前月までに設題をすべて提出・受理。\n合格時の単位認定日: '+x[5], 'exam-'+s));
       });
       bulkAdd(list);
+    } else if (kind === 'grades'){
+      const list=[];
+      for(let i=0;i<12;i++){ const d=new Date(BUKYO_Y,9+i+1,0), ds=dstr(d); if(ds<todayStr())continue; const y=d.getFullYear(),m=d.getMonth()+1; list.push(makeEv(m+'月成績開示','grade',ds,'','佛大通信: 成績開示は毎月月末。','grade-'+y+'-'+pad(m))); }
+      bulkAdd(list);
+    } else if (kind === 'schoolingApply'){
+      const list=[]; const apply=[['集中1',4,1,4,5],['春期',4,25,4,30],['春期夜間',4,25,4,30],['夏期',5,25,5,31],['集中2',5,25,5,31],['秋期',10,25,10,31],['秋期夜間',10,25,10,31],['冬期',11,25,11,30]];
+      apply.forEach(x=>{const st=bukyoDate(x[1],x[2]),en=bukyoDate(x[3],x[4]);if(en<todayStr())return;list.push(makeEv(x[0]+'スクーリング申込期間','schooling',st,en,'佛大通信: 2026年度スクーリング申込期間。','schooling-apply-'+x[0]+'-'+st));}); bulkAdd(list);
+    } else if (kind === 'schoolingResults'){
+      const raw=prompt('B-netで確認したスクーリング結果開示日を入力してください。\n複数ある場合はカンマ区切りで入力できます。\n例: 2026-10-20,2026-12-25'); if(raw===null)return;
+      const dates=raw.split(',').map(x=>x.trim()).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)); if(!dates.length){alert('YYYY-MM-DD形式の日付を1つ以上入力してください。');return;}
+      bulkAdd(dates.map(d=>makeEv('スクーリング結果開示日','schooling_result',d,'','B-netで確認したスクーリング結果開示日。','schooling-result-'+d)));
     } else if (kind === 'credits'){
       const list = [];
       BUKYO_CREDITS.forEach(x => {
@@ -916,6 +1358,7 @@ root.querySelectorAll('.ref-btn').forEach(b => {
     }
   };
 });
+const bulkAllRefBtn=root.querySelector('#bulkAllRefBtn'); if(bulkAllRefBtn) bulkAllRefBtn.onclick=autoAddAllSix;
 $('#fCat').onchange = () => { if (!editingId) $('#fNotes').value = REF_TEXT[$('#fCat').value] || ''; };
 $('#fAllDay').onchange=updateAllDayUI;
 $('#addCatBtn').onclick=addCategory;
@@ -1026,4 +1469,36 @@ updateAllDayUI();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="sync.js"></script>
+<script>
+/* v69: 同期モーダル表示の最終ガード
+   sync.jsの読み込み状態に左右されず、☁同期ボタンから必ず画面を開けるようにする。 */
+(function(){
+  function forceOpenSyncModal(){
+    const m=document.getElementById('syncModal');
+    if(!m)return false;
+    m.style.display='flex';
+    m.style.visibility='visible';
+    m.style.opacity='1';
+    m.style.zIndex='99999';
+    try{
+      if(typeof window.ensureClient==='function') window.ensureClient().catch(function(){});
+    }catch(e){}
+    return true;
+  }
+  const original=window.openSyncModal;
+  window.openSyncModal=function(){
+    let opened=false;
+    try{if(typeof original==='function') original();}catch(e){console.error('openSyncModal:',e);}
+    opened=forceOpenSyncModal()||opened;
+    return opened;
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    const b=document.querySelector('.actions button[onclick*="openSyncModal"]');
+    if(b){
+      b.removeAttribute('onclick');
+      b.addEventListener('click',function(e){e.preventDefault();window.openSyncModal();});
+    }
+  });
+})();
+</script>
 </body></html>
