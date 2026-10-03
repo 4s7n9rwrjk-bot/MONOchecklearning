@@ -15,40 +15,22 @@
   window.calcProgress = function(subject){
     const totalPages = Math.max(0, Number(subject.totalPages) || (Array.isArray(subject.contents) ? subject.contents.reduce((sum,c) => sum + Math.max(0, Number(c.end)-Number(c.start)+1), 0) : 0));
     const actuals = subject.actuals && typeof subject.actuals === 'object' ? subject.actuals : {};
-    const schedule = Array.isArray(subject.schedule) ? subject.schedule : [];
-    const isDay = day => /^\d{4}-\d{2}-\d{2}$/.test(day);
-    const allDates = [...new Set([...schedule.map(row => String(row && row.date || '')), ...Object.keys(actuals)].filter(isDay))].sort();
-
-    // I列を1行ずつ（日付の古い順に）計算し、その最大値を進捗率とする
-    let cumulative = 0;   // 直前の行までの G（実績累計）
-    let maxRatio = 0;     // I49 = MAX(I2:I48)
-    let validRows = 0;
-    allDates.forEach(day => {
-      const entered = Object.prototype.hasOwnProperty.call(actuals, day) && actuals[day] !== '' && actuals[day] != null;
-      const value = entered ? Math.max(0, Number(actuals[day]) || 0) : 0;
-      const total = cumulative + value;                 // G（その日までの実績累計）
-      if (entered) {                                    // IF(実績="","",…)：未入力の日はI列が空欄
-        const remainingBefore = totalPages - cumulative; // その前日時点のH（初日はH1=総ページ数）
-        if (remainingBefore > 0) {                      // Excelでは#DIV/0!になるため分母0は除外
-          maxRatio = Math.max(maxRatio, total / remainingBefore);
-          validRows += 1;
-        }
-      }
-      cumulative = total;
-    });
-
-    const actualPages = cumulative;                    // G列（SUM、上限なし）
-    const remainingPages = totalPages - actualPages;   // H列 = $H$1 - G
+    const actualPages = Object.values(actuals).reduce((sum,v) => sum + Math.max(0, Number(v) || 0), 0);
     const completedPages = actualPages;
-    const rawPercent = validRows ? maxRatio * 100 : 0; // I49
-    // Excel の 0% 表示は四捨五入。円弧を描くため 0〜100 に収める（100%超の日は100%表示）。
+    const remainingPages = Math.max(0, totalPages - actualPages);
+    // 実績進捗率は「実際に読んだ累計 ÷ 教材総ページ数」。
+    // 例: 総414ページで実績142ページなら 142/414 = 34.3% → 表示34%。
+    const rawPercent = totalPages > 0 ? (actualPages / totalPages) * 100 : 0;
     const percent = Math.max(0, Math.min(100, Math.round(rawPercent)));
-    return {totalPages, actualPages, completedPages, remainingPages, percent, rawPercent, ratio:percent/100, validRows};
+    return {totalPages, actualPages, completedPages, remainingPages, percent, rawPercent, ratio:percent/100, validRows:actualPages>0?1:0};
   };
 
   // 進捗率バーと円グラフ（ドーナツ）は必ず同じ数値を使う。共通の入口をここに一本化する。
   window.progressPercent = function(subject){
-    return window.calcProgress(subject).percent;
+    const total = Math.max(0, Number(subject?.totalPages)||0);
+    const actual = subject?.actuals && typeof subject.actuals==='object'
+      ? Object.values(subject.actuals).reduce((sum,v)=>sum+Math.max(0,Number(v)||0),0) : 0;
+    return total>0 ? Math.max(0,Math.min(100,Math.round(actual/total*100))) : 0;
   };
   window.progressPercentText = function(subject){
     return window.progressPercent(subject) + '%';
