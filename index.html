@@ -271,6 +271,130 @@ function addUnit(){const u=ensureUnits();u.courses.push({id:'u'+Date.now(),name:
 function updateUnit(i,k,v){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(k==='units')c[k]=Math.max(0,Number(v)||0);else c[k]=v;save(true)}
 function deleteUnit(i){const u=ensureUnits(),c=u.courses[i];if(!c)return;if(!confirm('「'+(c.name||'この科目')+'」を単位管理から削除しますか？'))return;u.courses.splice(i,1);save(true)}
 
+/* ===== XLSX / Excel 学習データ取り込み ===== */
+function xlsxText(xml){return String(xml||'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'");}
+function xlsxColToNum(ref){let m=String(ref||'').match(/[A-Z]+/i);if(!m)return 0;let n=0;for(const c of m[0].toUpperCase())n=n*26+c.charCodeAt(0)-64;return n-1;}
+function xlsxCellValue(cell,shared){
+  const t=cell.getAttribute('t');
+  if(t==='inlineStr'){const n=cell.getElementsByTagName('t')[0];return n?xlsxText(n.textContent):'';}
+  const f=cell.getElementsByTagName('v')[0]; if(!f)return '';
+  const raw=xlsxText(f.textContent||'');
+  if(t==='s'){const i=parseInt(raw,10);return Number.isFinite(i)?(shared[i]??''):'';}
+  if(t==='b')return raw==='1'?'TRUE':'FALSE';
+  return raw;
+}
+function xlsxSheetRows(xml,shared){
+  const doc=new DOMParser().parseFromString(xml,'application/xml');
+  if(doc.querySelector('parsererror'))throw new Error('ExcelシートXMLを解析できませんでした。');
+  const rows=[];
+  for(const row of Array.from(doc.getElementsByTagName('row'))){
+    const cells=[]; for(const cell of Array.from(row.getElementsByTagName('c'))){
+      const ref=cell.getAttribute('r')||''; const col=xlsxColToNum(ref); while(cells.length<=col)cells.push(''); cells[col]=xlsxCellValue(cell,shared);
+    }
+    rows.push(cells);
+  }
+  return rows;
+}
+function xlsxRowsToObjects(rows){
+  if(!rows.length)return [];
+  const headers=rows[0].map(v=>String(v??'').trim());
+  return rows.slice(1).filter(r=>r.some(v=>String(v??'').trim()!=='')).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??''])));
+}
+function xlsxNorm(v){return String(v??'').trim().replace(/\s+/g,'').replace(/[（）()［］\[\]【】「」『』]/g,'').toLowerCase();}
+function xlsxFindHeader(headers,names){const want=names.map(xlsxNorm);return headers.findIndex(h=>want.includes(xlsxNorm(h)));}
+function xlsxNum(v){if(v===null||v===undefined||v==='')return null;const n=Number(String(v).replace(/,/g,''));return Number.isFinite(n)?n:null;}
+function xlsxDate(v){
+  if(v===null||v===undefined||v==='')return null;
+  if(v instanceof Date)return v.toISOString().slice(0,10);
+  const s=String(v).trim();
+  let m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/); if(m)return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+  const n=Number(s); if(Number.isFinite(n)&&n>20000&&n<80000){const d=new Date(Date.UTC(1899,11,30)+n*86400000);return d.toISOString().slice(0,10);}
+  return null;
+}
+async function readXlsxWorkbook(file){
+  if(typeof JSZip==='undefined')throw new Error('Excel読込用ライブラリが見つかりません。jszip.min.jsが必要です。');
+  const zip=await JSZip.loadAsync(await file.arrayBuffer());
+  const shared=[];
+  if(zip.file('xl/sharedStrings.xml')){
+    const doc=new DOMParser().parseFromString(await zip.file('xl/sharedStrings.xml').async('string'),'application/xml');
+    for(const si of Array.from(doc.getElementsByTagName('si'))){shared.push(Array.from(si.getElementsByTagName('t')).map(x=>x.textContent||'').join(''));}
+  }
+  const wbDoc=new DOMParser().parseFromString(await zip.file('xl/workbook.xml').async('string'),'application/xml');
+  const relDoc=new DOMParser().parseFromString(await zip.file('xl/_rels/workbook.xml.rels').async('string'),'application/xml');
+  const rels={}; for(const r of Array.from(relDoc.getElementsByTagName('Relationship')))rels[r.getAttribute('Id')]=r.getAttribute('Target');
+  const sheets={};
+  for(const sh of Array.from(wbDoc.getElementsByTagName('sheet'))){
+    const name=sh.getAttribute('name'); const rid=sh.getAttribute('r:id'); let target=rels[rid]||'';
+    if(!target.startsWith('/'))target='xl/'+target.replace(/^\.\//,''); else target=target.slice(1);
+    if(target.startsWith('xl/xl/'))target=target.slice(3);
+    const entry=zip.file(target); if(!entry)continue;
+    sheets[name]=xlsxSheetRows(await entry.async('string'),shared);
+  }
+  return sheets;
+}
+function mergeImportedSubject(target,src){
+  if(src.name)target.name=src.name;
+  if(src.textbook!==undefined)target.textbook=src.textbook;
+  if(src.totalPages!==null&&src.totalPages!==undefined)target.totalPages=src.totalPages;
+  if(src.schedule)target.schedule=src.schedule;
+  if(src.actuals)target.actuals=src.actuals;
+  if(src.contents)target.contents=src.contents;
+  if(src.reportPrep)target.reportPrep=src.reportPrep;
+}
+async function importStudyXlsx(ev){
+  const file=ev.target.files?.[0]; if(!file)return;
+  try{
+    const sheets=await readXlsxWorkbook(file);
+    const mode=document.getElementById('studyXlsxMode')?.value||'merge';
+    const subjectRows=sheets['MONOcheck_科目']||[];
+    const scheduleRows=sheets['学習_予定実績']||[];
+    const contentRows=sheets['目次']||[];
+    const prepRows=sheets['レポート準備']||[];
+    const calRows=sheets['カレンダー']||[];
+    const unitRows=sheets['単位管理']||[];
+    let importedSubjects=0, importedDays=0, importedContents=0, importedEvents=0, importedUnits=0;
+    const subjectMap={};
+    for(const r of subjectRows.slice(1)){
+      const id=String(r[0]||'').trim(); const name=String(r[1]||'').trim(); if(!name)continue;
+      const key=id||name; let target=data.subjects.find(x=>x.id===id)||data.subjects.find(x=>x.name===name);
+      if(!target){target={id:id||('sub_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,6)),name,textbook:String(r[2]||''),totalPages:xlsxNum(r[3])||0,contents:[],schedule:[],actuals:{},notes:{},reportPrep:[]};data.subjects.push(target);}
+      if(mode==='replace'){target.contents=[];target.schedule=[];target.actuals={};target.reportPrep=[];}
+      target.name=name; target.textbook=String(r[2]||target.textbook||''); const tp=xlsxNum(r[3]); if(tp!==null)target.totalPages=tp;
+      subjectMap[key]=target; subjectMap[name]=target; importedSubjects++;
+    }
+    if(!Object.keys(subjectMap).length){const s=subject();subjectMap[s.id]=s;subjectMap[s.name]=s;}
+    const getSub=(id,name)=>subjectMap[String(id||'')]||subjectMap[String(name||'')]||data.subjects.find(x=>x.id===id)||data.subjects.find(x=>x.name===name)||subject();
+    for(const r of scheduleRows.slice(1)){
+      const s=getSub(r[0],r[1]), d=xlsxDate(r[2]); if(!d)continue; const plan=xlsxNum(r[3]), act=xlsxNum(r[4]);
+      if(!Array.isArray(s.schedule))s.schedule=[]; const old=s.schedule.find(x=>x.date===d); if(old){if(plan!==null)old.planned=Math.max(0,plan);}else s.schedule.push({date:d,planned:plan===null?0:Math.max(0,plan)});
+      if(act!==null)s.actuals[d]=Math.max(0,act); importedDays++;
+    }
+    for(const r of contentRows.slice(1)){
+      const s=getSub(r[0],r[1]), title=String(r[2]||'').trim(); if(!title)continue; const st=xlsxNum(r[3]), en=xlsxNum(r[4]);
+      const item={title,start:st===null?0:st,end:en===null?(st===null?0:st):en}; const old=s.contents.find(x=>x.title===title&&x.start===item.start);
+      if(old){old.end=item.end;}else s.contents.push(item); const pages=xlsxNum(r[5]); if(pages!==null&&item.start===item.end){} importedContents++;
+    }
+    // 旧Excel形式（進捗率管理表＋目次）もそのまま取り込む。
+    for(const [name,rows] of Object.entries(sheets)){
+      if(!/進捗率管理表|進捗|学習/i.test(name))continue;
+      if(rows.length<2)continue; const h=rows[0].map(xlsxNorm);
+      const hiDate=xlsxFindHeader(h,['日付','date']), hiPlan=xlsxFindHeader(h,['予定ページ数','予定ページ','予定','planned']), hiAct=xlsxFindHeader(h,['実績ページ数','実績','actual']), hiTotal=xlsxFindHeader(h,['総ページ数','教材総ページ数','totalpages']);
+      if(hiDate<0)continue; const s=subject(); for(const r of rows.slice(1)){const d=xlsxDate(r[hiDate]);if(!d)continue;const p=hiPlan>=0?xlsxNum(r[hiPlan]):null,a=hiAct>=0?xlsxNum(r[hiAct]):null;if(p!==null){const o=s.schedule.find(x=>x.date===d);if(o)o.planned=p;else s.schedule.push({date:d,planned:p});}if(a!==null)s.actuals[d]=a;importedDays++;if(hiTotal>=0){const t=xlsxNum(r[hiTotal]);if(t!==null)s.totalPages=t;}}
+    }
+    if(calRows.length>1){
+      data.calendarEvents=Array.isArray(data.calendarEvents)?data.calendarEvents:[];
+      for(const r of calRows.slice(1)){if(!String(r[0]||'').trim())continue; const ev0={title:String(r[0]||''),category:String(r[1]||'未分類'),start:String(r[2]||''),end:String(r[3]||r[2]||''),allDay:String(r[4]).toLowerCase()!=='false',startTime:String(r[5]||''),endTime:String(r[6]||''),location:String(r[7]||''),notes:String(r[8]||''),refKey:String(r[9]||'')}; const idx=data.calendarEvents.findIndex(x=>ev0.refKey&&x.refKey===ev0.refKey); if(idx>=0)data.calendarEvents[idx]=Object.assign({},data.calendarEvents[idx],ev0);else data.calendarEvents.push(ev0);importedEvents++;}
+    }
+    if(unitRows.length>1){
+      data.unitLedger=Array.isArray(data.unitLedger)?data.unitLedger:[];
+      for(const r of unitRows.slice(1)){if(!String(r[2]||'').trim())continue; data.unitLedger.push({course:String(r[2]||''),category:String(r[3]||''),credits:xlsxNum(r[4])||0,status:String(r[5]||'未取得'),year:xlsxNum(r[6])||null,note:String(r[7]||'')});importedUnits++;}
+    }
+    data.active=data.active||data.subjects[0]?.id; data.excelSyncAt=Date.now(); save(true); render();
+    alert(`Excel（.xlsx）をそのまま読み込みました。\n科目 ${importedSubjects}件 / 学習日 ${importedDays}件 / 目次 ${importedContents}件 / カレンダー ${importedEvents}件 / 単位 ${importedUnits}件`);
+  }catch(err){console.error(err);alert('Excel（.xlsx）の読み込みに失敗しました：'+(err?.message||err));}
+  ev.target.value='';
+}
+
 /* ===== Excel/CSV 学習データ取り込み ===== */
 function csvDecodeBuffer(buf){
   const bytes=new Uint8Array(buf);
@@ -503,7 +627,7 @@ function applyBundledExcelData(){
   alert('渡してもらったExcel由来データを反映しました。\n総ページ数: '+target.totalPages+'ページ\n目次: '+target.contents.length+'件\n実績: '+Object.keys(target.actuals||{}).length+'日\n進捗率: '+pct(target)+'%');
 }
 
-function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="card" style="margin-top:12px;padding:12px;background:#f8fafc;box-shadow:none;"><div class="subh" style="margin-top:0">📥 Excel連携</div><div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap"><button class="btn primary" type="button" onclick="document.getElementById('excelImportFile').click()">📥 Excelを取り込む</button><button class="btn" type="button" onclick="exportExcel()">📤 Excelへ書き出す</button><button class="btn" type="button" onclick="applyBundledExcelData()">📊 渡したExcelデータを反映</button></div><div class="subh" style="margin-top:12px">Excelからの同期方法</div><div class="muted">このアプリで書き出したExcelは、科目・予定/実績・目次・カレンダー・単位管理をまとめて保存できます。今まで使っているExcelは「進捗率管理表」「目次」の形式にも対応します。</div><div class="subh" style="margin-top:8px">CSVから追加同期</div><div class="muted">Excelで管理している学習表をCSV形式で読み込み、現在選択中の科目の「目次・予定・実績・総ページ数」に反映します。日別の実績は「実績」または「実績累計」列から読み取ります。</div><div class="field"><label>読み込み方法</label><select id="studyCsvMode"><option value="merge">既存データに追加・更新</option><option value="replace">現在の目次・予定・実績をCSVで置き換える</option></select></div><label class="btn file-btn" style="margin-top:8px;text-align:center;display:block;cursor:pointer">📥 ExcelをCSV化したファイルを読み込む<input id="studyCsvFile" type="file" accept=".csv,text/csv" hidden onchange="importStudyCsv(event)"></label><div class="small" style="margin-top:7px">対応例：日付／予定／実績、日付／予定ページ／実際に読んだページ、目次の項目／開始／終了／ページ数、総ページ数。UTF-8・Shift-JISに対応。</div></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
+function subjects(s){let list=data.subjects.map((x,i)=>`<div class="item row"><div><b>${esc(x.name)}</b><div class="small">${total(x)}ページ</div></div><div class="actions"><button class="btn ${x.id===data.active?'primary':''}" onclick="selectSubject('${x.id}')">${x.id===data.active?'選択中':'選択'}</button><button class="btn danger" onclick="deleteSubject('${x.id}')">削除</button></div></div>`).join('');$('#main').innerHTML=`<div class="grid"><section class="card span6"><div class="h">⚙️ 科目管理</div><div class="list">${list}</div><button class="btn primary" style="margin-top:12px" onclick="addSubject()">＋ 科目を追加</button></section><section class="card span6"><div class="h">選択中：${esc(s.name)}</div><div class="field"><label>科目名</label><input value="${esc(s.name)}" onchange="updateSubjectField('name',this.value)"></div><div class="field"><label>教材名</label><input value="${esc(s.textbook||'')}" onchange="updateSubjectField('textbook',this.value)"></div><div class="field"><label>総ページ数</label><input type="number" value="${total(s)}" onchange="updateSubjectField('totalPages',this.value)"></div><div class="card" style="margin-top:12px;padding:12px;background:#f8fafc;box-shadow:none;"><div class="subh" style="margin-top:0">📥 Excel連携</div><div class="row" style="margin-top:8px;gap:6px;flex-wrap:wrap"><button class="btn primary" type="button" onclick="document.getElementById('excelImportFile').click()">📥 Excelを取り込む</button><button class="btn" type="button" onclick="exportExcel()">📤 Excelへ書き出す</button><button class="btn" type="button" onclick="applyBundledExcelData()">📊 渡したExcelデータを反映</button></div><div class="subh" style="margin-top:12px">Excelからの同期方法</div><div class="muted">このアプリで書き出したExcelは、科目・予定/実績・目次・カレンダー・単位管理をまとめて保存できます。今まで使っているExcelは「進捗率管理表」「目次」の形式にも対応します。</div><div class="subh" style="margin-top:8px">📥 Excel（.xlsx）から直接同期</div><div class="muted">ExcelファイルをCSVに変換せず、そのまま読み込みます。MONOcheckから書き出したExcel形式と、既存の「進捗率管理表」「目次」形式の両方に対応します。</div><div class="field"><label>Excelの反映方法</label><select id="studyXlsxMode"><option value="merge">既存データに追加・更新</option><option value="replace">学習データをExcelで置き換える</option></select></div><label class="btn primary file-btn" style="margin-top:8px;text-align:center;display:block;cursor:pointer">📥 .xlsxファイルをそのまま読み込む<input id="studyXlsxFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden onchange="importStudyXlsx(event)"></label><div class="subh" style="margin-top:12px">CSVから追加同期</div><div class="muted">Excelで管理している学習表をCSV形式で読み込み、現在選択中の科目の「目次・予定・実績・総ページ数」に反映します。日別の実績は「実績」または「実績累計」列から読み取ります。</div><div class="field"><label>読み込み方法</label><select id="studyCsvMode"><option value="merge">既存データに追加・更新</option><option value="replace">現在の目次・予定・実績をCSVで置き換える</option></select></div><label class="btn file-btn" style="margin-top:8px;text-align:center;display:block;cursor:pointer">📥 ExcelをCSV化したファイルを読み込む<input id="studyCsvFile" type="file" accept=".csv,text/csv" hidden onchange="importStudyCsv(event)"></label><div class="small" style="margin-top:7px">対応例：日付／予定／実績、日付／予定ページ／実際に読んだページ、目次の項目／開始／終了／ページ数、総ページ数。UTF-8・Shift-JISに対応。</div></div><div class="muted">科目を追加しても、他の科目の学習記録は分離して保存されます。科目を削除すると、その科目の目次・予定・実績・レポート準備も一緒に削除されます。</div></section></div>`}
 function updateContent(i,key,val){let s=subject();if(!s.contents[i])return;s.contents[i][key]=key==='title'?val:Number(val)||0;syncTotal();render()}
 function deleteContent(i){let s=subject();if(!s.contents[i])return;s.contents.splice(i,1);syncTotal();render()}
 function updateSubjectField(key,val){let s=subject();if(!s)return;s[key]=key==='name'||key==='textbook'?val:Number(val)||0;save();render()}
