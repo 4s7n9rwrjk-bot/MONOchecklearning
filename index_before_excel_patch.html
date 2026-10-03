@@ -592,22 +592,7 @@ function parseLearningSheet(rows,subjectName){
   let dateI=idx([/日付/,/^日$/],0),planI=idx([/予定ページ数/,/^予定$/, /予定.*ページ/],2),actI=idx([/実績ページ数/,/^実績$/, /実際に読んだ/],5),cumI=idx([/実績の累積/,/実績累計/,/実績.*累積/],-1),totalI=idx([/総ページ数/,/総ページ/],-1);
   const planned={},actual={};let prevCum=0,total=null;
   if(totalI>=0){for(let i=h+1;i<Math.min(rows.length,h+5);i++){const n=numVal(rows[i]?.[totalI]);if(n!==null){total=n;break}}}
-  // 総ページ数列がない旧形式では、先頭行のExcel数式を値として取得できないため、
-  // 日付シリアル値（4万台）などを総ページ数として誤認しない。
-  // 目次シートがある場合は importExcelFile 側で目次から正確に算出する。
-  if(total===null){
-    for(const row of rows.slice(0,4)){
-      for(const v of row){
-        const n=numVal(v);
-        if(n!==null&&n>50&&n<10000){
-          // 4万台のExcel日付シリアルは除外。
-          if(n>=20000) continue;
-          total=n;break;
-        }
-      }
-      if(total!==null)break;
-    }
-  }
+  if(total===null){for(const row of rows.slice(0,4)){for(const v of row){const n=numVal(v);if(n!==null&&n>50&&n<10000){total=n;break}}if(total!==null)break}}
   for(let r=h+1;r<rows.length;r++){const row=rows[r]||[],d=normDate(row[dateI]);if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue;const p=numVal(row[planI]);if(p!==null)planned[d]=p;let a=numVal(row[actI]);if(a!==null)actual[d]=a;else if(cumI>=0){const c=numVal(row[cumI]);if(c!==null){actual[d]=Math.max(0,c-prevCum);prevCum=c}}}
   return {subjectName,planned,actual,total}
 }
@@ -663,21 +648,8 @@ async function importExcelFile(ev){
     if(contents.length){
       const cs=parseContentsSheet(contents);
       if(cs.length){
-        // 旧形式の「進捗率管理表」は総ページ数が数式になっているため、
-        // XMLから数式そのものしか読めない場合があります。
-        // その場合は「目次」のページ範囲から総ページ数を確定します。
         s.contents=mode==='replace'?cs:cs;
-        const contentsTotal=cs.reduce((a,c)=>a+Math.max(0,Number(c.end)-Number(c.start)+1),0);
-        if(parsed.total===null || parsed.total>10000) s.totalPages=contentsTotal;
-      }
-    }
-    // 「進捗率管理表」のE1/H1など、Excel側で総ページ数をSUM式にしている場合は
-    // 日付シリアルを総ページ数と誤認しないようにする。目次がある場合はそちらを優先。
-    if(contents.length){
-      const cs=parseContentsSheet(contents);
-      if(cs.length){
-        const contentsTotal=cs.reduce((a,c)=>a+Math.max(0,Number(c.end)-Number(c.start)+1),0);
-        if(contentsTotal>0) s.totalPages=contentsTotal;
+        if(parsed.total===null)s.totalPages=cs.reduce((a,c)=>a+Math.max(0,c.end-c.start+1),0);
       }
     }
     // 旧Excelは「文学入門」など科目名をファイル名から勝手に変更しない。
