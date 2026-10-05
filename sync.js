@@ -19,8 +19,6 @@ function status(t){
   let d=document.getElementById('syncDot');if(d)d.textContent=user?'●':'○';
 }
 function localStamp(){return Number(localStorage.getItem('monocheck-study-updated')||0);}
-function isLocalDirty(){return localStorage.getItem('monocheck-study-dirty')==='1';}
-function setLocalDirty(v){if(v)localStorage.setItem('monocheck-study-dirty','1');else localStorage.removeItem('monocheck-study-dirty');}
 const CAT_LS_KEY='monocheck-calendar-categories-v1';
 const CAT_UPDATED_KEY='monocheck-calendar-categories-updated';
 function mergeLocalCategoriesIntoData(target){
@@ -191,11 +189,7 @@ window.syncNow=async function(){
     data=mergeLocalCategoriesIntoData(data);
     try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:mergeLocalCategoriesIntoData後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
     let ls=localStamp(),remote=r?.updated_at?Date.parse(r.updated_at):0;
-    const dirty=isLocalDirty();
-    // 未同期のローカル変更がある場合は、時刻比較より先にその変更をクラウドへ保存する。
-    // これで「保存直後に古いクラウドデータが戻ってきてExcel/学習記録が消える」競合を防ぐ。
     if(!r)await push();
-    else if(dirty)await push();
     else if(ls>remote)await push();
     else if(remote>ls){
       const remoteData=r.data||{};
@@ -217,7 +211,6 @@ window.syncNow=async function(){
       try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
       localStorage.setItem(KEY,JSON.stringify(data));
       localStorage.setItem('monocheck-study-updated',String(remote));
-      setLocalDirty(false);
       render();
       if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
       if(localCatRaw){
@@ -230,7 +223,6 @@ window.syncNow=async function(){
         }
         localStorage.setItem(KEY,JSON.stringify(data));
         localStorage.setItem('monocheck-study-updated',String(remote));
-        setLocalDirty(false);
         render();
         if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
         status('クラウドから反映しました');msg('クラウドのデータを反映しました');
@@ -248,9 +240,7 @@ async function push(){
   let {error}=await client.from('monocheck_study_data').upsert({user_id:user.id,data:data,updated_at:stamp},{onConflict:'user_id'});
   if(error)throw error;
   try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('push:Supabase upsert後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
-  localStorage.setItem('monocheck-study-updated',String(Date.parse(stamp)));
-  setLocalDirty(false);
-  status('同期済み');msg('クラウドに保存しました');
+  localStorage.setItem('monocheck-study-updated',String(Date.parse(stamp)));status('同期済み');msg('クラウドに保存しました');
 }
 window.queueStudyCloudSync=function(){if(window.__monoViewerMode||!user)return;clearTimeout(timer);timer=setTimeout(()=>syncNow(),700);};
 window.addEventListener('online',()=>{if(window.__monoViewerMode)viewerFetch().catch(()=>{});else if(user)syncNow();});

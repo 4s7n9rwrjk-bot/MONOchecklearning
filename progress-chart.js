@@ -10,27 +10,45 @@
   //   H1 = 総ページ数 = SUM(目次!F2:F2000)            → totalPages
   //   G  = 実績の累積 = SUM(実績)（上限なし）          → actualPages
   //   H  = 実績残 = $H$1 - G                          → remainingPages
-  //   I  = IF(実績="","", G / その前日時点のH)         （初日は H1 = 総ページ数を使用／それ以外は前日のH）
+  //   I  = IF(実績="","", G / $H$1)                    → 実績累計 ÷ 総ページ数
   //   I49 = MAX(I2:I48)、J49 = 1 - I49                → 円グラフは [I49, J49]、表示は 0% 書式（四捨五入）
   window.calcProgress = function(subject){
     const totalPages = Math.max(0, Number(subject.totalPages) || (Array.isArray(subject.contents) ? subject.contents.reduce((sum,c) => sum + Math.max(0, Number(c.end)-Number(c.start)+1), 0) : 0));
     const actuals = subject.actuals && typeof subject.actuals === 'object' ? subject.actuals : {};
-    const actualPages = Object.values(actuals).reduce((sum,v) => sum + Math.max(0, Number(v) || 0), 0);
+    const schedule = Array.isArray(subject.schedule) ? subject.schedule : [];
+    const isDay = day => /^\d{4}-\d{2}-\d{2}$/.test(day);
+    const allDates = [...new Set([...schedule.map(row => String(row && row.date || '')), ...Object.keys(actuals)].filter(isDay))].sort();
+
+    // I列を1行ずつ（日付の古い順に）計算し、その最大値を進捗率とする
+    let cumulative = 0;   // 直前の行までの G（実績累計）
+    let maxRatio = 0;     // I49 = MAX(I2:I48)
+    let validRows = 0;
+    allDates.forEach(day => {
+      const entered = Object.prototype.hasOwnProperty.call(actuals, day) && actuals[day] !== '' && actuals[day] != null;
+      const value = entered ? Math.max(0, Number(actuals[day]) || 0) : 0;
+      const total = cumulative + value;                 // G（その日までの実績累計）
+      if (entered) {                                    // IF(実績="","",…)：未入力の日はI列が空欄
+        const denominator = totalPages;              // $H$1（総ページ数）
+        if (denominator > 0) {                         // Excelでは#DIV/0!になるため分母0は除外
+          maxRatio = Math.max(maxRatio, total / denominator);
+          validRows += 1;
+        }
+      }
+      cumulative = total;
+    });
+
+    const actualPages = cumulative;                    // G列（SUM、上限なし）
+    const remainingPages = totalPages - actualPages;   // H列 = $H$1 - G
     const completedPages = actualPages;
-    const remainingPages = Math.max(0, totalPages - actualPages);
-    // 実績進捗率は「実際に読んだ累計 ÷ 教材総ページ数」。
-    // 例: 総414ページで実績142ページなら 142/414 = 34.3% → 表示34%。
-    const rawPercent = totalPages > 0 ? (actualPages / totalPages) * 100 : 0;
+    const rawPercent = validRows ? maxRatio * 100 : 0; // I49
+    // Excel の 0% 表示は四捨五入。円弧を描くため 0〜100 に収める（100%超の日は100%表示）。
     const percent = Math.max(0, Math.min(100, Math.round(rawPercent)));
-    return {totalPages, actualPages, completedPages, remainingPages, percent, rawPercent, ratio:percent/100, validRows:actualPages>0?1:0};
+    return {totalPages, actualPages, completedPages, remainingPages, percent, rawPercent, ratio:percent/100, validRows};
   };
 
   // 進捗率バーと円グラフ（ドーナツ）は必ず同じ数値を使う。共通の入口をここに一本化する。
   window.progressPercent = function(subject){
-    const total = Math.max(0, Number(subject?.totalPages)||0);
-    const actual = subject?.actuals && typeof subject.actuals==='object'
-      ? Object.values(subject.actuals).reduce((sum,v)=>sum+Math.max(0,Number(v)||0),0) : 0;
-    return total>0 ? Math.max(0,Math.min(100,Math.round(actual/total*100))) : 0;
+    return window.calcProgress(subject).percent;
   };
   window.progressPercentText = function(subject){
     return window.progressPercent(subject) + '%';
@@ -71,7 +89,7 @@
     const donutCard = document.createElement('section');
     donutCard.className = 'card span4';
     donutCard.setAttribute('aria-label', '教材全体の実績進捗率');
-    donutCard.innerHTML = `<div class="h">🎯 実績進捗率</div><div class="muted" style="margin:-4px 0 8px">Excel「進捗率管理表」I列の最大値＝実績累計 ÷ 前日時点の実績残（進捗率バーと同値）</div><div data-progress-doughnut></div>`;
+    donutCard.innerHTML = `<div class="h">🎯 実績進捗率</div><div class="muted" style="margin:-4px 0 8px">Excel「進捗率管理表」I列の最大値＝実績累計 ÷ 総ページ数（進捗率バーと同値）</div><div data-progress-doughnut></div>`;
     charts.appendChild(lineCard);
     charts.appendChild(donutCard);
     main.appendChild(charts);
