@@ -183,6 +183,15 @@ window.syncNow=async function(){
   if(busy){pendingSync=true;return;}
   busy=true;status('同期中…');
   try{
+    // Excel取込直後の30秒間は、クラウド側の古い値を取り込まず、この端末の取込結果を優先してpushする。
+    const forceUntil=Number(localStorage.getItem('monocheck-study-force-local-until')||0);
+    if(forceUntil>Date.now()){
+      await push();
+      localStorage.removeItem('monocheck-study-force-local-until');
+      status('Excel取込データをクラウドへ保存しました');
+      msg('Excel取込データをクラウドへ保存しました');
+      return;
+    }
     try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:開始',{dataCats:window.cloneCats?window.cloneCats(data.calendarCategories):data.calendarCategories,localCat:localStorage.getItem(CAT_LS_KEY),localUpdated:localStorage.getItem(CAT_UPDATED_KEY)});}catch(_){}
     let {data:r,error:e}=await client.from('monocheck_study_data').select('data,updated_at').eq('user_id',user.id).maybeSingle();
     if(e)throw e;

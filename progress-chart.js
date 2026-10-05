@@ -13,6 +13,21 @@
   //   I  = IF(実績="","", G / $H$1)                    → 実績累計 ÷ 総ページ数
   //   I49 = MAX(I2:I48)、J49 = 1 - I49                → 円グラフは [I49, J49]、表示は 0% 書式（四捨五入）
   window.calcProgress = function(subject){
+    // Excel取込データは、Excelが保存した計算結果をそのまま表示する。
+    // これにより「414 / 188 / 45%」のようなExcel側の値と画面・グラフを一致させる。
+    const em=subject && subject.excelModel;
+    if(em && em.learning && em.calculated){
+      const rows=em.learning.rows||[];
+      let last=null;
+      for(const r of rows){ if(em.calculated[r.row]) last=em.calculated[r.row]; }
+      const total=Math.max(0,Number(em.totalPages||subject.totalPages)||0);
+      const actual=last && Number.isFinite(Number(last.G)) ? Number(last.G) : 0;
+      const remaining=last && Number.isFinite(Number(last.H)) ? Number(last.H) : total-actual;
+      const raw=em.calculated['49'] ? Number(em.calculated['49'].I) : NaN;
+      const rawPercent=Number.isFinite(raw) ? raw*100 : (total ? actual/total*100 : 0);
+      const percent=Math.max(0,Math.min(100,Math.round(rawPercent)));
+      return {totalPages:total,actualPages:actual,completedPages:actual,remainingPages:remaining,percent,rawPercent,ratio:percent/100,validRows:rows.length};
+    }
     const totalPages = Math.max(0, Number(subject.totalPages) || (Array.isArray(subject.contents) ? subject.contents.reduce((sum,c) => sum + Math.max(0, Number(c.end)-Number(c.start)+1), 0) : 0));
     const actuals = subject.actuals && typeof subject.actuals === 'object' ? subject.actuals : {};
     const schedule = Array.isArray(subject.schedule) ? subject.schedule : [];
