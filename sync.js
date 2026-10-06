@@ -21,20 +21,35 @@ function status(t){
 function localStamp(){return Number(localStorage.getItem('monocheck-study-updated')||0);}
 const CAT_LS_KEY='monocheck-calendar-categories-v1';
 const CAT_UPDATED_KEY='monocheck-calendar-categories-updated';
-function mergeLocalCategoriesIntoData(target){
+function normalizeCalendarPayload(target){
   try{
-    const raw=localStorage.getItem(CAT_LS_KEY); if(!raw)return target;
-    const cats=JSON.parse(raw); if(!cats||typeof cats!=='object')return target;
-    target=target&&typeof target==='object'?target:{};
-    const localUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
-    const dataUpdated=Number(target.calendarCategoriesUpdatedAt||0);
-    if(localUpdated>=dataUpdated){
-      target.calendarCategories=Object.assign({},target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{},cats);
-      target.calendarCategoriesUpdatedAt=localUpdated;
-    }
-  }catch(e){}
+    if(window.__monoNormalizeCalendarDataCategories) return window.__monoNormalizeCalendarDataCategories(target)||target;
+  }catch(e){console.warn('category normalize failed',e);}
   return target;
 }
+function readLocalCategories(){
+  try{const raw=localStorage.getItem(CAT_LS_KEY);const cats=raw?JSON.parse(raw):null;return cats&&typeof cats==='object'&&!Array.isArray(cats)?cats:null;}catch(e){return null;}
+}
+function chooseCategories(localData,remoteData){
+  const lc=localData?.calendarCategories&&typeof localData.calendarCategories==='object'?localData.calendarCategories:null;
+  const rc=remoteData?.calendarCategories&&typeof remoteData.calendarCategories==='object'?remoteData.calendarCategories:null;
+  const lu=Number(localData?.calendarCategoriesUpdatedAt||localStorage.getItem(CAT_UPDATED_KEY)||0)||0;
+  const ru=Number(remoteData?.calendarCategoriesUpdatedAt||0)||0;
+  if(lc&&rc) return lu>=ru?lc:rc;
+  return lc||rc||{};
+}
+function mergeLocalCategoriesIntoData(target){
+  try{
+    target=target&&typeof target==='object'?target:{};
+    const local=readLocalCategories();
+    if(local){
+      target.calendarCategories=local;
+      target.calendarCategoriesUpdatedAt=Math.max(Number(target.calendarCategoriesUpdatedAt||0),Number(localStorage.getItem(CAT_UPDATED_KEY)||0));
+    }
+    return normalizeCalendarPayload(target);
+  }catch(e){return target;}
+}
+
 async function waitForSupabase(){
   if(window.supabase)return true;
   for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,150));if(window.supabase)return true;}
@@ -193,6 +208,7 @@ window.syncNow=async function(){
       return;
     }
     try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:開始',{dataCats:window.cloneCats?window.cloneCats(data.calendarCategories):data.calendarCategories,localCat:localStorage.getItem(CAT_LS_KEY),localUpdated:localStorage.getItem(CAT_UPDATED_KEY)});}catch(_){}
+    data=normalizeCalendarPayload(data);
     let {data:r,error:e}=await client.from('monocheck_study_data').select('data,updated_at').eq('user_id',user.id).maybeSingle();
     if(e)throw e;
     data=mergeLocalCategoriesIntoData(data);
@@ -201,20 +217,15 @@ window.syncNow=async function(){
     if(!r)await push();
     else if(ls>remote)await push();
     else if(remote>ls){
-      const remoteData=r.data||{};
-      // カレンダーのカテゴリ設定はこの端末で最後に保存した値を常に保持する。
-      // 学習データの更新時刻がクラウド側で新しくても、カテゴリだけを古い値へ戻さない。
-      const localCatRaw=localStorage.getItem(CAT_LS_KEY);
+      const remoteData=normalizeCalendarPayload(r.data||{});
+      // カテゴリは端末ごとのIDではなく共通IDへ正規化し、カテゴリ自身の更新日時で新旧を決める。
+      // これで PC の cat_xxx とスマホの cat_yyy が同じ「家族」でも別物になる問題を解消する。
+      const localCatRaw=readLocalCategories();
       const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
-      if(localCatRaw){
-        try{
-          const localCats=JSON.parse(localCatRaw);
-          if(localCats&&typeof localCats==='object'&&!Array.isArray(localCats)){
-            remoteData.calendarCategories=localCats;
-            remoteData.calendarCategoriesUpdatedAt=Math.max(localCatUpdated,Number(remoteData.calendarCategoriesUpdatedAt||0));
-          }
-        }catch(e){}
-      }
+      const chosenCats=chooseCategories(data,remoteData);
+      remoteData.calendarCategories=chosenCats;
+      remoteData.calendarCategoriesUpdatedAt=Math.max(localCatUpdated,Number(remoteData.calendarCategoriesUpdatedAt||0));
+      normalizeCalendarPayload(remoteData);
       try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直前',{remoteCats:remoteData.calendarCategories,localCats:localCatRaw?JSON.parse(localCatRaw):null,remoteUpdated:remoteData.calendarCategoriesUpdatedAt,localUpdated:localCatUpdated});}catch(_){}
       data=remoteData;
       try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
@@ -222,13 +233,15 @@ window.syncNow=async function(){
       localStorage.setItem('monocheck-study-updated',String(remote));
       render();
       if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
-      if(localCatRaw){
-        status('クラウドデータを反映（カテゴリ設定は保持）');msg('カテゴリ設定はこの端末の変更を保持しました');
+      const localCatsWon=!!localCatRaw && localCatUpdated>=Number(r?.data?.calendarCategoriesUpdatedAt||0);
+      if(localCatsWon){
+        status('クラウドデータを反映（カテゴリ設定は保持）');msg('カテゴリ設定はこの端末のカテゴリを保持しました');
         await push();
         if(window.__monoCalendarRefresh)window.__monoCalendarRefresh();
       } else {
+        normalizeCalendarPayload(data);
         if(data.calendarCategories&&typeof data.calendarCategories==='object'){
-          try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(localCatUpdated||remote||Date.now()));}catch(e){}
+          try{localStorage.setItem(CAT_LS_KEY,JSON.stringify(data.calendarCategories));localStorage.setItem(CAT_UPDATED_KEY,String(Number(data.calendarCategoriesUpdatedAt||remote||Date.now())));}catch(e){}
         }
         localStorage.setItem(KEY,JSON.stringify(data));
         localStorage.setItem('monocheck-study-updated',String(remote));
@@ -242,6 +255,7 @@ window.syncNow=async function(){
   finally{busy=false;if(pendingSync){pendingSync=false;clearTimeout(timer);timer=setTimeout(()=>syncNow(),300);}}
 };
 async function push(){
+  data=normalizeCalendarPayload(data);
   try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('push:開始',{before:data.calendarCategories,beforeUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
   data=mergeLocalCategoriesIntoData(data);
   try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('push:merge後',{dataCats:data.calendarCategories,dataUpdated:data.calendarCategoriesUpdatedAt});}catch(_){}
