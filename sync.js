@@ -217,9 +217,11 @@ window.syncNow=async function(){
     if(!r)await push();
     else if(ls>remote)await push();
     else if(remote>ls){
-      const remoteData=normalizeCalendarPayload(r.data||{});
-      // カテゴリは端末ごとのIDではなく共通IDへ正規化し、カテゴリ自身の更新日時で新旧を決める。
-      // これで PC の cat_xxx とスマホの cat_yyy が同じ「家族」でも別物になる問題を解消する。
+      // 重要: 先にカテゴリ設定を選び、その後で予定のカテゴリIDを正規化する。
+      // 旧版は remoteData を先に正規化していたため、リモート側にカテゴリ設定が
+      // 無い/古い場合、予定の cat がその場で「未設定」に変換され、後から正しい
+      // カテゴリ設定を入れても元に戻せない問題があった。
+      const remoteData=r.data&&typeof r.data==='object'?JSON.parse(JSON.stringify(r.data)):{};
       const localCatRaw=readLocalCategories();
       const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
       const chosenCats=chooseCategories(data,remoteData);
