@@ -31,12 +31,14 @@ function readLocalCategories(){
   try{const raw=localStorage.getItem(CAT_LS_KEY);const cats=raw?JSON.parse(raw):null;return cats&&typeof cats==='object'&&!Array.isArray(cats)?cats:null;}catch(e){return null;}
 }
 function chooseCategories(localData,remoteData){
-  const lc=localData?.calendarCategories&&typeof localData.calendarCategories==='object'?localData.calendarCategories:null;
-  const rc=remoteData?.calendarCategories&&typeof remoteData.calendarCategories==='object'?remoteData.calendarCategories:null;
-  const lu=Number(localData?.calendarCategoriesUpdatedAt||localStorage.getItem(CAT_UPDATED_KEY)||0)||0;
-  const ru=Number(remoteData?.calendarCategoriesUpdatedAt||0)||0;
-  if(lc&&rc) return lu>=ru?lc:rc;
-  return lc||rc||{};
+  const lc=localData?.calendarCategories&&typeof localData.calendarCategories==='object'?localData.calendarCategories:{};
+  const rc=remoteData?.calendarCategories&&typeof remoteData.calendarCategories==='object'?remoteData.calendarCategories:{};
+  // カテゴリは「どちらか片方を採用」すると、片方の端末だけに存在する
+  // カテゴリIDが消えて予定が「未設定」へ落ちる。カテゴリ設定は両端末の
+  // 共通IDで統合し、同名カテゴリは1つにまとめる。
+  const merge=window.__monoMergeCategorySetsByLabel;
+  if(typeof merge==='function') return merge(lc,rc);
+  return Object.assign({},rc,lc);
 }
 function mergeLocalCategoriesIntoData(target){
   try{
