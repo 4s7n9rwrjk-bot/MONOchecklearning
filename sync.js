@@ -44,8 +44,12 @@ function mergeLocalCategoriesIntoData(target){
   try{
     target=target&&typeof target==='object'?target:{};
     const local=readLocalCategories();
+    const dataCats=target.calendarCategories&&typeof target.calendarCategories==='object'?target.calendarCategories:{};
     if(local){
-      target.calendarCategories=local;
+      // 旧版は localStorage のカテゴリだけで data.calendarCategories を上書きしてから
+      // 予定を正規化していた。そのため、クラウド側にしか存在しないカテゴリIDを持つ予定が
+      // 「未設定」に落ちていた。ここでは両方の「元ID」を残したまま一度に正規化する。
+      target.calendarCategories=Object.assign({},dataCats,local);
       target.calendarCategoriesUpdatedAt=Math.max(Number(target.calendarCategoriesUpdatedAt||0),Number(localStorage.getItem(CAT_UPDATED_KEY)||0));
     }
     return normalizeCalendarPayload(target);
@@ -226,8 +230,11 @@ window.syncNow=async function(){
       const remoteData=r.data&&typeof r.data==='object'?JSON.parse(JSON.stringify(r.data)):{};
       const localCatRaw=readLocalCategories();
       const localCatUpdated=Number(localStorage.getItem(CAT_UPDATED_KEY)||0);
-      const chosenCats=chooseCategories(data,remoteData);
-      remoteData.calendarCategories=chosenCats;
+      // ローカル＋リモートの元カテゴリIDを両方残してから一度だけ正規化する。
+      // 片方だけを採用してから正規化すると、採用されなかった側の予定IDが未設定になる。
+      const localCatsForMerge=readLocalCategories()||{};
+      const remoteCatsForMerge=remoteData.calendarCategories&&typeof remoteData.calendarCategories==='object'?remoteData.calendarCategories:{};
+      remoteData.calendarCategories=Object.assign({},remoteCatsForMerge,localCatsForMerge);
       remoteData.calendarCategoriesUpdatedAt=Math.max(localCatUpdated,Number(remoteData.calendarCategoriesUpdatedAt||0));
       normalizeCalendarPayload(remoteData);
       try{if(typeof window.catDiagWrite==='function')window.catDiagWrite('syncNow:remoteData反映直前',{remoteCats:remoteData.calendarCategories,localCats:localCatRaw?JSON.parse(localCatRaw):null,remoteUpdated:remoteData.calendarCategoriesUpdatedAt,localUpdated:localCatUpdated});}catch(_){}

@@ -228,22 +228,19 @@ function normalizeCalendarDataCategories(target){
 }
 window.__monoNormalizeCalendarDataCategories=normalizeCalendarDataCategories;
 function mergeCategorySets(primary, secondary){
-  const out={}, byLabel={};
+  // 重要: ここでは旧IDを捨てず「統合用の生カテゴリ集合」を作る。
+  // normalizeCalendarDataCategories() が旧ID→共通IDの対応表を作れるように、
+  // primary/secondary の元キーをそのまま残す。
+  const out={};
   const add=(rawCats)=>{
     Object.entries(rawCats||{}).forEach(([oldKey,raw])=>{
       if(!raw||typeof raw!=='object'||Array.isArray(raw)) return;
-      const key=canonicalCategoryKey(oldKey,raw);
-      if(!key) return;
-      const label=normalizeCategoryLabel(raw.label||raw.short||oldKey);
-      const canonical=byLabel[label]||key;
-      byLabel[label]=canonical;
-      if(!out[canonical]) out[canonical]=cloneCats(raw);
-      else out[canonical]=Object.assign({},out[canonical],raw);
+      if(!canonicalCategoryKey(oldKey,raw)) return;
+      if(!out[oldKey]) out[oldKey]=cloneCats(raw);
+      else out[oldKey]=Object.assign({},out[oldKey],raw);
     });
   };
   add(primary); add(secondary);
-  Object.entries(DEFAULT_CATS).forEach(([k,v])=>{if(!out[k])out[k]=cloneCats(v);});
-  delete out.other;
   return out;
 }
 window.__monoMergeCategorySetsByLabel=mergeCategorySets;
