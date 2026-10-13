@@ -133,7 +133,7 @@
       // schedule/actuals から別計算すると、Excelの累積値とグラフだけズレるため。
       let points;
       if (excelRows.length) {
-        points = excelRows.slice().sort((a,b) => a.day.localeCompare(b.day));
+        points = excelRows.slice(); // Excel系列の順番を維持。日付なしの最終点をソートで先頭へ移動させない。
       } else {
         // 通常のMONOcheckデータは日別記録から残りページを算出する。
         const firstRecord = asDate(allDates[0]);
