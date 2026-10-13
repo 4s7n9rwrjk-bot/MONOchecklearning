@@ -86,6 +86,22 @@
     Object.entries(actuals).forEach(([day, value]) => {
       if (asDate(day)) actualByDate[day] = Math.max(0, Number(value) || 0);
     });
+    const em = subject && subject.excelModel;
+    const excelRows = em && em.learning && Array.isArray(em.learning.rows) && em.calculated
+      ? (() => {
+          // Excelの折れ線グラフは E1:E48 / H1:H48 を系列に使い、
+          // A2:A48 を横軸に使っている。つまり先頭点は E1/H1（総ページ数）。
+          // 以前は E2/H2 から描いていたため、Excelより1点先に進んだ線になっていた。
+          const categories = em.learning.rows.map(row => String(row.date || ''));
+          const values = [{day: categories[0] || '', plannedRemaining: Number((em.calculated['1'] || {}).E), actualRemaining: Number((em.calculated['1'] || {}).H)}];
+          em.learning.rows.forEach((row, index) => {
+            const calc = em.calculated[row.row] || {};
+            values.push({day: categories[index + 1] || '', plannedRemaining: Number(calc.E), actualRemaining: Number(calc.H)});
+          });
+          // Excelと同じく、系列値は48点、日付カテゴリは47件。最後の余分な点には日付ラベルを付けない。
+          return values.filter(point => Number.isFinite(point.plannedRemaining) && Number.isFinite(point.actualRemaining));
+        })()
+      : [];
     const allDates = [...new Set([...Object.keys(plannedByDate), ...Object.keys(actualByDate)])].sort();
     const actualTotal = progress.actualPages;
     const completed = progress.completedPages;
@@ -110,29 +126,35 @@
     main.appendChild(charts);
 
     const lineHost = lineCard.querySelector('[data-remaining-chart]');
-    if (!allDates.length) {
+    if (!excelRows.length && !allDates.length) {
       lineHost.innerHTML = '<div class="item muted">日別の予定または実績を登録すると、残りページの折れ線グラフが表示されます。</div>';
     } else {
-      // Add a starting baseline one day before the first planned/actual record,
-      // then include every intervening day as a calendar-date category.
-      const firstRecord = asDate(allDates[0]);
-      const lastRecord = asDate(allDates[allDates.length - 1]);
-      const first = new Date(firstRecord.getTime() - 86400000);
-      const dayCount = Math.floor((lastRecord - first) / 86400000) + 1;
-      const dates = [];
-      if (dayCount > 0 && dayCount <= 3661) {
-        for (let i = 0; i < dayCount; i++) dates.push(new Date(first.getTime() + i * 86400000).toISOString().slice(0,10));
+      // Excel取込時は、ExcelのE列（予定残）・H列（実績残）を直接描画する。
+      // schedule/actuals から別計算すると、Excelの累積値とグラフだけズレるため。
+      let points;
+      if (excelRows.length) {
+        points = excelRows.slice().sort((a,b) => a.day.localeCompare(b.day));
       } else {
-        dates.push(first.toISOString().slice(0,10), ...allDates);
-      }
-      let plannedDone = 0, actualDone = 0;
-      const points = dates.map((day, i) => {
-        if (i > 0) {
-          plannedDone += plannedByDate[day] || 0;
-          actualDone += actualByDate[day] || 0;
+        // 通常のMONOcheckデータは日別記録から残りページを算出する。
+        const firstRecord = asDate(allDates[0]);
+        const lastRecord = asDate(allDates[allDates.length - 1]);
+        const first = new Date(firstRecord.getTime() - 86400000);
+        const dayCount = Math.floor((lastRecord - first) / 86400000) + 1;
+        const dates = [];
+        if (dayCount > 0 && dayCount <= 3661) {
+          for (let i = 0; i < dayCount; i++) dates.push(new Date(first.getTime() + i * 86400000).toISOString().slice(0,10));
+        } else {
+          dates.push(first.toISOString().slice(0,10), ...allDates);
         }
-        return {day, plannedRemaining:Math.max(0,total-plannedDone), actualRemaining:Math.max(0,total-actualDone)};
-      });
+        let plannedDone = 0, actualDone = 0;
+        points = dates.map((day, i) => {
+          if (i > 0) {
+            plannedDone += plannedByDate[day] || 0;
+            actualDone += actualByDate[day] || 0;
+          }
+          return {day, plannedRemaining:Math.max(0,total-plannedDone), actualRemaining:Math.max(0,total-actualDone)};
+        });
+      }
       const maxValue = Math.max(1, total, ...points.map(point => Math.max(point.plannedRemaining,point.actualRemaining)));
       const tickStep = Math.max(1, Math.ceil(maxValue / 4));
       const axisMax = tickStep * 4;
@@ -145,15 +167,16 @@
         const value=tickStep*i, yy=y(value);
         grid += `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e8edf4"/><text x="${L-9}" y="${yy+4}" text-anchor="end" fill="#667085" font-size="11">${value}</text>`;
       }
-      const labelCount=Math.min(6,points.length), labels=[];
+      const categoryCount=Math.max(1,points.filter(point=>point.day).length);
+      const labelCount=Math.min(6,categoryCount), labels=[];
       for(let i=0;i<labelCount;i++) {
-        const index=labelCount===1?0:Math.round(i*(points.length-1)/(labelCount-1));
-        labels.push(`<text x="${x(index)}" y="${H-16}" text-anchor="middle" fill="#667085" font-size="11">${esc(fmtDate(points[index].day))}</text>`);
+        const index=labelCount===1?0:Math.round(i*(categoryCount-1)/(labelCount-1));
+        if(points[index] && points[index].day) labels.push(`<text x="${x(index)}" y="${H-16}" text-anchor="middle" fill="#667085" font-size="11">${esc(fmtDate(points[index].day))}</text>`);
       }
       const plannedPoints=points.map((point,i)=>`${x(i)},${y(point.plannedRemaining)}`).join(' ');
       const actualPoints=points.map((point,i)=>`${x(i)},${y(point.actualRemaining)}`).join(' ');
       const dots=points.map((point,i)=>{
-        const title=`${point.day}｜予定残り ${point.plannedRemaining}p｜実績残り ${point.actualRemaining}p`;
+        const title=`${point.day || '日付なし'}｜予定残り ${point.plannedRemaining}p｜実績残り ${point.actualRemaining}p`;
         const radius=points.length<=45?2.6:1.6;
         return `<circle cx="${x(i)}" cy="${y(point.plannedRemaining)}" r="${radius}" fill="${BLUE}"><title>${esc(title)}</title></circle><circle cx="${x(i)}" cy="${y(point.actualRemaining)}" r="${radius}" fill="${ORANGE}"><title>${esc(title)}</title></circle>`;
       }).join('');
